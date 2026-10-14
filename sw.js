@@ -1,5 +1,5 @@
 /* service worker: เก็บไฟล์ที่เคยเปิดไว้ในเครื่อง ดูออฟไลน์ได้ และอัปเดตเบื้องหลังเมื่อมีเน็ต */
-const V='kla-v1';
+const V='kla-v2';
 const CORE=['./','00_เมนูหลัก.html','engine/engine.js','engine/engine.css','เสียง/amap.js','manifest.webmanifest','icon-192.png'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(V).then(c=>Promise.all(CORE.map(u=>c.add(new Request(u,{cache:'reload'})).catch(()=>{})))));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});

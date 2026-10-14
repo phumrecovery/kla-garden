@@ -1,0 +1,126 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>สวนมหัศจรรย์ของน้องกล้า</title><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#8e5bd8"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet"><style>:root{--c:#8e5bd8;--bg:#f4eefc;--ink:#2d2340}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:'Itim','Leelawadee UI','Sarabun','Tahoma',sans-serif;color:var(--ink);background:var(--bg)}
+button{font-family:inherit;cursor:pointer}
+#app{position:relative;height:100%;display:flex;flex-direction:column;overflow:hidden}
+.top{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--c);color:#fff;font-size:clamp(14px,2.2vw,20px)}
+.top .t{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .lv{background:rgba(255,255,255,.25);border-radius:999px;padding:2px 12px;white-space:nowrap}
+.top button{background:rgba(255,255,255,.25);border:0;color:#fff;border-radius:12px;font-size:clamp(16px,2.4vw,22px);width:2.2em;height:2.2em}
+.bar{height:6px;background:rgba(0,0,0,.08)}.bar i{display:block;height:100%;background:var(--c);width:0;transition:width .4s}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;padding:14px 14px 0;min-height:0;overflow:auto}
+.foot{display:flex;align-items:flex-end;gap:12px;padding:8px 14px 14px}
+.who{width:clamp(64px,11vw,116px);flex:none}
+.who svg,.char svg{width:100%;height:auto;display:block}
+.sub{flex:1;background:#fff;border-radius:18px;padding:10px 18px;font-size:clamp(18px,3vw,30px);line-height:1.45;min-height:2.3em;box-shadow:0 3px 0 rgba(0,0,0,.08)}
+.pop{animation:pop .45s both cubic-bezier(.3,1.6,.6,1)}
+@keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.vis{width:100%;max-width:1000px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.row{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:clamp(6px,1.5vw,16px)}
+.row.left{justify-content:flex-start}
+.it{display:flex;flex-direction:column;align-items:center}
+.e{font-size:clamp(40px,8vw,84px);line-height:1.1}
+.it b{font-size:clamp(18px,3vw,28px);color:var(--c)}
+.bignum{font-size:clamp(56px,12vw,120px);color:var(--c);line-height:1}
+.bignum small{font-size:.45em}
+.char{width:clamp(110px,20vw,200px)}
+.bubble{background:#fff;border-radius:22px;padding:12px 24px;font-size:clamp(22px,4vw,40px);max-width:700px;text-align:center;box-shadow:0 4px 0 rgba(0,0,0,.08)}
+.card{background:#fff;border-radius:20px;padding:12px 16px;min-width:clamp(90px,14vw,150px);text-align:center;box-shadow:0 4px 0 rgba(0,0,0,.08);display:flex;flex-direction:column;align-items:center;gap:2px}
+.card .L,.opt .L{font-size:clamp(52px,10vw,104px);line-height:1.15;color:var(--c)}
+.card .T,.opt .T{font-size:clamp(16px,2.6vw,26px)}
+.row.sm .card{min-width:clamp(56px,8vw,86px);padding:6px 8px}
+.row.sm .L{font-size:clamp(30px,5.5vw,56px)}
+.card.bad{box-shadow:0 0 0 4px #e5484d}
+.card.bad .T::after{content:' ✗';color:#e5484d}
+.cmp{display:flex;flex-direction:column;gap:10px;width:100%}
+.cmp .r{display:flex;align-items:center;gap:12px;background:#fff;border-radius:18px;padding:6px 14px;transition:box-shadow .3s}
+.cmp .r.win{box-shadow:0 0 0 5px var(--c)}
+.cmp .lab{width:4.2em;flex:none;font-size:clamp(16px,2.4vw,24px)}
+.res{font-size:clamp(22px,4vw,38px);background:var(--c);color:#fff;border-radius:16px;padding:4px 20px}
+.n{width:clamp(50px,8.5vw,84px);height:clamp(50px,8.5vw,84px);border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:clamp(24px,4.5vw,44px);box-shadow:0 4px 0 rgba(0,0,0,.08)}
+.n.q{background:#fff3c4;border:3px dashed var(--c)}
+.n.hi{background:var(--c);color:#fff}
+.lb{font-size:clamp(14px,2.2vw,22px);color:var(--c);min-height:1.4em}
+.scatter{position:relative;width:min(92%,720px);height:clamp(220px,42vh,380px);background:#fff;border-radius:24px}
+.scatter .e{position:absolute}
+.star{background:#ffd23f;color:#5a4300;border-radius:999px;padding:4px 16px;font-size:clamp(16px,2.6vw,24px)}
+.qtext{font-size:clamp(22px,3.8vw,38px);text-align:center}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,28vw),1fr));gap:14px;width:100%;max-width:900px}
+.opt{background:#fff;border:4px solid transparent;border-radius:22px;padding:10px;font-size:clamp(30px,5vw,54px);min-height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:0 5px 0 rgba(0,0,0,.1);color:var(--ink)}
+.opt:hover:not([disabled]){transform:translateY(-3px)}
+.opt.ok{border-color:#2fae5c;background:#eafbef}
+.opt.no{border-color:#e5484d;background:#fdeeee;animation:shake .4s}
+.opt[disabled]{cursor:default}
+.opt[disabled]:not(.ok){opacity:.55}
+.cover{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.cover h1{margin:0;font-size:clamp(28px,5.5vw,56px);font-weight:400}
+.cover p{margin:0;font-size:clamp(16px,2.6vw,24px)}
+.go{background:var(--c);color:#fff;border:0;border-radius:999px;font-size:clamp(24px,4vw,40px);padding:.35em 1.6em;box-shadow:0 6px 0 rgba(0,0,0,.15)}
+.btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.btn2{background:#fff;color:var(--ink);border:3px solid var(--c);border-radius:999px;font-size:clamp(18px,3vw,28px);padding:.25em 1.2em;text-decoration:none}
+.note{font-size:clamp(14px,2vw,18px);opacity:.75}
+.opt .M{font-size:clamp(22px,3.6vw,36px);line-height:1.3}
+.opt .L{font-size:clamp(44px,8vw,84px)}
+.opt{position:relative}.opt .k{position:absolute;top:6px;left:12px;font-size:clamp(14px,2vw,20px);opacity:.55}
+
+/* character animation */
+.kla,.jook{overflow:visible}
+.bodyg{transform-box:view-box;transform-origin:60px 130px;animation:breathe 2.6s ease-in-out infinite}
+@keyframes breathe{50%{transform:scale(1.025,.975)}}
+.eyes{transform-box:view-box;transform-origin:60px 80px;animation:blink 4.2s infinite}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+.kla .leaves{transform-box:view-box;transform-origin:60px 46px;animation:leaf 3s ease-in-out infinite}
+@keyframes leaf{25%{transform:rotate(-9deg)}75%{transform:rotate(9deg)}}
+.jook .wing{transform-box:view-box;transform-origin:20px 88px;animation:flap 2.4s ease-in-out infinite}
+@keyframes flap{0%,70%,100%{transform:rotate(0)}78%{transform:rotate(25deg)}86%{transform:rotate(-5deg)}92%{transform:rotate(18deg)}}
+.jook .bodyg{animation:tilt 3.4s ease-in-out infinite}@keyframes tilt{25%{transform:rotate(-4deg)}75%{transform:rotate(4deg)}}
+.m-open{display:none}
+.talk .m-close{display:none}.talk .m-open{display:inline;transform-box:fill-box;transform-origin:50% 50%;animation:mouth .22s ease-in-out infinite alternate}
+@keyframes mouth{from{transform:scaleY(.35)}to{transform:scaleY(1)}}
+.beak-b{transform-box:fill-box;transform-origin:50% 0}.talk .beak-b{animation:beak .2s ease-in-out infinite alternate}
+@keyframes beak{to{transform:translateY(5px)}}
+.who.talk svg{animation:bob .45s ease-in-out infinite alternate}@keyframes bob{to{transform:translateY(-5px)}}
+.cheer svg{animation:hop .4s ease-out 3!important}@keyframes hop{50%{transform:translateY(-22px) rotate(-6deg)}}
+.oops svg{animation:wob .25s ease-in-out 3!important}@keyframes wob{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+.char .bodyg{animation-duration:2.2s}
+.rep{border:0;background:#fff;border-radius:50%;width:1.8em;height:1.8em;font-size:.8em;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.1);vertical-align:middle}
+@media (prefers-reduced-motion:reduce){.bodyg,.eyes,.leaves,.wing{animation:none!important}}
+.grp{display:flex;flex-wrap:wrap;gap:4px;max-width:40%;justify-content:center;background:#fff;border-radius:18px;padding:8px}
+.opr{font-size:clamp(40px,7vw,72px);color:var(--c);align-self:center}
+.bond{display:flex;flex-direction:column;align-items:center}
+.btop .n,.bbot .n{width:clamp(64px,10vw,100px);height:clamp(64px,10vw,100px);font-size:clamp(30px,5vw,50px)}
+.blines{width:clamp(180px,26vw,260px);height:auto}.blines line{stroke:var(--c);stroke-width:5;stroke-linecap:round}
+.bbot{display:flex;gap:clamp(70px,12vw,120px)}
+.flip{display:inline-block;transform:scaleX(-1)}
+.n{line-height:1}
+.e.sm{font-size:clamp(26px,4.6vw,50px);white-space:nowrap}
+#app{overflow:auto}</style></head><body><div id="app"><div class="top"><div class="t">🏡 สวนมหัศจรรย์ของน้องกล้า</div></div>
+<div class="stage" style="align-items:flex-start"><div class="vis" style="max-width:900px">
+<div class="row" style="align-items:center"><div class="char" style="width:110px" id="kla"></div><div class="bubble" id="msg">เลือกตอนที่จะดูได้เลย</div></div>
+<div class="card" style="width:100%"><div class="T">สวนของหนู · <span id="cnt"></span></div><div class="e" id="garden" style="letter-spacing:4px;font-size:clamp(28px,5vw,44px)"></div></div>
+<div id="days" style="width:100%;display:flex;flex-direction:column;gap:12px"></div>
+<p class="note">ดูวันจันทร์ พุธ ศุกร์ วันละ 3 ตอน · 🌱 = ดูจบแล้ว · ⭐ = ตอบถูกตั้งแต่ครั้งแรกทุกข้อ · ความคืบหน้าจำไว้ในเบราว์เซอร์ของเครื่องนี้</p>
+</div></div>
+<script>
+const L=[{"ep":"00","title":"รู้จักน้องกล้า","href":"EP00_รู้จักน้องกล้า.html","level":""},{"ep":"01","title":"ตะกร้าผลไม้นับเลข","href":"สัปดาห์01/EP01_คณิต_ตะกร้าผลไม้นับเลข.html","level":"easy"},{"ep":"02","title":"ตะกร้าไหนมากกว่า","href":"สัปดาห์01/EP02_คณิต_ตะกร้าไหนมากกว่า.html","level":"mid"},{"ep":"03","title":"เลขหายไปไหน","href":"สัปดาห์01/EP03_คณิต_เลขหายไปไหน.html","level":"hard"},{"ep":"04","title":"ก ไก่ มาแล้ว","href":"สัปดาห์01/EP04_ไทย_กไก่มาแล้ว.html","level":"easy"},{"ep":"05","title":"พยัญชนะหน้าตาคล้ายกัน","href":"สัปดาห์01/EP05_ไทย_พยัญชนะหน้าตาคล้ายกัน.html","level":"mid"},{"ep":"06","title":"ฟังเสียงหาตัวแรก","href":"สัปดาห์01/EP06_ไทย_ฟังเสียงหาตัวแรก.html","level":"hard"},{"ep":"07","title":"ร่างกายของฉัน","href":"สัปดาห์01/EP07_วิทย์_ร่างกายของฉัน.html","level":"easy"},{"ep":"08","title":"ประสาทสัมผัสทั้ง 5","href":"สัปดาห์01/EP08_วิทย์_ประสาทสัมผัสทั้ง5.html","level":"mid"},{"ep":"09","title":"หนูดูแลตัวเองได้","href":"สัปดาห์01/EP09_วิทย์_หนูดูแลตัวเองได้.html","level":"hard"},{"ep":"10","title":"รวมกันได้เท่าไร","href":"สัปดาห์02/EP10_คณิต_รวมกันได้เท่าไร.html","level":"easy"},{"ep":"11","title":"บ้านตัวเลข","href":"สัปดาห์02/EP11_คณิต_บ้านตัวเลข.html","level":"mid"},{"ep":"12","title":"โจทย์บวกในตลาด","href":"สัปดาห์02/EP12_คณิต_โจทย์บวกในตลาด.html","level":"hard"},{"ep":"13","title":"หาคู่เหมือน","href":"สัปดาห์02/EP13_เชาวน์_หาคู่เหมือน.html","level":"easy"},{"ep":"14","title":"ใครไม่ใช่พวกเรา","href":"สัปดาห์02/EP14_เชาวน์_ใครไม่ใช่พวกเรา.html","level":"mid"},{"ep":"15","title":"แบบรูปต่อไป","href":"สัปดาห์02/EP15_เชาวน์_แบบรูปต่อไป.html","level":"hard"},{"ep":"16","title":"รถไฟ A ถึง Z","href":"สัปดาห์02/EP16_อังกฤษ_รถไฟAถึงZ.html","level":"easy"},{"ep":"17","title":"ตัวใหญ่ตัวเล็ก","href":"สัปดาห์02/EP17_อังกฤษ_ตัวใหญ่ตัวเล็ก.html","level":"mid"},{"ep":"18","title":"A for Apple","href":"สัปดาห์02/EP18_อังกฤษ_AforApple.html","level":"hard"}],WK=[{"n":"","t":"เริ่มต้น","days":[["ก่อนเริ่ม","ดูก่อนเริ่มสัปดาห์ 1",["00"]]]},{"n":1,"t":"สัปดาห์ 1 · หว่านเมล็ดแรก","days":[["จันทร์ 26 ต.ค.","คณิตศาสตร์",["01","02","03"]],["พุธ 28 ต.ค.","ภาษาไทย",["04","05","06"]],["ศุกร์ 30 ต.ค.","วิทยาศาสตร์",["07","08","09"]]]},{"n":2,"t":"สัปดาห์ 2 · รดน้ำ","days":[["จันทร์ 2 พ.ย.","คณิตศาสตร์",["10","11","12"]],["พุธ 4 พ.ย.","เชาวน์ปัญญา",["13","14","15"]],["ศุกร์ 6 พ.ย.","ภาษาอังกฤษ",["16","17","18"]]]}];
+const LV={easy:'ง่าย',mid:'กลาง',hard:'ท้าทาย'};
+let P={};try{P=JSON.parse(localStorage.getItem('kla-garden-v1')||'{}')}catch(e){}
+document.getElementById('kla').innerHTML="<svg class=\"kla\" viewBox=\"0 0 120 140\"><g class=\"bodyg\"><g class=\"leaves\"><path d=\"M60 46 C60 34 60 28 60 22\" stroke=\"#3f8a2e\" stroke-width=\"5\" fill=\"none\" stroke-linecap=\"round\"/><ellipse cx=\"44\" cy=\"20\" rx=\"16\" ry=\"9\" fill=\"#5cc46b\" stroke=\"#3f8a2e\" stroke-width=\"3\" transform=\"rotate(-25 44 20)\"/><ellipse cx=\"76\" cy=\"20\" rx=\"16\" ry=\"9\" fill=\"#5cc46b\" stroke=\"#3f8a2e\" stroke-width=\"3\" transform=\"rotate(25 76 20)\"/></g><circle cx=\"60\" cy=\"88\" r=\"46\" fill=\"#b5e88a\" stroke=\"#4f9a3a\" stroke-width=\"4\"/><g class=\"eyes\"><ellipse cx=\"44\" cy=\"82\" rx=\"9\" ry=\"11\" fill=\"#fff\"/><ellipse cx=\"76\" cy=\"82\" rx=\"9\" ry=\"11\" fill=\"#fff\"/><circle class=\"pupil\" cx=\"46\" cy=\"84\" r=\"5\" fill=\"#2d2340\"/><circle class=\"pupil\" cx=\"78\" cy=\"84\" r=\"5\" fill=\"#2d2340\"/></g><circle cx=\"34\" cy=\"100\" r=\"6\" fill=\"#ff9fb0\" opacity=\".8\"/><circle cx=\"86\" cy=\"100\" r=\"6\" fill=\"#ff9fb0\" opacity=\".8\"/><path class=\"m-close\" d=\"M48 104 Q60 116 72 104\" stroke=\"#2d2340\" stroke-width=\"4\" fill=\"none\" stroke-linecap=\"round\"/><ellipse class=\"m-open\" cx=\"60\" cy=\"108\" rx=\"9\" ry=\"7\" fill=\"#7a2f3b\" stroke=\"#2d2340\" stroke-width=\"3\"/></g></svg>";
+const box=document.getElementById('days');
+const tile=n=>{const e=L.find(x=>x.ep===n);const p=P['EP'+n]||{};const a=document.createElement('a');a.className='opt';a.href=e.href;a.style.textDecoration='none';a.style.minHeight='90px';
+  a.innerHTML='<div class="e" style="font-size:36px">'+(p.gold?'⭐':p.seed?'🌱':'🟫')+'</div><div class="T">EP'+n+' '+e.title+'</div>'+(LV[e.level]?'<div class="note">'+LV[e.level]+'</div>':'');return a;};
+let cur=null;
+WK.forEach(W=>{const sec=document.createElement('details');sec.className='card';sec.style.alignItems='stretch';const eps=W.days.flatMap(d=>d[2]);const done=eps.filter(n=>(P['EP'+n]||{}).seed).length;
+ sec.innerHTML='<summary class="T" style="text-align:left;cursor:pointer"><b>'+W.t+'</b> · '+(W.n?'🌱 '+done+'/'+eps.length:'')+'</summary>';
+ if(!cur&&done<eps.length){cur=W;sec.open=true;}
+ W.days.forEach(([d,s,ns])=>{const h=document.createElement('div');h.className='T';h.style.cssText='text-align:left;margin:10px 0 6px';h.innerHTML='<b>'+d+'</b> · '+s;sec.append(h);const r=document.createElement('div');r.className='opts';ns.forEach(n=>r.append(tile(n)));sec.append(r);});
+ box.append(sec);});
+if(!cur&&box.lastChild)box.lastChild.open=true;
+const wk=L.filter(e=>e.ep!=='00');const got=wk.filter(e=>(P['EP'+e.ep]||{}).seed).length;
+document.getElementById('cnt').textContent='เมล็ดพันธุ์ '+got+' / '+wk.length+' · ต้นไม้ '+Math.floor(got/9)+' ต้น';
+document.getElementById('garden').textContent='🌳'.repeat(Math.floor(got/9))+wk.slice(Math.floor(got/9)*9).map(e=>{const p=P['EP'+e.ep]||{};return p.gold?'🌼':p.seed?'🌱':'🟫'}).join('');
+if(got>0)document.getElementById('msg').textContent=got%9===0?'ครบ '+got+' เมล็ดแล้ว ต้นไม้โตขึ้นอีกต้น!':'เก็บได้ '+got+' เมล็ดแล้ว เก่งมาก!';
+
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script></div></body></html>

@@ -1,0 +1,209 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EP16 รถไฟ A ถึง Z</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet"><link rel="stylesheet" href="../engine/engine.css"></head><body><div id="app"></div>
+<script>window.EP={
+ "ep": "16",
+ "subject": "eng",
+ "level": "easy",
+ "title": "รถไฟ A ถึง Z",
+ "scenes": [
+  {
+   "v": {
+    "type": "kla",
+    "text": "ขึ้นรถไฟ ABC กัน!"
+   },
+   "say": "ปู๊น ปู๊น ขึ้นรถไฟเอบีซีกัน ภาษาอังกฤษมีตัวอักษรยี่สิบหกตัว"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "sm": true,
+    "speed": 0.5,
+    "items": [
+     {
+      "big": "A"
+     },
+     {
+      "big": "B"
+     },
+     {
+      "big": "C"
+     },
+     {
+      "big": "D"
+     },
+     {
+      "big": "E"
+     },
+     {
+      "big": "F"
+     },
+     {
+      "big": "G"
+     },
+     {
+      "big": "H"
+     }
+    ]
+   },
+   "say": "อ่านตามนะ [A, B, C, D, E, F, G, H]"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "sm": true,
+    "speed": 0.5,
+    "items": [
+     {
+      "big": "I"
+     },
+     {
+      "big": "J"
+     },
+     {
+      "big": "K"
+     },
+     {
+      "big": "L"
+     },
+     {
+      "big": "M"
+     },
+     {
+      "big": "N"
+     },
+     {
+      "big": "O"
+     },
+     {
+      "big": "P"
+     }
+    ]
+   },
+   "say": "ต่อเลย [I, J, K, L, M, N, O, P]"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "sm": true,
+    "speed": 0.45,
+    "items": [
+     {
+      "big": "Q"
+     },
+     {
+      "big": "R"
+     },
+     {
+      "big": "S"
+     },
+     {
+      "big": "T"
+     },
+     {
+      "big": "U"
+     },
+     {
+      "big": "V"
+     },
+     {
+      "big": "W"
+     },
+     {
+      "big": "X"
+     },
+     {
+      "big": "Y"
+     },
+     {
+      "big": "Z"
+     }
+    ]
+   },
+   "say": "ขบวนสุดท้าย [Q, R, S, T, U, V, W, X, Y, Z]"
+  },
+  {
+   "v": {
+    "type": "nums",
+    "nums": [
+     "A",
+     "B",
+     null,
+     "D"
+    ],
+    "fill": "C",
+    "fd": 4
+   },
+   "say": "ตัวอักษรเรียงตามลำดับเสมอ ต่อจาก [B] คือ [C]"
+  },
+  {
+   "v": {
+    "type": "kla",
+    "text": "A คือตัวแรก Z คือตัวสุดท้าย"
+   },
+   "say": "ตัวแรกคือ [A] ตัวสุดท้ายคือ [Z] อ่านทวนอีกครั้ง [A, B, C, D, E, F, G]"
+  }
+ ],
+ "questions": [
+  {
+   "q": "ตัวไหนคือตัว C",
+   "say": "ตัวไหนคือตัว [C]",
+   "opts": [
+    "G",
+    "C",
+    "O"
+   ],
+   "ans": 1,
+   "hint": "ตัว [C] หน้าตาเหมือนวงกลมที่เปิดด้านขวา",
+   "why": "นี่คือตัว [C]"
+  },
+  {
+   "q": "ตัวอักษรที่หายไปคือตัวไหน",
+   "v": {
+    "type": "nums",
+    "nums": [
+     "K",
+     "L",
+     null,
+     "N"
+    ]
+   },
+   "opts": [
+    "M",
+    "O",
+    "J"
+   ],
+   "ans": 0,
+   "hint": "อ่านตาม [K, L] แล้วต่อด้วย...",
+   "why": "[K, L, M, N]"
+  },
+  {
+   "q": "ตัวอักษรตัวแรกคือตัวไหน",
+   "opts": [
+    "Z",
+    "B",
+    "A"
+   ],
+   "ans": 2,
+   "hint": "รถไฟขบวนแรกเริ่มที่ตัวนี้",
+   "why": "ตัวแรกคือ [A]"
+  },
+  {
+   "q": "ข้อไหนเรียงลำดับไม่ถูกต้อง",
+   "star": true,
+   "opts": [
+    "EFGH",
+    "LMOP",
+    "QRST"
+   ],
+   "ans": 1,
+   "hint": "อ่านทีละข้อ ข้อไหนมีตัวอักษรหายไป",
+   "why": "[L, M] แล้วต้องเป็น [N] ก่อน [O]"
+  }
+ ],
+ "summary": "วันนี้เรารู้จักตัวอักษรภาษาอังกฤษ ยี่สิบหกตัว ตั้งแต่ [A] ถึง [Z]",
+ "menu": "../00_เมนูหลัก.html",
+ "next": "EP17_อังกฤษ_ตัวใหญ่ตัวเล็ก.html",
+ "audioDir": "../เสียง/"
+};</script>
+<script src="../เสียง/amap.js"></script>
+<script src="../engine/engine.js"></script>
+</body></html>

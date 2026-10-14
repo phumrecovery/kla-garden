@@ -1,0 +1,203 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EP18 A for Apple</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet"><link rel="stylesheet" href="../engine/engine.css"></head><body><div id="app"></div>
+<script>window.EP={
+ "ep": "18",
+ "subject": "eng",
+ "level": "hard",
+ "title": "A for Apple",
+ "dayEnd": true,
+ "scenes": [
+  {
+   "v": {
+    "type": "kla",
+    "text": "A for Apple!"
+   },
+   "say": "ตัวอักษรแต่ละตัวเป็นตัวแรกของคำ ฟังเสียงแรกของคำ จะรู้ว่าขึ้นต้นด้วยตัวไหน"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "speed": 1.2,
+    "items": [
+     {
+      "e": "🍎",
+      "big": "A",
+      "t": "apple"
+     },
+     {
+      "e": "⚽",
+      "big": "B",
+      "t": "ball"
+     },
+     {
+      "e": "🐱",
+      "big": "C",
+      "t": "cat"
+     }
+    ]
+   },
+   "say": "[A, apple] [B, ball] [C, cat]"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "speed": 1.2,
+    "items": [
+     {
+      "e": "🐶",
+      "big": "D",
+      "t": "dog"
+     },
+     {
+      "e": "🥚",
+      "big": "E",
+      "t": "egg"
+     },
+     {
+      "e": "🐟",
+      "big": "F",
+      "t": "fish"
+     }
+    ]
+   },
+   "say": "[D, dog] [E, egg] [F, fish]"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "speed": 1.2,
+    "items": [
+     {
+      "e": "🎩",
+      "big": "H",
+      "t": "hat"
+     },
+     {
+      "e": "☀️",
+      "big": "S",
+      "t": "sun"
+     },
+     {
+      "e": "🌳",
+      "big": "T",
+      "t": "tree"
+     }
+    ]
+   },
+   "say": "[H, hat] [S, sun] [T, tree]"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "speed": 1,
+    "items": [
+     {
+      "e": "🥕",
+      "t": "carrot"
+     },
+     {
+      "e": "🍬",
+      "t": "candy"
+     },
+     {
+      "e": "🐱",
+      "t": "cat"
+     }
+    ]
+   },
+   "say": "[carrot, candy, cat] ทุกคำขึ้นต้นด้วยตัว [C]"
+  },
+  {
+   "v": {
+    "type": "kla",
+    "text": "ฟังเสียงแรกของคำ"
+   },
+   "say": "เคล็ดลับ ฟังเสียงแรกของคำให้ดี [ball] เสียงแรกคือ [B]"
+  }
+ ],
+ "questions": [
+  {
+   "q": "apple ขึ้นต้นด้วยตัวไหน",
+   "say": "[apple] ขึ้นต้นด้วยตัวไหน",
+   "v": {
+    "type": "big",
+    "e": "🍎",
+    "sub": "apple"
+   },
+   "opts": [
+    "E",
+    "A",
+    "P"
+   ],
+   "ans": 1,
+   "hint": "[A for apple]",
+   "why": "[apple] ขึ้นต้นด้วยตัว [A]"
+  },
+  {
+   "q": "sun ขึ้นต้นด้วยตัวไหน",
+   "say": "[sun] ขึ้นต้นด้วยตัวไหน",
+   "v": {
+    "type": "big",
+    "e": "☀️",
+    "sub": "sun"
+   },
+   "opts": [
+    "C",
+    "Z",
+    "S"
+   ],
+   "ans": 2,
+   "hint": "ฟังเสียงแรก [sun] [S]",
+   "why": "[sun] ขึ้นต้นด้วยตัว [S]"
+  },
+  {
+   "q": "คำไหนขึ้นต้นด้วย D",
+   "say": "คำไหนขึ้นต้นด้วยตัว [D]",
+   "opts": [
+    {
+     "e": "🐶",
+     "t": "dog"
+    },
+    {
+     "e": "🐱",
+     "t": "cat"
+    },
+    {
+     "e": "🐟",
+     "t": "fish"
+    }
+   ],
+   "ans": 0,
+   "hint": "[D for dog]",
+   "why": "[dog] ขึ้นต้นด้วยตัว [D]"
+  },
+  {
+   "q": "คำไหนไม่ได้ขึ้นต้นด้วย C",
+   "say": "คำไหนไม่ได้ขึ้นต้นด้วยตัว [C]",
+   "star": true,
+   "opts": [
+    {
+     "e": "🥕",
+     "t": "carrot"
+    },
+    {
+     "e": "🍕",
+     "t": "pizza"
+    },
+    {
+     "e": "🍬",
+     "t": "candy"
+    }
+   ],
+   "ans": 1,
+   "hint": "ฟังเสียงแรกของแต่ละคำ [carrot, pizza, candy]",
+   "why": "[pizza] ขึ้นต้นด้วยตัว [P]"
+  }
+ ],
+ "summary": "วันนี้เรารู้ว่าตัวอักษรเป็นเสียงแรกของคำ [A for apple]",
+ "menu": "../00_เมนูหลัก.html",
+ "next": null,
+ "audioDir": "../เสียง/"
+};</script>
+<script src="../เสียง/amap.js"></script>
+<script src="../engine/engine.js"></script>
+</body></html>

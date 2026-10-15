@@ -11,7 +11,7 @@ const TH='๐๑๒๓๔๕๖๗๘๙',thd=n=>String(n).replace(/\d/g,d=>TH[d
 const SC=[[6,8],[30,52],[54,10],[76,46],[12,60],[42,30],[66,68],[82,8],[30,6],[56,48],[20,34],[88,70],[4,34],[46,72],[70,24],[18,80],[60,86],[86,28],[36,84],[50,58]];
 const KLA='<svg class="kla" viewBox="0 0 120 140"><g class="bodyg"><g class="leaves"><path d="M60 46 C60 34 60 28 60 22" stroke="#3f8a2e" stroke-width="5" fill="none" stroke-linecap="round"/><ellipse cx="44" cy="20" rx="16" ry="9" fill="#5cc46b" stroke="#3f8a2e" stroke-width="3" transform="rotate(-25 44 20)"/><ellipse cx="76" cy="20" rx="16" ry="9" fill="#5cc46b" stroke="#3f8a2e" stroke-width="3" transform="rotate(25 76 20)"/></g><circle cx="60" cy="88" r="46" fill="#b5e88a" stroke="#4f9a3a" stroke-width="4"/><g class="eyes"><ellipse cx="44" cy="82" rx="9" ry="11" fill="#fff"/><ellipse cx="76" cy="82" rx="9" ry="11" fill="#fff"/><circle class="pupil" cx="46" cy="84" r="5" fill="#2d2340"/><circle class="pupil" cx="78" cy="84" r="5" fill="#2d2340"/></g><circle cx="34" cy="100" r="6" fill="#ff9fb0" opacity=".8"/><circle cx="86" cy="100" r="6" fill="#ff9fb0" opacity=".8"/><path class="m-close" d="M48 104 Q60 116 72 104" stroke="#2d2340" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse class="m-open" cx="60" cy="108" rx="9" ry="7" fill="#7a2f3b" stroke="#2d2340" stroke-width="3"/></g></svg>';
 const JOOK='<svg class="jook" viewBox="0 0 120 140"><g class="bodyg"><path d="M58 38 C54 24 62 18 66 14 C66 24 72 26 70 36" fill="#8a5a2b"/><ellipse cx="60" cy="88" rx="44" ry="42" fill="#c98a4b" stroke="#8a5a2b" stroke-width="4"/><ellipse cx="62" cy="100" rx="26" ry="24" fill="#f7dcae"/><path class="wing" d="M18 86 Q2 98 20 108" fill="#a86f38"/><g class="eyes"><circle cx="48" cy="74" r="9" fill="#fff"/><circle cx="76" cy="74" r="9" fill="#fff"/><circle class="pupil" cx="49" cy="75" r="4.5" fill="#2d2340"/><circle class="pupil" cx="77" cy="75" r="4.5" fill="#2d2340"/></g><path class="beak-t" d="M56 86 L68 86 L62 92 Z" fill="#ff9a1f" stroke="#c96a00" stroke-width="2"/><path class="beak-b" d="M57 89 L67 89 L62 97 Z" fill="#ff9a1f" stroke="#c96a00" stroke-width="2"/></g></svg>';
-const SPROUT='<svg class="sprout" viewBox="0 0 120 130"><ellipse cx="60" cy="118" rx="44" ry="10" fill="#8a5a2b" opacity=".35"/><path class="stem" d="M60 118 C60 95 58 75 60 50" stroke="#3f8a2e" stroke-width="7" fill="none" stroke-linecap="round"/><ellipse class="lf a" cx="42" cy="72" rx="20" ry="10" fill="#5cc46b" stroke="#3f8a2e" stroke-width="3" transform="rotate(-30 42 72)"/><ellipse class="lf b" cx="78" cy="62" rx="20" ry="10" fill="#5cc46b" stroke="#3f8a2e" stroke-width="3" transform="rotate(30 78 62)"/><g class="flw"><circle cx="60" cy="40" r="9" fill="#ffd23f"/><circle cx="60" cy="25" r="9" fill="#ff9fb0"/><circle cx="74" cy="40" r="9" fill="#ff9fb0"/><circle cx="46" cy="40" r="9" fill="#ff9fb0"/><circle cx="60" cy="54" r="9" fill="#ff9fb0"/><circle cx="60" cy="40" r="7" fill="#ffd23f"/></g></svg>';
+const SPROUT='<svg class="sprout" viewBox="0 0 140 150"><g class="plant"><path class="stem" d="M70 122 C70 104 67 86 70 58" stroke="#3f8a2e" stroke-width="7" fill="none" stroke-linecap="round"/><g transform="translate(69 94)"><path class="lf a" d="M0 0 C-8 -14 -30 -18 -44 -10 C-32 4 -12 6 0 0Z" fill="#5cc46b" stroke="#3f8a2e" stroke-width="3" stroke-linejoin="round"/><path class="vein a" d="M-4 -2 C-16 -8 -28 -10 -38 -9" stroke="#3f8a2e" stroke-width="2" fill="none"/></g><g transform="translate(70 78)"><path class="lf b" d="M0 0 C8 -14 30 -18 44 -10 C32 4 12 6 0 0Z" fill="#6fd17c" stroke="#3f8a2e" stroke-width="3" stroke-linejoin="round"/><path class="vein b" d="M4 -2 C16 -8 28 -10 38 -9" stroke="#3f8a2e" stroke-width="2" fill="none"/></g><g class="flw"><circle cx="70" cy="34" r="9" fill="#ff9fb0"/><circle cx="84" cy="46" r="9" fill="#ff9fb0"/><circle cx="56" cy="46" r="9" fill="#ff9fb0"/><circle cx="70" cy="58" r="9" fill="#ff9fb0"/><circle cx="70" cy="46" r="8" fill="#ffd23f"/></g></g><ellipse class="seed" cx="70" cy="121" rx="7" ry="5" fill="#c98b4a" stroke="#7a4f24" stroke-width="2"/><path class="soil" d="M14 142 C20 122 46 116 70 118 C94 116 120 122 126 142 Z" fill="#9b6a3c"/><path d="M28 130 q4 -3 8 0 M92 128 q4 -3 8 0 M60 136 q4 -3 8 0" stroke="#7a4f24" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle class="dirt d1" cx="64" cy="118" r="3" fill="#9b6a3c"/><circle class="dirt d2" cx="76" cy="118" r="2.5" fill="#9b6a3c"/><circle class="dirt d3" cx="70" cy="117" r="2" fill="#9b6a3c"/></svg>';
 const z=Z[EP.subject]||Z.intro;
 document.documentElement.style.setProperty('--c',z[1]);document.documentElement.style.setProperty('--bg',z[2]);
 document.title='EP'+EP.ep+' '+EP.title;
@@ -86,6 +86,58 @@ async function say(segs,lang){if(!Array.isArray(segs))segs=[segs];segs=segs.filt
  for(const g of segs)for(const p of splitSeg(g)){if(my!==tok)return;const rec=await playRec(p.t,my);if(my!==tok)return;if(!rec)await speak1(p.t,p.en?'en-US':lang);}}
 async function gap(ms,my){let t=0;while(t<ms){await wait(100);if(my!==tok)return;if(!paused)t+=100;}}
 
+/* ---------- ภาพวาด SVG: ทรงสามมิติ กล่องบล็อก รอยเท้า วงจรชีวิต ---------- */
+let gid=0;const BC=['#f6a04d','#5fb4e6','#7ccf8a','#c08fe6'];
+function tint(hex,k){const n=parseInt(hex.slice(1),16);const f=c=>Math.max(0,Math.min(255,Math.round(k>1?c+(255-c)*(k-1):c*k)));return 'rgb('+f(n>>16)+','+f(n>>8&255)+','+f(n&255)+')';}
+const poly=(pts,fill,cls)=>'<polygon'+(cls?' class="'+cls+'"':'')+' points="'+pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')+'" fill="'+fill+'"/>';
+/* b={g:[[สูง..]..] แถวหลัง→หน้า, view:'iso'|'top'|'front'|'side', gray:[r,c,z], mark:[[r,c,z]], layers, color, nums} */
+function blocksSVG(b,anim){const g=b.g,R=g.length,C=Math.max(...g.map(r=>r.length)),view=b.view||'iso',H=(r,c)=>(g[r]&&g[r][c])||0;
+ const same=(a,r,c,z)=>a&&a[0]===r&&a[1]===c&&(a[2]||0)===z;
+ const fill=(r,c,z)=>same(b.gray,r,c,z)?'#a3a7ad':(b.mark||[]).some(m=>same(m,r,c,z))?'#f472b6':b.layers?BC[z%BC.length]:(b.color||BC[0]);
+ const svg=(w,hh,x0,y0,body)=>'<svg class="blk" viewBox="'+[x0,y0,w,hh].map(n=>n.toFixed(1)).join(' ')+'" stroke="#3b3b4f" stroke-width="2" stroke-linejoin="round">'+body+'</svg>';
+ if(view==='iso'){const s=40,dx=s*.5,dy=s*.4;const cubes=[];
+  for(let r=0;r<R;r++)for(let c=0;c<C;c++)for(let z=0;z<H(r,c);z++)cubes.push([r,c,z]);
+  const order=[...cubes].sort((a,b2)=>a[2]-b2[2]||a[0]-b2[0]||a[1]-b2[1]);const draw=[...cubes].sort((a,b2)=>a[0]-b2[0]||a[2]-b2[2]||a[1]-b2[1]);
+  let body='',xs=[],ys=[];draw.forEach(([r,c,z])=>{const f=fill(r,c,z),d=R-1-r,x=c*s+d*dx,y=-z*s-d*dy;
+   const fr=[[x,y],[x+s,y],[x+s,y-s],[x,y-s]],top=[[x,y-s],[x+s,y-s],[x+s+dx,y-s-dy],[x+dx,y-s-dy]],rt=[[x+s,y],[x+s+dx,y-dy],[x+s+dx,y-s-dy],[x+s,y-s]];
+   [...fr,...top,...rt].forEach(p=>{xs.push(p[0]);ys.push(p[1]);});const i=order.findIndex(o=>o[0]===r&&o[1]===c&&o[2]===z);
+   body+='<g class="'+(anim?'cb':'')+'" data-i="'+i+'"'+(anim?' style="animation-delay:'+(anim.at+i*anim.sp).toFixed(2)+'s"':'')+'>'+poly(fr,f)+poly(top,tint(f,1.25))+poly(rt,tint(f,.78))+'</g>';});
+  const x0=Math.min(...xs)-4,y0=Math.min(...ys)-4;return svg(Math.max(...xs)+4-x0,Math.max(...ys)+4-y0,x0,y0,body);}
+ const s=44;let body='',w,hh;
+ if(view==='top'){w=C*s;hh=R*s;for(let r=0;r<R;r++)for(let c=0;c<C;c++){const n=H(r,c);if(!n){if(b.grid)body+='<rect x="'+c*s+'" y="'+r*s+'" width="'+s+'" height="'+s+'" fill="none" stroke="#c9c3d6" stroke-dasharray="4 4"/>';continue;}
+  const f=(b.gray&&b.gray[0]===r&&b.gray[1]===c)?'#a3a7ad':b.layers?BC[(n-1)%BC.length]:(b.color||BC[0]);body+='<rect x="'+c*s+'" y="'+r*s+'" width="'+s+'" height="'+s+'" fill="'+tint(f,1.25)+'"/>'+(b.nums?'<text x="'+(c*s+s/2)+'" y="'+(r*s+s/2+9)+'" text-anchor="middle" font-size="26" stroke="none" fill="#3b3b4f">'+n+'</text>':'');}}
+ else{const front=view==='front',N=front?C:R,col=i=>{let m=0;for(let k=0;k<(front?R:C);k++)m=Math.max(m,front?H(k,i):H(R-1-i,k));return m;};const top=Math.max(1,...Array.from({length:N},(_,i)=>col(i)));w=N*s;hh=top*s;
+  for(let i=0;i<N;i++)for(let z=0;z<col(i);z++)body+='<rect x="'+i*s+'" y="'+(hh-(z+1)*s)+'" width="'+s+'" height="'+s+'" fill="'+(b.color||BC[0])+'"/>';}
+ return svg(w+4,hh+4,-2,-2,body);}
+function solidSVG(n){const id='g'+(++gid),C={sphere:'#f25f5c',cube:'#f6a04d',cuboid:'#5fb4e6',cylinder:'#7ccf8a',cone:'#c08fe6',pyramid:'#f2c14e'}[n]||'#999';
+ const st=' stroke="#3b3b4f" stroke-width="2.5" stroke-linejoin="round"';let b='';
+ if(n==='sphere')b='<defs><radialGradient id="'+id+'" cx=".35" cy=".35" r=".7"><stop offset="0" stop-color="#fff"/><stop offset=".25" stop-color="'+tint(C,1.2)+'"/><stop offset="1" stop-color="'+tint(C,.7)+'"/></radialGradient></defs><circle cx="50" cy="52" r="38" fill="url(#'+id+')"'+st+'/>';
+ else if(n==='cube'||n==='cuboid'){const w=n==='cube'?30:44,d=n==='cube'?30:18,h=n==='cube'?34:26,x=50-(w-d)*.43,y=60;const P=(a,c,z)=>[x+(a-c)*.866,y+(a+c)*.5-z];
+  b=poly([P(0,0,h),P(w,0,h),P(w,d,h),P(0,d,h)],tint(C,1.25))+poly([P(0,d,0),P(w,d,0),P(w,d,h),P(0,d,h)],C)+poly([P(w,0,0),P(w,d,0),P(w,d,h),P(w,0,h)],tint(C,.78));b='<g'+st+'>'+b+'</g>';}
+ else if(n==='cylinder')b='<defs><linearGradient id="'+id+'"><stop offset="0" stop-color="'+tint(C,.8)+'"/><stop offset=".4" stop-color="'+tint(C,1.25)+'"/><stop offset="1" stop-color="'+tint(C,.7)+'"/></linearGradient></defs><path d="M22 26 V78 A28 10 0 0 0 78 78 V26" fill="url(#'+id+')"'+st+'/><ellipse cx="50" cy="26" rx="28" ry="10" fill="'+tint(C,1.3)+'"'+st+'/>';
+ else if(n==='cone')b='<defs><linearGradient id="'+id+'"><stop offset="0" stop-color="'+tint(C,.8)+'"/><stop offset=".4" stop-color="'+tint(C,1.25)+'"/><stop offset="1" stop-color="'+tint(C,.7)+'"/></linearGradient></defs><path d="M50 10 L20 78 A30 10 0 0 0 80 78 Z" fill="url(#'+id+')"'+st+'/>';
+ else if(n==='pyramid')b='<g'+st+'>'+poly([[50,12],[16,72],[48,88]],tint(C,1.15))+poly([[50,12],[48,88],[86,70]],tint(C,.8))+'</g>';
+ return '<svg class="sol" viewBox="0 0 100 100">'+b+'</svg>';}
+/* รอยเท้า: ไก่ เป็ด หมาแมว ม้า วัว คน ช้าง */
+function printSVG(n,k){const one={
+ chicken:'<path d="M0 14 V-10 M0 14 L-11 -6 M0 14 L11 -6 M0 14 V22" stroke="#6b4f3a" stroke-width="4" stroke-linecap="round" fill="none"/>',
+ duck:'<path d="M0 16 L-14 -8 Q-7 -3 0 -12 Q7 -3 14 -8 Z" fill="#6b4f3a"/>',
+ paw:'<g fill="#6b4f3a"><ellipse cx="0" cy="8" rx="9" ry="8"/><circle cx="-11" cy="-5" r="4"/><circle cx="-4" cy="-11" r="4"/><circle cx="4" cy="-11" r="4"/><circle cx="11" cy="-5" r="4"/></g>',
+ hoof:'<path d="M-10 12 V-2 A10 10 0 0 1 10 -2 V12" stroke="#6b4f3a" stroke-width="6" fill="none" stroke-linecap="round"/>',
+ cow:'<g fill="#6b4f3a"><path d="M-2 14 Q-13 12 -11 -2 Q-9 -12 -2 -12 Z"/><path d="M2 14 Q13 12 11 -2 Q9 -12 2 -12 Z"/></g>',
+ human:'<g fill="#6b4f3a"><ellipse cx="0" cy="4" rx="7" ry="13"/><circle cx="-5" cy="-13" r="3"/><circle cx="0" cy="-15" r="2.6"/><circle cx="4.5" cy="-14" r="2.3"/><circle cx="8" cy="-11" r="2"/></g>',
+ elephant:'<g fill="#6b4f3a"><circle r="15"/></g>'}[n]||'';
+ k=k||3;let b='';for(let i=0;i<k;i++)b+='<g transform="translate('+(22+i*34)+','+(i%2?62:34)+')">'+one+'</g>';return '<svg class="prt" viewBox="0 0 '+(14+k*34)+' 96">'+b+'</svg>';}
+/* ภาพวงจรชีวิตที่ไม่มีอีโมจิ */
+function picSVG(n){return '<svg class="pic" viewBox="0 0 100 100">'+({
+ spawn:'<g stroke="#3b3b4f" stroke-width="1.5">'+[[30,40],[50,34],[70,42],[40,58],[60,58],[28,72],[50,76],[72,70]].map(([x,y])=>'<circle cx="'+x+'" cy="'+y+'" r="11" fill="#d7eef7"/><circle cx="'+x+'" cy="'+y+'" r="4" fill="#222" stroke="none"/>').join('')+'</g>',
+ tadpole:'<path d="M42 50 Q70 30 92 52 Q70 46 60 56 Z" fill="#4d5b3a"/><ellipse cx="34" cy="52" rx="20" ry="15" fill="#4d5b3a"/><circle cx="26" cy="47" r="3" fill="#fff"/>',
+ froglet:'<path d="M50 52 Q75 40 94 58 Q74 52 64 60 Z" fill="#5d7f3a"/><ellipse cx="36" cy="52" rx="20" ry="15" fill="#6c9a3e"/><circle cx="28" cy="46" r="3.5" fill="#fff"/><path d="M44 62 L52 78 L60 80 M30 64 L26 80 L18 82" stroke="#6c9a3e" stroke-width="5" fill="none" stroke-linecap="round"/>',
+ pupa:'<path d="M50 6 V18" stroke="#6b4f3a" stroke-width="3"/><path d="M50 18 Q70 30 64 62 Q58 90 50 94 Q42 90 36 62 Q30 30 50 18 Z" fill="#9bbf5a" stroke="#5d7f3a" stroke-width="2"/><path d="M40 46 Q50 52 60 46 M38 62 Q50 68 62 62" stroke="#5d7f3a" stroke-width="2" fill="none"/>',
+ wiggler:'<path d="M30 20 Q44 34 34 48 Q24 62 38 76" stroke="#555" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M30 20 L22 12 M30 20 L36 10" stroke="#555" stroke-width="2"/>',
+ nymph:'<path d="M20 60 Q50 40 80 58 Q50 66 20 60 Z" fill="#7cb342"/><circle cx="20" cy="56" r="8" fill="#7cb342"/><path d="M40 60 L32 78 M52 60 L56 80 M64 58 L76 76 M14 50 L6 36" stroke="#558b2f" stroke-width="3" fill="none"/>'}[n]||'')+'</svg>';}
+const art=o=>o.solid?solidSVG(o.solid):o.blk?blocksSVG(o.blk):o.print?printSVG(o.print,o.k):o.pic?picSVG(o.pic):'';
+
 /* ---------- ภาพประกอบแต่ละแบบ ---------- */
 function vis(v,still){const d=h('div','vis');d._fx=[];d._later=[];const at=still?0:(v.at||0);const dl=(i,s)=>(still?0:at+i*(s||.55));const T=v.type;
  const fx=(el,i,s,boing)=>{if(!still)d._fx.push({t:dl(i,s),i,el:boing?el:null});};
@@ -122,10 +174,19 @@ function vis(v,still){const d=h('div','vis');d._fx=[];d._later=[];const at=still
   let lines='';parts.forEach((_,i)=>{const x=k===1?50:i*100/(k-1);lines+='<line x1="50" y1="0" x2="'+x+'" y2="60"/>';});
   const b=h('div','bond pop k'+k,'<div class="btop">'+c(v.top)+'</div><svg class="blines" viewBox="0 0 100 60" preserveAspectRatio="none">'+lines+'</svg><div class="bbot">'+parts.map(c).join('')+'</div>');b.style.setProperty('--k',Math.max(2,k));d.append(b);
   if(v.fill!=null&&!still)later(v.fd||3,()=>{const q=b.querySelector('.n.q');if(q){q.textContent=v.fill;q.className='n hi pop';SFX.chime();}});}
- else if(T==='cards'){const r=h('div','row'+(v.sm?' sm':''));v.items.forEach((c,i)=>{const k=h('div','card pop'+(c.bad?' bad':''));k.innerHTML=(c.e?'<div class="e'+(c.flip?' flip':'')+([...c.e].length>2?' sm':'')+'">'+c.e+'</div>':'')+(c.big?'<div class="L">'+c.big+'</div>':'')+(c.t?'<div class="T">'+c.t+'</div>':'');k.style.animationDelay=dl(i,v.speed||.6)+'s';fx(k,i,v.speed||.6);r.append(k);});d.append(r);}
+ else if(T==='blocks'){const sp=v.speed||.45,n=v.g.flat().reduce((a,b)=>a+b,0);const w=h('div','blkrow');
+  const main=h('div','blkbox pop');main.innerHTML=blocksSVG(v,still?null:{at,sp});w.append(main);
+  (v.views||[]).forEach((vw,i)=>{const k=h('div','card pop');k.innerHTML='<div class="art">'+blocksSVG(Object.assign({},v,{view:vw}))+'</div><div class="T">'+({top:'มองจากด้านบน',front:'มองจากด้านหน้า',side:'มองจากด้านข้าง'}[vw])+'</div>';const tt=still?0:(v.vd||at+n*sp+.3)+i*.6;k.style.animationDelay=tt+'s';w.append(k);});d.append(w);
+  if(!still)main.querySelectorAll('.cb').forEach(c=>later(at+(+c.dataset.i)*sp+.15,()=>SFX.pop(+c.dataset.i)));
+  if(v.text){const t=h('div','bignum pop',v.text);const tt=still?0:at+n*sp+.4;t.style.animationDelay=tt+'s';d.append(t);later(tt,SFX.chime);}}
+ else if(T==='cycle'){const N=v.items.length,sp=v.speed||.9,box=h('div','cyc');const pos=v.items.map((_,i)=>{const a=-Math.PI/2+i*2*Math.PI/N;return [50+38*Math.cos(a),50+31*Math.sin(a)];});
+  let ar='';pos.forEach((p,i)=>{const q=pos[(i+1)%N],mx=(p[0]+q[0])/2,my=(p[1]+q[1])/2,ang=Math.atan2(q[1]-p[1],q[0]-p[0])*180/Math.PI;ar+='<g class="'+(still?'':'cyA')+'" style="animation-delay:'+(still?0:at+i*sp+sp*.6)+'s" transform="translate('+mx+','+my+') rotate('+ang+')"><path d="M-5 0 H4 M1 -3 L5 0 L1 3" stroke="#8e5bd8" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>';});
+  box.innerHTML='<svg class="cyar" viewBox="0 0 100 100" preserveAspectRatio="none">'+ar+'</svg>';
+  v.items.forEach((c,i)=>{const k=h('div','card pop');k.style.left=pos[i][0]+'%';k.style.top=pos[i][1]+'%';k.innerHTML=(c.e?'<div class="e">'+c.e+'</div>':'')+(art(c)?'<div class="art">'+art(c)+'</div>':'')+(c.t?'<div class="T">'+c.t+'</div>':'');k.style.animationDelay=dl(i,sp)+'s';fx(k,i,sp);box.append(k);});d.append(box);}
+ else if(T==='cards'){const r=h('div','row'+(v.sm?' sm':''));v.items.forEach((c,i)=>{const k=h('div','card pop'+(c.bad?' bad':''));k.innerHTML=(art(c)?'<div class="art">'+art(c)+'</div>':'')+(c.e?'<div class="e'+(c.flip?' flip':'')+([...c.e].length>2?' sm':'')+'">'+c.e+'</div>':'')+(c.big?'<div class="L">'+c.big+'</div>':'')+(c.t?'<div class="T">'+c.t+'</div>':'');k.style.animationDelay=dl(i,v.speed||.6)+'s';fx(k,i,v.speed||.6);r.append(k);});d.append(r);}
  return d;}
-const optHTML=o=>typeof o==='string'?'<div class="'+([...o].length<=3?'L':'M')+'">'+o+'</div>':(o.e?'<div class="e'+(o.flip?' flip':'')+([...o.e].length>2?' sm':'')+'">'+o.e+'</div>':'')+(o.big?'<div class="L">'+o.big+'</div>':'')+(o.t?'<div class="T">'+o.t+'</div>':'');
-const label=o=>typeof o==='string'?o:(o.t||o.big||'');const labelSay=o=>{const l=label(o);return /^[A-Za-z]$/.test(l)?'['+l+']':l;};
+const optHTML=o=>typeof o==='string'?'<div class="'+([...o].length<=3?'L':'M')+'">'+o+'</div>':(art(o)?'<div class="art">'+art(o)+'</div>':'')+(o.e?'<div class="e'+(o.flip?' flip':'')+([...o.e].length>2?' sm':'')+'">'+o.e+'</div>':'')+(o.big?'<div class="L">'+o.big+'</div>':'')+(o.m?'<div class="M">'+o.m+'</div>':'')+(o.t?'<div class="T">'+o.t+'</div>':'');
+const label=o=>typeof o==='string'?o:(o.t||o.big||o.m||'');const labelSay=o=>{if(o&&o.say)return o.say;const l=label(o);return /^[A-Za-z]$/.test(l)?'['+l+']':l;};
 const rand=a=>a[Math.floor(Math.random()*a.length)];
 
 /* ---------- ลำดับการเล่น ---------- */
@@ -141,7 +202,7 @@ async function answer(i,b){const s=QS;if(!s||s.lock)return;s.lock=true;tok++;if(
  if(i===q.ans){b.classList.add('ok');SFX.ok();react('cheer');const [x,y]=centerOf(b);confetti(x,y,s.tries===0?26:14);if(s.tries===0&&!q.star)score.first++;if(s.tries===0&&q.star){SFX.sparkle();starBurst(x,y,8);}s.btns.forEach(x=>x.disabled=true);await say([rand(PRAISE),q.why]);}
  else{b.classList.add('no');b.disabled=true;SFX.no();react('oops');s.tries++;
   if(s.tries===1){setWho('jook');await say(['เจ้าจุกใบ้ให้นะ',q.hint||'ลองดูดี ๆ อีกครั้งนะ']);setWho('kla');s.lock=false;return;}
-  s.btns.forEach(x=>x.disabled=true);s.btns[q.ans].classList.add('ok');await say(['ไม่เป็นไรนะ คำตอบคือ',labelSay(q.opts[q.ans]),q.why]);}
+  s.btns.forEach(x=>x.disabled=true);s.btns[q.ans].classList.add('ok');await say(['ไม่เป็นไรนะ คำตอบคือ',labelSay(q.opts[q.ans])||'ข้อ '+'กขคง'[q.ans],q.why]);}
  await wait(700);quiz(s.qi+1);}
 function save(gold){try{const k='kla-garden-v1';const d=JSON.parse(localStorage.getItem(k)||'{}');const o=d['EP'+EP.ep]||{};d['EP'+EP.ep]={seed:1,gold:!!(o.gold||gold),t:Date.now()};localStorage.setItem(k,JSON.stringify(d));}catch(e){}}
 async function finish(){phase='end';react('cheer');QS=null;prog(1);const need=EP.questions.filter(q=>!q.star).length;const gold=score.first>=need;save(gold);
@@ -149,7 +210,7 @@ async function finish(){phase='end';react('cheer');QS=null;prog(1);const need=EP
  const bt=h('div','btns');const a1=h('button','btn2','↺ ดูอีกครั้ง');a1.onclick=()=>location.reload();bt.append(a1);
  if(EP.next&&!EP.dayEnd){const a=h('a','go','ตอนต่อไป ▶');a.href=EP.next;a.style.textDecoration='none';bt.append(a);}
  const m=h('a','btn2','🏡 กลับสวน');m.href=EP.menu;bt.append(m);c.append(bt);SFX.whoosh();await show(c,true);SFX.fanfare();
- setTimeout(()=>{const sp=c.querySelector('.sprout');if(sp){const [x,y]=centerOf(sp);confetti(x,y,30);if(gold){SFX.sparkle();starBurst(x,y,10);}}},1700);
+ [[650,0],[1900,3],[2700,5]].forEach(([t,k])=>setTimeout(()=>{if(phase==='end')SFX.pop(k);},t));setTimeout(()=>{const sp=c.querySelector('.sprout');if(sp&&phase==='end'){const [x,y]=centerOf(sp);confetti(x,y,30);if(gold){SFX.sparkle();starBurst(x,y,10);}}},3400);
  await say([EP.summary,'หนูได้เมล็ดพันธุ์หนึ่งเมล็ด',gold?'และได้ดาวทองด้วย':'']);}
 function cover(){const c=h('div','cover');c.innerHTML='<div class="char pop">'+KLA+'</div><p>'+z[0]+(LV[EP.level]?' · ระดับ'+LV[EP.level]:'')+'</p><h1>EP'+EP.ep+' '+EP.title+'</h1>';const g=h('button','go pop','▶ เริ่มเลย');
  g.onclick=()=>{ac();SFX.chime();pick();if(!synth||!voice)sub.textContent='เครื่องนี้ไม่มีเสียงพูดภาษาไทย ผู้ปกครองช่วยอ่านคำบรรยายนี้ให้น้องฟังนะ';
@@ -159,6 +220,10 @@ document.getElementById('bP').onclick=e=>{paused=!paused;e.currentTarget.textCon
 function restart(){tok++;if(synth)synth.cancel();if(curAudio){try{curAudio.pause()}catch(e){}}paused=false;document.getElementById('bP').textContent='⏸';score.first=0;QS=null;lesson(0);}
 document.getElementById('bR').onclick=restart;
 document.getElementById('bF').onclick=()=>{try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}catch(e){}};
-cover();
+/* #all = หน้าตรวจภาพทุกฉากทุกข้อ (สำหรับผู้ปกครอง/ตรวจงาน) */
+if(location.hash==='#all'){const w=h('div','vis');EP.scenes.forEach((s,i)=>{w.append(h('div','qtext','ฉาก '+(i+1)));w.append(vis(s.v||{type:'kla'},true));});
+ EP.questions.forEach((q,i)=>{w.append(h('div','qtext','ข้อ '+(i+1)+(q.star?' ⭐ ':' ')+strip(q.q)));if(q.v)w.append(vis(q.v,true));const o=h('div','opts');q.opts.forEach((x,k)=>o.append(h('button','opt'+(k===q.ans?' ok':''),'<span class="k">'+'กขคง'[k]+'.</span>'+optHTML(x))));w.append(o);});
+ st.innerHTML='';st.append(w);st.style.display='block';sub.textContent='โหมดตรวจภาพ: ข้อที่มีกรอบเขียวคือคำตอบ';}
+else cover();
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){try{navigator.serviceWorker.register(new URL('sw.js',new URL(EP.menu,location.href)).href).catch(()=>{});}catch(e){}}
 })();

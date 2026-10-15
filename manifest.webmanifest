@@ -1,0 +1,18 @@
+{
+ "id": "/kla-garden/",
+ "name": "สวนมหัศจรรย์ของน้องกล้า",
+ "short_name": "สวนน้องกล้า",
+ "description": "คลิปเตรียมสอบเข้า ป.1",
+ "start_url": "/kla-garden/",
+ "scope": "/kla-garden/",
+ "display": "standalone",
+ "orientation": "any",
+ "background_color": "#f4eefc",
+ "theme_color": "#8e5bd8",
+ "icons": [
+  {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+  {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+  {"src": "icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable"},
+  {"src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+ ]
+}

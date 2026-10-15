@@ -1,6 +1,9 @@
 <!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>สนามสอบ</title><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#8e5bd8"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet"><link rel="stylesheet" href="engine/engine.css">
 <style>
 #setup .stage{align-items:flex-start}
+.tabs{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.tabs button{border:3px solid transparent;background:#fff;border-radius:18px;padding:10px 22px;font-size:clamp(18px,2.8vw,26px);box-shadow:0 3px 0 rgba(0,0,0,.08);color:var(--ink)}
+.tabs button.on{border-color:var(--c);background:var(--bg)}
 .subj{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,42vw),1fr));gap:14px;width:100%}
 .subj .opt{min-height:120px}
 .subj .opt .e{font-size:clamp(36px,6vw,54px)}
@@ -8,65 +11,74 @@
 .cnt{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .cnt button{border:3px solid transparent;background:#fff;border-radius:999px;padding:8px 20px;font-size:clamp(18px,2.6vw,24px);box-shadow:0 3px 0 rgba(0,0,0,.08);color:var(--ink)}
 .cnt button.on{border-color:var(--c);background:var(--bg)}
-details.card{align-items:stretch;text-align:left;width:100%}
-details.card summary{cursor:pointer;font-size:clamp(16px,2.4vw,22px)}
-.pt{width:100%;border-collapse:collapse;font-size:clamp(14px,2vw,18px);margin-top:8px}
-.pt td,.pt th{padding:6px 8px;border-bottom:1px solid #eee;text-align:left}
-.pt th{opacity:.7;font-weight:normal}
-.bar{display:inline-block;height:10px;border-radius:6px;background:var(--c);vertical-align:middle}
-.sw{display:flex;align-items:center;gap:8px;margin:10px 0;font-size:clamp(15px,2.2vw,19px)}
-.sw input{width:22px;height:22px}
+.mock{width:100%;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.mock .mix{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.mock .mix span{background:#fff;border-radius:999px;padding:4px 14px;font-size:clamp(15px,2.2vw,20px)}
+.mock .go{font-size:clamp(22px,3.4vw,32px);padding:14px 34px}
+.plink{display:block;width:100%;text-align:center;background:#fff;border-radius:18px;padding:12px;text-decoration:none;color:var(--ink);font-size:clamp(17px,2.5vw,22px);box-shadow:0 3px 0 rgba(0,0,0,.08)}
 .note{font-size:clamp(13px,1.8vw,16px);opacity:.7;text-align:center}
+.sw{display:flex;align-items:center;gap:8px;justify-content:center;font-size:clamp(14px,2vw,17px);opacity:.8}
+.sw input{width:20px;height:20px}
 </style></head><body><div id="app">
 <div id="setup" style="display:contents">
-<div class="top"><div class="t">🏟️ สนามสอบ · โหมดฝึก</div><a href="00_เมนูหลัก.html" style="margin-left:auto;color:#fff;text-decoration:none;font-size:clamp(16px,2.4vw,22px)">🏡 กลับสวน</a></div>
+<div class="top"><div class="t">🏟️ สนามสอบ</div><a href="00_เมนูหลัก.html" style="margin-left:auto;color:#fff;text-decoration:none;font-size:clamp(16px,2.4vw,22px)">🏡 กลับสวน</a></div>
 <div class="stage"><div class="vis" style="max-width:900px">
-<div class="row" style="align-items:center"><div class="char" style="width:110px" id="kla"></div><div class="bubble" id="msg">เลือกวิชาที่อยากฝึกได้เลย</div></div>
-<div class="subj" id="subj"></div>
-<div class="cnt" id="cnt"></div>
-<details class="card" id="parent"><summary>👨‍👩‍👧 สำหรับผู้ปกครอง</summary><div id="pbody"></div></details>
-<p class="note">โหมดฝึกมีคำใบ้และเฉลยทุกข้อ · สุ่มเฉพาะหัวข้อที่น้องดูคลิปแล้ว · ผลจำไว้ในเครื่องนี้</p>
+<div class="row" style="align-items:center"><div class="char" style="width:110px" id="kla"></div><div class="bubble" id="msg"></div></div>
+<div class="tabs" id="tabs"></div>
+<div id="body" style="width:100%;display:flex;flex-direction:column;gap:14px;align-items:center"></div>
+<a class="plink" href="สนามสอบ_ผู้ปกครอง.html">📊 รายงานสำหรับผู้ปกครอง</a>
+<label class="sw"><input type="checkbox" id="all"> ผู้ปกครอง: เปิดทุกหัวข้อ แม้น้องยังไม่ได้ดูคลิป (ใช้ทดลอง)</label>
+<p class="note" id="foot"></p>
 </div></div></div></div>
 <script src="คลังโจทย์.js"></script>
 <script src="เสียง/amap.js"></script>
 <script>
 (function(){
 const SUBJ=[['mix','คละวิชา','🎲','review'],['math','คณิตศาสตร์','🍊','math'],['thai','ภาษาไทย','📖','thai'],['logic','เชาวน์ปัญญา','🌽','logic'],['eng','ภาษาอังกฤษ','🚂','eng'],['sci','วิทยาศาสตร์','🔍','sci']];
+const QUOTA=[['math',8],['logic',6],['thai',6],['eng',5],['sci',5]];
 const get=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}};
 const set=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
-const P=get('kla-garden-v1',{}),H=get('kla-exam-v1',[]);let all=get('kla-exam-all',false),N=get('kla-exam-n',30);
-const T=BANK.topics,TI=Object.fromEntries(T.map(t=>[t.id,t]));
+const P=get('kla-garden-v1',{}),H=get('kla-exam-v1',[]);let all=get('kla-exam-all',false),N=get('kla-exam-n',30),MODE=get('kla-exam-mode','practice');
+const T=BANK.topics;
 const open=t=>all||!!(P['EP'+t.ep]&&P['EP'+t.ep].seed);
 const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
-/* สถิติรายหัวข้อจาก 10 ชุดล่าสุด */
-function stats(){const s={};H.slice(-10).forEach(r=>(r.items||[]).forEach(x=>{if(!x)return;const o=s[x[1]]=s[x[1]]||{n:0,ok:0};o.n++;o.ok+=x[2];}));return s;}
-const ST=stats();const recent=new Set(H.slice(-3).flatMap(r=>(r.items||[]).filter(Boolean).map(x=>x[0])));
+const ST={};H.slice(-10).forEach(r=>(r.items||[]).forEach(x=>{if(!x)return;const o=ST[x[1]]=ST[x[1]]||{n:0,ok:0};o.n++;o.ok+=x[2];}));
+const recent=new Set(H.slice(-3).flatMap(r=>(r.items||[]).filter(Boolean).map(x=>x[0])));
 document.getElementById('kla').innerHTML='<svg class="kla" viewBox="0 0 120 140"><g class="bodyg"><g class="leaves"><path d="M60 46 C60 34 60 28 60 22" stroke="#3f8a2e" stroke-width="5" fill="none" stroke-linecap="round"/><ellipse cx="44" cy="20" rx="16" ry="9" fill="#5cc46b" stroke="#3f8a2e" stroke-width="3" transform="rotate(-25 44 20)"/><ellipse cx="76" cy="20" rx="16" ry="9" fill="#5cc46b" stroke="#3f8a2e" stroke-width="3" transform="rotate(25 76 20)"/></g><ellipse cx="60" cy="92" rx="44" ry="42" fill="#7ed37f" stroke="#3f8a2e" stroke-width="4"/><circle cx="46" cy="84" r="7" fill="#2d2340"/><circle cx="74" cy="84" r="7" fill="#2d2340"/><circle cx="48" cy="81" r="2.5" fill="#fff"/><circle cx="76" cy="81" r="2.5" fill="#fff"/><path d="M50 102 Q60 112 70 102" stroke="#2d2340" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="36" cy="100" rx="7" ry="4" fill="#ff9fb0" opacity=".7"/><ellipse cx="84" cy="100" rx="7" ry="4" fill="#ff9fb0" opacity=".7"/></g></svg>';
-function pick(subj){
-  let ts=T.filter(t=>open(t)&&(subj==='mix'||t.subj===subj));
-  // หัวข้อที่ตอบถูกน้อยกว่า 70% ได้โอกาสออกบ่อยขึ้นเท่าตัว
-  const rot=[];ts.forEach(t=>{rot.push(t.id);const s=ST[t.id];if(s&&s.n>=3&&s.ok/s.n<.7)rot.push(t.id);});
+/* สุ่ม n ข้อจากหัวข้อที่กำหนด: เวียนหัวข้อให้ทั่ว หัวข้อที่ตอบถูกน้อยกว่า 70% ได้โอกาสเพิ่ม ข้อที่เพิ่งทำไปอยู่ท้ายคิว */
+function draw(ts,n){const rot=[];ts.forEach(t=>{rot.push(t.id);const s=ST[t.id];if(s&&s.n>=3&&s.ok/s.n<.7)rot.push(t.id);});
   const Q={};ts.forEach(t=>{const it=shuf(BANK.items.filter(x=>x.t===t.id));Q[t.id]=it.filter(x=>!recent.has(x.id)).concat(it.filter(x=>recent.has(x.id)));});
-  const out=[];let guard=0;while(out.length<N&&guard++<2000){const r=shuf(rot.slice());let added=false;for(const id of r){if(out.length>=N)break;const x=Q[id].shift();if(x){out.push(x);added=true;}}if(!added)break;}
-  return shuf(out);}
-function start(subj){const s=SUBJ.find(x=>x[0]===subj);const qs=pick(subj);if(!qs.length)return;
-  window.EP={mode:'practice',autostart:true,title:'สนามสอบ · '+s[1],subject:s[3],subj,level:'',scenes:[],questions:qs,summary:'',menu:'00_เมนูหลัก.html',audioDir:'เสียง/'};
+  const out=[];for(let g=0;g<200&&out.length<n;g++){let add=false;for(const id of shuf(rot.slice())){if(out.length>=n)break;const x=Q[id].shift();if(x){out.push(x);add=true;}}if(!add)break;}return shuf(out);}
+const openOf=subj=>T.filter(t=>open(t)&&(subj==='mix'||t.subj===subj));
+/* จำลองสอบ: คณิต 8 เชาวน์ 6 ไทย 6 อังกฤษ 5 วิทย์ 5 เรียงเป็นตอนตามวิชา วิชาที่ยังไม่เปิดยกโควตาให้วิชาอื่น */
+function mockSet(){const q={};let left=0;QUOTA.forEach(([s,n])=>{if(openOf(s).length)q[s]=n;else left+=n;});const ks=Object.keys(q);if(!ks.length)return [];
+  for(let i=0;left>0;i++,left--)q[ks[i%ks.length]]++;
+  return QUOTA.filter(([s])=>q[s]).flatMap(([s])=>draw(openOf(s),q[s]));}
+function launch(mode,subj,qs){if(!qs.length)return;const s=SUBJ.find(x=>x[0]===subj);
+  window.EP={mode,autostart:true,title:mode==='mock'?'จำลองสอบ 30 ข้อ':'สนามสอบ · '+s[1],subject:mode==='mock'?'ready':s[3],subj,level:'',scenes:[],questions:qs,summary:'',menu:'00_เมนูหลัก.html',audioDir:'เสียง/'};
   document.getElementById('app').innerHTML='';const e=document.createElement('script');e.src='engine/engine.js';document.body.append(e);}
 function render(){
-  const sb=document.getElementById('subj');sb.innerHTML='';
-  SUBJ.forEach(([id,name,emo])=>{const ts=T.filter(t=>open(t)&&(id==='mix'||t.subj===id));const n=ts.reduce((a,t)=>a+t.n,0);
-    const b=document.createElement('button');b.className='opt pop';b.disabled=!ts.length;
-    b.innerHTML='<div class="e">'+emo+'</div><div class="T">'+name+'</div><small>'+(ts.length?ts.length+' หัวข้อ':'ยังไม่ได้ดูคลิป')+'</small>';b.onclick=()=>start(id);sb.append(b);});
-  const c=document.getElementById('cnt');c.innerHTML='<span class="T" style="align-self:center">ชุดละ</span>';
-  [10,20,30].forEach(n=>{const b=document.createElement('button');b.textContent=n+' ข้อ';b.className=n===N?'on':'';b.onclick=()=>{N=n;set('kla-exam-n',n);render();};c.append(b);});
-  const anyOpen=T.some(open);document.getElementById('msg').textContent=anyOpen?'เลือกวิชาที่อยากฝึกได้เลย':'ไปดูคลิปในสวนก่อนนะ แล้วค่อยกลับมาฝึก';
-  // ส่วนผู้ปกครอง
-  const pb=document.getElementById('pbody');const fmt=t=>new Date(t).toLocaleDateString('th-TH',{day:'numeric',month:'short'})+' '+new Date(t).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
-  let html='<label class="sw"><input type="checkbox" id="all" '+(all?'checked':'')+'> เปิดทุกหัวข้อ แม้น้องยังไม่ได้ดูคลิป (ใช้ทดลอง)</label>';
-  html+='<div class="T"><b>ชุดล่าสุด</b></div>'+(H.length?'<table class="pt"><tr><th>เวลา</th><th>วิชา</th><th>ถูกตั้งแต่ครั้งแรก</th></tr>'+H.slice(-8).reverse().map(r=>'<tr><td>'+fmt(r.t)+'</td><td>'+((SUBJ.find(x=>x[0]===r.subj)||[0,'คละวิชา'])[1])+'</td><td>'+r.ok+' / '+r.n+'</td></tr>').join('')+'</table>':'<p class="note">ยังไม่มีผล</p>');
-  const rows=Object.entries(ST).map(([id,s])=>({t:TI[id],s,p:s.ok/s.n})).filter(x=>x.t).sort((a,b)=>a.p-b.p);
-  html+='<div class="T" style="margin-top:12px"><b>รายหัวข้อ (10 ชุดล่าสุด)</b> · เรียงจากที่ควรทบทวนก่อน</div>'+(rows.length?'<table class="pt"><tr><th>หัวข้อ</th><th>ถูก</th><th>ดูคลิปซ้ำ</th></tr>'+rows.map(x=>'<tr><td>'+x.t.name+'</td><td><span class="bar" style="width:'+Math.max(4,Math.round(x.p*80))+'px;'+(x.p<.7?'background:#e5484d':'')+'"></span> '+x.s.ok+'/'+x.s.n+'</td><td>EP'+x.t.ep+'</td></tr>').join('')+'</table>':'<p class="note">ยังไม่มีผล</p>');
-  pb.innerHTML=html;document.getElementById('all').onchange=e=>{all=e.target.checked;set('kla-exam-all',all);render();};}
+  const tb=document.getElementById('tabs');tb.innerHTML='';[['practice','📝 โหมดฝึก'],['mock','🏫 จำลองสอบ']].forEach(([m,l])=>{const b=document.createElement('button');b.textContent=l;b.className=m===MODE?'on':'';b.onclick=()=>{MODE=m;set('kla-exam-mode',m);render();};tb.append(b);});
+  const body=document.getElementById('body');body.innerHTML='';const any=T.some(open);
+  if(MODE==='practice'){
+    const sb=document.createElement('div');sb.className='subj';
+    SUBJ.forEach(([id,name,emo])=>{const ts=openOf(id);const b=document.createElement('button');b.className='opt pop';b.disabled=!ts.length;
+      b.innerHTML='<div class="e">'+emo+'</div><div class="T">'+name+'</div><small>'+(ts.length?ts.length+' หัวข้อ':'ยังไม่ได้ดูคลิป')+'</small>';b.onclick=()=>launch('practice',id,draw(ts,N));sb.append(b);});
+    body.append(sb);
+    const c=document.createElement('div');c.className='cnt';c.innerHTML='<span class="T" style="align-self:center">ชุดละ</span>';
+    [10,20,30].forEach(n=>{const b=document.createElement('button');b.textContent=n+' ข้อ';b.className=n===N?'on':'';b.onclick=()=>{N=n;set('kla-exam-n',n);render();};c.append(b);});body.append(c);
+    document.getElementById('msg').textContent=any?'เลือกวิชาที่อยากฝึกได้เลย':'ไปดูคลิปในสวนก่อนนะ แล้วค่อยกลับมาฝึก';
+    document.getElementById('foot').textContent='โหมดฝึกมีคำใบ้และเฉลยทุกข้อ · สุ่มเฉพาะหัวข้อที่น้องดูคลิปแล้ว';
+  }else{
+    const qs=mockSet();const cnt={};qs.forEach(x=>{const s=(T.find(t=>t.id===x.t)||{}).subj;cnt[s]=(cnt[s]||0)+1;});
+    const m=document.createElement('div');m.className='mock';
+    m.innerHTML='<div class="card" style="width:100%"><div class="T"><b>ทำข้อสอบเหมือนวันสอบจริง</b></div><div class="T" style="font-size:clamp(15px,2.2vw,20px)">คุณครูดอกม่วงอ่านโจทย์ให้ฟังทีละข้อ · ตอบได้ครั้งเดียว · ไม่มีเฉลยระหว่างทำ · รู้ผลตอนจบ</div></div>'+
+      '<div class="mix">'+QUOTA.filter(([s])=>cnt[s]).map(([s])=>{const x=SUBJ.find(y=>y[0]===s);return '<span>'+x[2]+' '+x[1]+' '+cnt[s]+' ข้อ</span>';}).join('')+'</div>';
+    const g=document.createElement('button');g.className='go pop';g.textContent='▶ เริ่มทำ '+qs.length+' ข้อ';g.disabled=!qs.length;g.onclick=()=>launch('mock','mix',qs);m.append(g);body.append(m);
+    document.getElementById('msg').textContent=any?(qs.length<30?'ตอนนี้มีโจทย์จากเรื่องที่ดูแล้ว '+qs.length+' ข้อ':'พร้อมสอบแล้วใช่ไหม สู้ ๆ นะ'):'ไปดูคลิปในสวนก่อนนะ แล้วค่อยกลับมาสอบ';
+    document.getElementById('foot').textContent='แนะนำทำสัปดาห์ละครั้ง ในที่เงียบ ๆ ให้น้องทำเองทั้งชุด';
+  }
+  const a=document.getElementById('all');a.checked=all;a.onchange=()=>{all=a.checked;set('kla-exam-all',all);render();};}
 render();
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
 })();

@@ -1,0 +1,206 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EP36 Fruits and vegetables</title></title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet"><link rel="stylesheet" href="../engine/engine.css"></head><body><div id="app"></div>
+<script>window.EP={
+ "ep": "36",
+ "subject": "eng",
+ "level": "hard",
+ "title": "Fruits and vegetables",
+ "dayEnd": true,
+ "scenes": [
+  {
+   "v": {
+    "type": "kla",
+    "text": "Fruits and vegetables"
+   },
+   "say": "วันนี้ไปตลาดผลไม้ของป้าส้ม เรียนชื่อผลไม้และผักเป็นภาษาอังกฤษกัน"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🍎",
+      "t": "apple"
+     },
+     {
+      "e": "🍌",
+      "t": "banana"
+     },
+     {
+      "e": "🍊",
+      "t": "orange"
+     },
+     {
+      "e": "🍇",
+      "t": "grape"
+     }
+    ],
+    "speed": 1.2
+   },
+   "say": "[apple] แอปเปิล [banana] กล้วย [orange] ส้ม [grape] องุ่น"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🥭",
+      "t": "mango"
+     },
+     {
+      "e": "🍉",
+      "t": "watermelon"
+     },
+     {
+      "e": "🍍",
+      "t": "pineapple"
+     },
+     {
+      "e": "🥥",
+      "t": "coconut"
+     }
+    ],
+    "speed": 1.2
+   },
+   "say": "[mango] มะม่วง [watermelon] แตงโม [pineapple] สับปะรด [coconut] มะพร้าว"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🥕",
+      "t": "carrot"
+     },
+     {
+      "e": "🌽",
+      "t": "corn"
+     },
+     {
+      "e": "🍅",
+      "t": "tomato"
+     },
+     {
+      "e": "🥔",
+      "t": "potato"
+     }
+    ],
+    "speed": 1.2
+   },
+   "say": "ผักบ้าง [carrot] แครอท [corn] ข้าวโพด [tomato] มะเขือเทศ [potato] มันฝรั่ง"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🧅",
+      "t": "onion"
+     },
+     {
+      "e": "🥒",
+      "t": "cucumber"
+     },
+     {
+      "e": "🥦",
+      "t": "broccoli"
+     }
+    ],
+    "speed": 1.2
+   },
+   "say": "[onion] หัวหอม [cucumber] แตงกวา [broccoli] บรอกโคลี"
+  },
+  {
+   "v": {
+    "type": "big",
+    "e": "🍌",
+    "text": "B _ n _ n _"
+   },
+   "say": "บางข้อให้เติมตัวที่หายไป [B, A, N, A, N, A] [banana] ตัวที่หายไปคือ [a] ทั้งหมด"
+  },
+  {
+   "v": {
+    "type": "kla",
+    "text": "ผลไม้ หวาน กินได้เลย"
+   },
+   "say": "เคล็ดลับ ผลไม้ส่วนใหญ่หวาน กินสด ๆ ได้ ผักส่วนใหญ่ต้องนำไปทำอาหาร"
+  }
+ ],
+ "questions": [
+  {
+   "q": "ภาพนี้คือคำใด",
+   "opts": [
+    "mango",
+    "orange",
+    "apple"
+   ],
+   "ans": 0,
+   "hint": "ผลไม้สีเหลือง เนื้อหวาน หน้าร้อน",
+   "why": "ภาพนี้คือ [mango]",
+   "v": {
+    "type": "big",
+    "e": "🥭"
+   }
+  },
+  {
+   "q": "carrot คือภาพใด",
+   "say": "[carrot] คือภาพใด",
+   "opts": [
+    {
+     "e": "🥕"
+    },
+    {
+     "e": "🌽"
+    },
+    {
+     "e": "🍅"
+    }
+   ],
+   "ans": 0,
+   "hint": "ผักสีส้ม กระต่ายชอบกิน",
+   "why": "[carrot] คือแครอท"
+  },
+  {
+   "q": "ข้อใดไม่ใช่ผลไม้",
+   "opts": [
+    "grape",
+    "corn",
+    "banana"
+   ],
+   "ans": 1,
+   "hint": "ข้อไหนเป็นผัก",
+   "why": "[corn] คือข้าวโพด เป็นผัก"
+  },
+  {
+   "q": "B _ n _ n _ คือผลไม้อะไร",
+   "say": "[B] ขีด [n] ขีด [n] ขีด คือผลไม้อะไร",
+   "star": true,
+   "opts": [
+    {
+     "e": "🍌",
+     "t": "banana"
+    },
+    {
+     "e": "🍊",
+     "t": "orange"
+    },
+    {
+     "e": "🍇",
+     "t": "grape"
+    }
+   ],
+   "ans": 0,
+   "hint": "ขึ้นต้นด้วย [B] และมีหกตัว",
+   "why": "[banana] คือกล้วย",
+   "v": {
+    "type": "big",
+    "text": "B _ n _ n _"
+   }
+  }
+ ],
+ "summary": "วันนี้เรารู้จักชื่อผลไม้และผักเป็นภาษาอังกฤษ และเติมตัวอักษรที่หายไปได้",
+ "menu": "../00_เมนูหลัก.html",
+ "audioDir": "../เสียง/"
+};</script>
+<script src="../เสียง/amap.js"></script>
+<script src="../engine/engine.js"></script>
+</body></html>

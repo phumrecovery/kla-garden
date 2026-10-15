@@ -232,3 +232,15 @@ button{font-family:inherit;cursor:pointer}
 @keyframes shine{0%{transform:skewX(-20deg) translateX(0)}60%,100%{transform:skewX(-20deg) translateX(190px)}}
 @keyframes twinkle{0%,100%{transform:translate(-50%,-50%) scale(0) rotate(0)}50%{transform:translate(-50%,-50%) scale(1.2) rotate(90deg)}}
 @media (prefers-reduced-motion:reduce){.starbox *{animation:none!important}.starbox .rays{opacity:.6}}
+/* การลบ: ของที่ถูกเอาออก */
+.subr .it{position:relative}
+.subr .it.gone{opacity:.35;filter:grayscale(1);transition:opacity .3s,filter .3s}
+.subr .it.gone::after{content:'✗';position:absolute;left:50%;top:50%;transform:translate(-50%,-55%);color:#e5484d;font-size:clamp(34px,6vw,64px);font-weight:bold;animation:pop .3s both}
+/* จำลองสอบ */
+.qno{font-size:clamp(16px,2.4vw,22px);background:#fff;border-radius:999px;padding:2px 14px;color:var(--c)}
+.opt.picked{border-color:#8e5bd8;background:#f1e8ff}
+.teach{width:100%;height:auto}
+/* ตัวเลือกที่เป็นอีโมจิหลายตัว ต้องไม่ล้นปุ่ม */
+.opt{min-width:0}
+.opt .e.sm{font-size:clamp(20px,3.3vw,38px);letter-spacing:-1px;max-width:100%}
+.opt .e.xs{font-size:clamp(16px,2.6vw,30px);letter-spacing:-2px}

@@ -1,0 +1,85 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>รายงานสนามสอบ</title><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#8e5bd8"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+<style>
+:root{--c:#8e5bd8;--bg:#f4eefc;--ink:#2d2340;--muted:#6b6280;--card:#fff;--grid:#e6e0ef;--bad:#d1353b;--bar:#8e5bd8}
+*{box-sizing:border-box}
+html,body{margin:0;font-family:'Itim','Leelawadee UI','Sarabun','Tahoma',sans-serif;color:var(--ink);background:var(--bg)}
+.top{position:sticky;top:0;display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--c);color:#fff;font-size:clamp(18px,2.6vw,24px);z-index:2}
+.top a{margin-left:auto;color:#fff;text-decoration:none}
+main{max-width:960px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:16px}
+.card{background:var(--card);border-radius:18px;padding:14px 16px;box-shadow:0 3px 0 rgba(0,0,0,.06)}
+h2{margin:0 0 4px;font-size:clamp(18px,2.6vw,22px);font-weight:normal}
+.sub{color:var(--muted);font-size:14px;margin:0 0 10px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.tile .v{font-size:clamp(28px,5vw,40px);line-height:1.1}
+.tile .l{color:var(--muted);font-size:14px}
+.hb{display:grid;grid-template-columns:minmax(90px,max-content) 1fr 70px;gap:8px 10px;align-items:center;font-size:15px}
+.hb .track{position:relative;height:16px;border-radius:4px;background:var(--grid)}
+.hb .fill{position:absolute;left:0;top:0;bottom:0;border-radius:0 4px 4px 0;background:var(--bar)}
+.hb .fill.bad{background:var(--bad)}
+.hb .val{text-align:right;color:var(--ink)}
+.trend{display:flex;align-items:flex-end;gap:6px;height:180px;border-bottom:1px solid var(--grid);padding-top:20px;position:relative}
+.trend .col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:24px;cursor:default}
+.trend .b{width:min(36px,100%);background:var(--bar);border-radius:4px 4px 0 0}
+.trend .col:hover .b{filter:brightness(1.15)}
+.trend .n{font-size:13px;margin-bottom:2px}
+.xl{display:flex;gap:6px}.xl span{flex:1;min-width:24px;text-align:center;font-size:12px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{padding:7px 8px;border-bottom:1px solid var(--grid);text-align:left;vertical-align:middle}
+th{color:var(--muted);font-weight:normal}
+.tag{display:inline-block;border-radius:999px;padding:1px 10px;font-size:13px;background:var(--bg)}
+.warn{color:var(--bad)}
+a.ep{color:var(--c)}
+.empty{color:var(--muted);text-align:center;padding:20px}
+button{font-family:inherit;border:0;border-radius:999px;padding:8px 18px;background:#fff;box-shadow:0 2px 0 rgba(0,0,0,.08);cursor:pointer;color:var(--ink)}
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:#fff;padding:6px 10px;border-radius:8px;font-size:14px;display:none;z-index:9}
+.scroll{overflow-x:auto}
+@media (prefers-color-scheme:dark){:root{--bg:#1d1828;--ink:#efeaf7;--muted:#a79fba;--card:#2a2338;--grid:#3d3450;--bar:#9a6fdf;--bad:#e2575d}}
+</style></head><body>
+<div class="top">📊 รายงานสนามสอบ <a href="สนามสอบ.html">🏟️ กลับสนามสอบ</a></div>
+<main id="m"></main><div class="tip" id="tip"></div>
+<script src="คลังโจทย์.js"></script>
+<script>
+(function(){
+const SUBJ={math:'คณิตศาสตร์',thai:'ภาษาไทย',logic:'เชาวน์ปัญญา',eng:'ภาษาอังกฤษ',sci:'วิทยาศาสตร์',mix:'คละวิชา'};
+const ORDER=['math','logic','thai','eng','sci'];
+let H=[];try{H=JSON.parse(localStorage.getItem('kla-exam-v1')||'[]')}catch(e){}
+const TI=Object.fromEntries(BANK.topics.map(t=>[t.id,t]));
+const fmt=t=>new Date(t).toLocaleDateString('th-TH',{day:'numeric',month:'short'});
+const fmtT=t=>fmt(t)+' '+new Date(t).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+const mins=s=>!s?'–':s<60?s+' วินาที':Math.round(s/60)+' นาที';
+const pct=(a,b)=>b?Math.round(a*100/b):0;
+const m=document.getElementById('m'),tip=document.getElementById('tip');
+const hover=(el,text)=>{el.onmousemove=e=>{tip.textContent=text;tip.style.display='block';tip.style.left=(e.clientX+12)+'px';tip.style.top=(e.clientY+12)+'px';};el.onmouseleave=()=>tip.style.display='none';el.title=text;};
+if(!H.length){m.innerHTML='<div class="card empty">ยังไม่มีผลการทำสนามสอบ<br>ให้น้องลองทำโหมดฝึกหรือจำลองสอบสักชุดก่อน แล้วกลับมาดูที่นี่</div>';return;}
+const mock=H.filter(r=>r.kind==='mock'),prac=H.filter(r=>r.kind!=='mock');const last=mock[mock.length-1];
+// ภาพรวม
+const tiles=document.createElement('div');tiles.className='tiles';
+[[prac.length+' ชุด','โหมดฝึกที่ทำแล้ว'],[mock.length+' ชุด','จำลองสอบที่ทำแล้ว'],[last?last.ok+' / '+last.n:'–','คะแนนจำลองสอบครั้งล่าสุด'],[last?mins(last.sec):'–','เวลาที่ใช้ครั้งล่าสุด']].forEach(([v,l])=>{const d=document.createElement('div');d.className='card tile';d.innerHTML='<div class="v">'+v+'</div><div class="l">'+l+'</div>';tiles.append(d);});
+m.append(tiles);
+// คะแนนจำลองสอบแต่ละครั้ง
+if(mock.length){const c=document.createElement('div');c.className='card';c.innerHTML='<h2>คะแนนจำลองสอบแต่ละครั้ง</h2><p class="sub">ร้อยละของข้อที่ตอบถูก · 10 ครั้งล่าสุด</p>';
+  const tr=document.createElement('div');tr.className='trend';const xl=document.createElement('div');xl.className='xl';
+  mock.slice(-10).forEach(r=>{const p=pct(r.ok,r.n);const col=document.createElement('div');col.className='col';col.innerHTML='<div class="n">'+r.ok+'</div><div class="b" style="height:'+Math.max(2,p)+'%"></div>';hover(col,fmtT(r.t)+' · ถูก '+r.ok+'/'+r.n+' ('+p+'%) · '+mins(r.sec));tr.append(col);const s=document.createElement('span');s.textContent=fmt(r.t);xl.append(s);});
+  c.append(tr,xl);m.append(c);}
+// รายวิชา จาก 10 ชุดล่าสุด
+const recent=H.slice(-10),bySubj={},byTopic={};
+recent.forEach(r=>(r.items||[]).forEach(x=>{if(!x)return;const t=TI[x[1]];if(!t)return;const a=bySubj[t.subj]=bySubj[t.subj]||{n:0,ok:0};a.n++;a.ok+=x[2];const b=byTopic[x[1]]=byTopic[x[1]]||{n:0,ok:0};b.n++;b.ok+=x[2];}));
+{const c=document.createElement('div');c.className='card';c.innerHTML='<h2>ตอบถูกตั้งแต่ครั้งแรก แยกวิชา</h2><p class="sub">จาก 10 ชุดล่าสุดทั้งโหมดฝึกและจำลองสอบ · ต่ำกว่า 70% แสดงสีแดงพร้อม ⚠</p>';
+  const g=document.createElement('div');g.className='hb';
+  ORDER.filter(s=>bySubj[s]).forEach(s=>{const a=bySubj[s],p=pct(a.ok,a.n),bad=p<70;const l=document.createElement('div');l.textContent=(bad?'⚠ ':'')+SUBJ[s];
+    const tr=document.createElement('div');tr.className='track';tr.innerHTML='<div class="fill'+(bad?' bad':'')+'" style="width:'+p+'%"></div>';hover(tr,SUBJ[s]+' · ถูก '+a.ok+'/'+a.n+' ข้อ ('+p+'%)');
+    const v=document.createElement('div');v.className='val';v.textContent=p+'%';g.append(l,tr,v);});
+  c.append(g);m.append(c);}
+// รายหัวข้อ
+{const rows=Object.entries(byTopic).map(([id,a])=>({t:TI[id],a,p:pct(a.ok,a.n)})).filter(x=>x.t).sort((x,y)=>x.p-y.p||y.a.n-x.a.n);
+  const c=document.createElement('div');c.className='card';c.innerHTML='<h2>รายหัวข้อ เรียงจากที่ควรทบทวนก่อน</h2><p class="sub">หัวข้อที่ทำไม่ถึง 3 ข้อ ยังสรุปไม่ได้ ดูประกอบกันหลาย ๆ ชุด · กดชื่อตอนเพื่อเปิดคลิปให้น้องดูซ้ำ</p>';
+  const w=document.createElement('div');w.className='scroll';
+  w.innerHTML='<table><tr><th>หัวข้อ</th><th>วิชา</th><th>ถูก</th><th>ดูคลิปซ้ำ</th></tr>'+rows.map(x=>{const bad=x.p<70&&x.a.n>=3;return '<tr><td>'+(bad?'<span class="warn">⚠ ควรทบทวน</span> ':'')+x.t.name+'</td><td><span class="tag">'+SUBJ[x.t.subj]+'</span></td><td>'+x.a.ok+'/'+x.a.n+' ('+x.p+'%)</td><td>'+(x.t.href?'<a class="ep" href="'+x.t.href+'">EP'+x.t.ep+' ▶</a>':'EP'+x.t.ep)+'</td></tr>';}).join('')+'</table>';
+  c.append(w);m.append(c);}
+// ประวัติ
+{const c=document.createElement('div');c.className='card';c.innerHTML='<h2>ประวัติการทำ</h2>';const w=document.createElement('div');w.className='scroll';
+  w.innerHTML='<table><tr><th>เวลา</th><th>แบบ</th><th>วิชา</th><th>ถูกตั้งแต่ครั้งแรก</th><th>เวลาที่ใช้</th></tr>'+H.slice().reverse().slice(0,30).map(r=>'<tr><td>'+fmtT(r.t)+'</td><td>'+(r.kind==='mock'?'🏫 จำลองสอบ':'📝 ฝึก')+'</td><td>'+(SUBJ[r.subj]||'คละวิชา')+'</td><td>'+r.ok+'/'+r.n+'</td><td>'+mins(r.sec)+'</td></tr>').join('')+'</table>';
+  c.append(w);const b=document.createElement('button');b.textContent='🗑️ ล้างผลทั้งหมด';b.style.marginTop='12px';b.onclick=()=>{if(confirm('ล้างผลสนามสอบทั้งหมดในเครื่องนี้? (ความคืบหน้าการดูคลิปไม่ถูกลบ)')){localStorage.removeItem('kla-exam-v1');location.reload();}};c.append(b);m.append(c);}
+const n=document.createElement('p');n.className='sub';n.style.textAlign='center';n.textContent='ผลเก็บไว้ในเครื่องนี้เท่านั้น ถ้าน้องทำบนแท็บเล็ต ให้เปิดหน้านี้บนแท็บเล็ต';m.append(n);
+})();
+</script></body></html>

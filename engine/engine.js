@@ -14,7 +14,7 @@ const JOOK='<svg class="jook" viewBox="0 0 120 140"><g class="bodyg"><path d="M5
 const SPROUT='<svg class="sprout" viewBox="0 0 140 150"><g class="plant"><path class="stem" d="M70 122 C70 104 67 86 70 58" stroke="#3f8a2e" stroke-width="7" fill="none" stroke-linecap="round"/><g transform="translate(69 94)"><path class="lf a" d="M0 0 C-8 -14 -30 -18 -44 -10 C-32 4 -12 6 0 0Z" fill="#5cc46b" stroke="#3f8a2e" stroke-width="3" stroke-linejoin="round"/><path class="vein a" d="M-4 -2 C-16 -8 -28 -10 -38 -9" stroke="#3f8a2e" stroke-width="2" fill="none"/></g><g transform="translate(70 78)"><path class="lf b" d="M0 0 C8 -14 30 -18 44 -10 C32 4 12 6 0 0Z" fill="#6fd17c" stroke="#3f8a2e" stroke-width="3" stroke-linejoin="round"/><path class="vein b" d="M4 -2 C16 -8 28 -10 38 -9" stroke="#3f8a2e" stroke-width="2" fill="none"/></g><g class="flw"><circle cx="70" cy="34" r="9" fill="#ff9fb0"/><circle cx="84" cy="46" r="9" fill="#ff9fb0"/><circle cx="56" cy="46" r="9" fill="#ff9fb0"/><circle cx="70" cy="58" r="9" fill="#ff9fb0"/><circle cx="70" cy="46" r="8" fill="#ffd23f"/></g></g><ellipse class="seed" cx="70" cy="121" rx="7" ry="5" fill="#c98b4a" stroke="#7a4f24" stroke-width="2"/><path class="soil" d="M14 142 C20 122 46 116 70 118 C94 116 120 122 126 142 Z" fill="#9b6a3c"/><path d="M28 130 q4 -3 8 0 M92 128 q4 -3 8 0 M60 136 q4 -3 8 0" stroke="#7a4f24" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle class="dirt d1" cx="64" cy="118" r="3" fill="#9b6a3c"/><circle class="dirt d2" cx="76" cy="118" r="2.5" fill="#9b6a3c"/><circle class="dirt d3" cx="70" cy="117" r="2" fill="#9b6a3c"/></svg>';
 const z=Z[EP.subject]||Z.intro;
 document.documentElement.style.setProperty('--c',z[1]);document.documentElement.style.setProperty('--bg',z[2]);
-document.title='EP'+EP.ep+' '+EP.title;
+const NAME=EP.mode?EP.title:'EP'+EP.ep+' '+EP.title;document.title=NAME;const LOG=[];
 const h=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.innerHTML=x;return e;};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -52,7 +52,7 @@ let voiceJ=null,voiceEn=null;function pick(){if(!synth)return;const all=synth.ge
 if(synth){pick();synth.onvoiceschanged=pick;}
 const app=document.getElementById('app');
 const deco=h('div','deco');if(!reduce){const ch=[...(DECO[EP.subject]||DECO.intro)];for(let i=0;i<9;i++){const s=h('span','',ch[i%ch.length]);s.style.left=(i*11+Math.random()*6)+'%';s.style.animationDuration=(22+Math.random()*18)+'s';s.style.animationDelay=(-Math.random()*30)+'s';deco.append(s);}}
-app.innerHTML='<div class="top"><div class="t">'+z[0]+' · EP'+EP.ep+' '+EP.title+'</div>'+(LV[EP.level]?'<span class="lv">'+LV[EP.level]+'</span>':'')+'<button id="bS" class="mute" title="เปิด/ปิดเสียงประกอบ">'+(sfxOn?'🔔':'🔕')+'</button><button id="bP" title="หยุด / เล่นต่อ">⏸</button><button id="bR" title="เริ่มใหม่ตั้งแต่ต้น">↺</button><button id="bF" title="เต็มจอ">⛶</button></div><div class="bar"><i id="pg"></i></div><div class="stage" id="st"></div><div class="foot"><div class="who" id="who"></div><div class="sub" id="sub"></div></div>';
+app.innerHTML='<div class="top"><div class="t">'+(EP.mode?NAME:z[0]+' · '+NAME)+'</div>'+(LV[EP.level]?'<span class="lv">'+LV[EP.level]+'</span>':'')+'<button id="bS" class="mute" title="เปิด/ปิดเสียงประกอบ">'+(sfxOn?'🔔':'🔕')+'</button><button id="bP" title="หยุด / เล่นต่อ">⏸</button><button id="bR" title="เริ่มใหม่ตั้งแต่ต้น">↺</button><button id="bF" title="เต็มจอ">⛶</button></div><div class="bar"><i id="pg"></i></div><div class="stage" id="st"></div><div class="foot"><div class="who" id="who"></div><div class="sub" id="sub"></div></div>';
 app.prepend(deco);
 const st=document.getElementById('st'),sub=document.getElementById('sub'),who=document.getElementById('who'),pg=document.getElementById('pg');
 let curWho='kla';const setWho=n=>{const ch=n!==curWho;curWho=n;who.innerHTML=n==='jook'?JOOK:KLA;if(ch&&n==='jook'&&!reduce){who.classList.remove('fly');void who.offsetWidth;who.classList.add('fly');SFX.flap();}};setWho('kla');
@@ -199,20 +199,28 @@ async function quiz(qi){if(qi>=EP.questions.length)return finish();const q=EP.qu
  if(qi>0)SFX.whoosh();await show(box,true);if(q.star)SFX.sparkle();
  QS={qi,q,btns,tries:0,lock:false};say([q.star?'ข้อท้าทาย':'',q.say||q.q]);}
 async function answer(i,b){const s=QS;if(!s||s.lock)return;s.lock=true;tok++;if(synth)synth.cancel();const q=s.q;
- if(i===q.ans){b.classList.add('ok');SFX.ok();react('cheer');const [x,y]=centerOf(b);confetti(x,y,s.tries===0?26:14);if(s.tries===0&&!q.star)score.first++;if(s.tries===0&&q.star){SFX.sparkle();starBurst(x,y,8);}s.btns.forEach(x=>x.disabled=true);await say([rand(PRAISE),q.why]);}
+ if(i===q.ans){LOG[s.qi]={id:q.id,t:q.t,ok:s.tries===0};b.classList.add('ok');SFX.ok();react('cheer');const [x,y]=centerOf(b);confetti(x,y,s.tries===0?26:14);if(s.tries===0&&!q.star)score.first++;if(s.tries===0&&q.star){SFX.sparkle();starBurst(x,y,8);}s.btns.forEach(x=>x.disabled=true);await say([rand(PRAISE),q.why]);}
  else{b.classList.add('no');b.disabled=true;SFX.no();react('oops');s.tries++;
   if(s.tries===1){setWho('jook');await say(['เจ้าจุกใบ้ให้นะ',q.hint||'ลองดูดี ๆ อีกครั้งนะ']);setWho('kla');s.lock=false;return;}
-  s.btns.forEach(x=>x.disabled=true);s.btns[q.ans].classList.add('ok');await say(['ไม่เป็นไรนะ คำตอบคือ',labelSay(q.opts[q.ans])||'ข้อ '+'กขคง'[q.ans],q.why]);}
+  LOG[s.qi]={id:q.id,t:q.t,ok:false};s.btns.forEach(x=>x.disabled=true);s.btns[q.ans].classList.add('ok');await say(['ไม่เป็นไรนะ คำตอบคือ',labelSay(q.opts[q.ans])||'ข้อ '+'กขคง'[q.ans],q.why]);}
  await wait(700);quiz(s.qi+1);}
 function save(gold){try{const k='kla-garden-v1';const d=JSON.parse(localStorage.getItem(k)||'{}');const o=d['EP'+EP.ep]||{};d['EP'+EP.ep]={seed:1,gold:!!(o.gold||gold),t:Date.now()};localStorage.setItem(k,JSON.stringify(d));}catch(e){}}
-async function finish(){phase='end';react('cheer');QS=null;prog(1);const need=EP.questions.filter(q=>!q.star).length;const gold=score.first>=need;save(gold);
+async function finish(){if(EP.mode)return examEnd();phase='end';react('cheer');QS=null;prog(1);const need=EP.questions.filter(q=>!q.star).length;const gold=score.first>=need;save(gold);
  const c=h('div','cover');c.innerHTML='<div class="pop">'+SPROUT+'</div><h1>ได้เมล็ดพันธุ์ 1 เมล็ด</h1>'+(gold?'<p class="pop gold">⭐ ตอบถูกตั้งแต่ครั้งแรกทุกข้อ ได้ดาวทองด้วย</p>':'')+(EP.dayEnd?'<p>วันนี้ดูครบ 3 ตอนแล้ว ไว้เจอกันรอบหน้านะ</p>':'');
  const bt=h('div','btns');const a1=h('button','btn2','↺ ดูอีกครั้ง');a1.onclick=()=>location.reload();bt.append(a1);
  if(EP.next&&!EP.dayEnd){const a=h('a','go','ตอนต่อไป ▶');a.href=EP.next;a.style.textDecoration='none';bt.append(a);}
  const m=h('a','btn2','🏡 กลับสวน');m.href=EP.menu;bt.append(m);c.append(bt);SFX.whoosh();await show(c,true);SFX.fanfare();
  [[650,0],[1900,3],[2700,5]].forEach(([t,k])=>setTimeout(()=>{if(phase==='end')SFX.pop(k);},t));setTimeout(()=>{const sp=c.querySelector('.sprout');if(sp&&phase==='end'){const [x,y]=centerOf(sp);confetti(x,y,30);if(gold){SFX.sparkle();starBurst(x,y,10);}}},3400);
  await say([EP.summary,'หนูได้เมล็ดพันธุ์หนึ่งเมล็ด',gold?'และได้ดาวทองด้วย':'']);}
-function cover(){const c=h('div','cover');c.innerHTML='<div class="char pop">'+KLA+'</div><p>'+z[0]+(LV[EP.level]?' · ระดับ'+LV[EP.level]:'')+'</p><h1>EP'+EP.ep+' '+EP.title+'</h1>';const g=h('button','go pop','▶ เริ่มเลย');
+/* จบชุดสนามสอบ: เด็กเห็นแค่ดาวที่ได้ ผลรายข้อเก็บไว้ให้ผู้ปกครองดู */
+async function examEnd(){phase='end';react('cheer');QS=null;prog(1);const n=EP.questions.length,ok=LOG.filter(x=>x&&x.ok).length;
+ try{const k='kla-exam-v1';const d=JSON.parse(localStorage.getItem(k)||'[]');d.push({t:Date.now(),subj:EP.subj||'mix',n,ok,items:LOG.map(x=>x?[x.id,x.t,x.ok?1:0]:null)});localStorage.setItem(k,JSON.stringify(d.slice(-80)));}catch(e){}
+ const c=h('div','cover');c.innerHTML='<div class="pop">'+SPROUT+'</div><h1>ทำครบ '+n+' ข้อแล้ว</h1><p class="pop gold" style="font-size:clamp(24px,3.6vw,36px)">⭐ ได้ดาว '+ok+' ดวง</p>';
+ const bt=h('div','btns');const a1=h('button','go','↺ ทำชุดใหม่');a1.onclick=()=>location.reload();bt.append(a1);const m=h('a','btn2','🏡 กลับสวน');m.href=EP.menu;bt.append(m);c.append(bt);
+ SFX.whoosh();await show(c,true);SFX.fanfare();[[650,0],[1900,3],[2700,5]].forEach(([t,k])=>setTimeout(()=>{if(phase==='end')SFX.pop(k);},t));
+ setTimeout(()=>{const sp=c.querySelector('.sprout');if(sp&&phase==='end'){const [x,y]=centerOf(sp);confetti(x,y,34);SFX.sparkle();starBurst(x,y,10);}},3400);
+ await say(['หนูทำสนามสอบครบทุกข้อแล้ว เก่งมากเลย','ฝึกบ่อย ๆ จะเก่งขึ้นทุกวันนะ']);}
+function cover(){const c=h('div','cover');c.innerHTML='<div class="char pop">'+KLA+'</div><p>'+z[0]+(LV[EP.level]?' · ระดับ'+LV[EP.level]:'')+'</p><h1>'+NAME+'</h1>';const g=h('button','go pop','▶ เริ่มเลย');
  g.onclick=()=>{ac();SFX.chime();pick();if(!synth||!voice)sub.textContent='เครื่องนี้ไม่มีเสียงพูดภาษาไทย ผู้ปกครองช่วยอ่านคำบรรยายนี้ให้น้องฟังนะ';
   const j=/^#([sq])(\d+)$/.exec(location.hash);if(j&&j[1]==='q'){phase='quiz';tok++;quiz(Math.min(+j[2]-1,EP.questions.length-1));}else lesson(j?Math.min(+j[2]-1,EP.scenes.length-1):0);};c.append(g);show(c);sub.textContent='กด เริ่มเลย ได้เลยนะ';}
 document.getElementById('bS').onclick=e=>{sfxOn=!sfxOn;store.set('kla-sfx',sfxOn?'1':'0');e.currentTarget.textContent=sfxOn?'🔔':'🔕';if(sfxOn)SFX.chime();};
@@ -224,6 +232,7 @@ document.getElementById('bF').onclick=()=>{try{document.fullscreenElement?docume
 if(location.hash==='#all'){const w=h('div','vis');EP.scenes.forEach((s,i)=>{w.append(h('div','qtext','ฉาก '+(i+1)));w.append(vis(s.v||{type:'kla'},true));});
  EP.questions.forEach((q,i)=>{w.append(h('div','qtext','ข้อ '+(i+1)+(q.star?' ⭐ ':' ')+strip(q.q)));if(q.v)w.append(vis(q.v,true));const o=h('div','opts');q.opts.forEach((x,k)=>o.append(h('button','opt'+(k===q.ans?' ok':''),'<span class="k">'+'กขคง'[k]+'.</span>'+optHTML(x))));w.append(o);});
  st.innerHTML='';st.append(w);st.style.display='block';sub.textContent='โหมดตรวจภาพ: ข้อที่มีกรอบเขียวคือคำตอบ';}
+else if(EP.autostart){ac();pick();lesson(0);}
 else cover();
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){try{navigator.serviceWorker.register(new URL('sw.js',new URL(EP.menu,location.href)).href).catch(()=>{});}catch(e){}}
 })();

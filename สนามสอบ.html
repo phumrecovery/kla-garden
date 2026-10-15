@@ -1,0 +1,73 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>สนามสอบ</title><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#8e5bd8"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet"><link rel="stylesheet" href="engine/engine.css">
+<style>
+#setup .stage{align-items:flex-start}
+.subj{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,42vw),1fr));gap:14px;width:100%}
+.subj .opt{min-height:120px}
+.subj .opt .e{font-size:clamp(36px,6vw,54px)}
+.subj .opt small{font-size:clamp(14px,2vw,18px);opacity:.7}
+.cnt{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.cnt button{border:3px solid transparent;background:#fff;border-radius:999px;padding:8px 20px;font-size:clamp(18px,2.6vw,24px);box-shadow:0 3px 0 rgba(0,0,0,.08);color:var(--ink)}
+.cnt button.on{border-color:var(--c);background:var(--bg)}
+details.card{align-items:stretch;text-align:left;width:100%}
+details.card summary{cursor:pointer;font-size:clamp(16px,2.4vw,22px)}
+.pt{width:100%;border-collapse:collapse;font-size:clamp(14px,2vw,18px);margin-top:8px}
+.pt td,.pt th{padding:6px 8px;border-bottom:1px solid #eee;text-align:left}
+.pt th{opacity:.7;font-weight:normal}
+.bar{display:inline-block;height:10px;border-radius:6px;background:var(--c);vertical-align:middle}
+.sw{display:flex;align-items:center;gap:8px;margin:10px 0;font-size:clamp(15px,2.2vw,19px)}
+.sw input{width:22px;height:22px}
+.note{font-size:clamp(13px,1.8vw,16px);opacity:.7;text-align:center}
+</style></head><body><div id="app">
+<div id="setup" style="display:contents">
+<div class="top"><div class="t">🏟️ สนามสอบ · โหมดฝึก</div><a href="00_เมนูหลัก.html" style="margin-left:auto;color:#fff;text-decoration:none;font-size:clamp(16px,2.4vw,22px)">🏡 กลับสวน</a></div>
+<div class="stage"><div class="vis" style="max-width:900px">
+<div class="row" style="align-items:center"><div class="char" style="width:110px" id="kla"></div><div class="bubble" id="msg">เลือกวิชาที่อยากฝึกได้เลย</div></div>
+<div class="subj" id="subj"></div>
+<div class="cnt" id="cnt"></div>
+<details class="card" id="parent"><summary>👨‍👩‍👧 สำหรับผู้ปกครอง</summary><div id="pbody"></div></details>
+<p class="note">โหมดฝึกมีคำใบ้และเฉลยทุกข้อ · สุ่มเฉพาะหัวข้อที่น้องดูคลิปแล้ว · ผลจำไว้ในเครื่องนี้</p>
+</div></div></div></div>
+<script src="คลังโจทย์.js"></script>
+<script src="เสียง/amap.js"></script>
+<script>
+(function(){
+const SUBJ=[['mix','คละวิชา','🎲','review'],['math','คณิตศาสตร์','🍊','math'],['thai','ภาษาไทย','📖','thai'],['logic','เชาวน์ปัญญา','🌽','logic'],['eng','ภาษาอังกฤษ','🚂','eng'],['sci','วิทยาศาสตร์','🔍','sci']];
+const get=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}};
+const set=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const P=get('kla-garden-v1',{}),H=get('kla-exam-v1',[]);let all=get('kla-exam-all',false),N=get('kla-exam-n',30);
+const T=BANK.topics,TI=Object.fromEntries(T.map(t=>[t.id,t]));
+const open=t=>all||!!(P['EP'+t.ep]&&P['EP'+t.ep].seed);
+const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+/* สถิติรายหัวข้อจาก 10 ชุดล่าสุด */
+function stats(){const s={};H.slice(-10).forEach(r=>(r.items||[]).forEach(x=>{if(!x)return;const o=s[x[1]]=s[x[1]]||{n:0,ok:0};o.n++;o.ok+=x[2];}));return s;}
+const ST=stats();const recent=new Set(H.slice(-3).flatMap(r=>(r.items||[]).filter(Boolean).map(x=>x[0])));
+document.getElementById('kla').innerHTML='<svg class="kla" viewBox="0 0 120 140"><g class="bodyg"><g class="leaves"><path d="M60 46 C60 34 60 28 60 22" stroke="#3f8a2e" stroke-width="5" fill="none" stroke-linecap="round"/><ellipse cx="44" cy="20" rx="16" ry="9" fill="#5cc46b" stroke="#3f8a2e" stroke-width="3" transform="rotate(-25 44 20)"/><ellipse cx="76" cy="20" rx="16" ry="9" fill="#5cc46b" stroke="#3f8a2e" stroke-width="3" transform="rotate(25 76 20)"/></g><ellipse cx="60" cy="92" rx="44" ry="42" fill="#7ed37f" stroke="#3f8a2e" stroke-width="4"/><circle cx="46" cy="84" r="7" fill="#2d2340"/><circle cx="74" cy="84" r="7" fill="#2d2340"/><circle cx="48" cy="81" r="2.5" fill="#fff"/><circle cx="76" cy="81" r="2.5" fill="#fff"/><path d="M50 102 Q60 112 70 102" stroke="#2d2340" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="36" cy="100" rx="7" ry="4" fill="#ff9fb0" opacity=".7"/><ellipse cx="84" cy="100" rx="7" ry="4" fill="#ff9fb0" opacity=".7"/></g></svg>';
+function pick(subj){
+  let ts=T.filter(t=>open(t)&&(subj==='mix'||t.subj===subj));
+  // หัวข้อที่ตอบถูกน้อยกว่า 70% ได้โอกาสออกบ่อยขึ้นเท่าตัว
+  const rot=[];ts.forEach(t=>{rot.push(t.id);const s=ST[t.id];if(s&&s.n>=3&&s.ok/s.n<.7)rot.push(t.id);});
+  const Q={};ts.forEach(t=>{const it=shuf(BANK.items.filter(x=>x.t===t.id));Q[t.id]=it.filter(x=>!recent.has(x.id)).concat(it.filter(x=>recent.has(x.id)));});
+  const out=[];let guard=0;while(out.length<N&&guard++<2000){const r=shuf(rot.slice());let added=false;for(const id of r){if(out.length>=N)break;const x=Q[id].shift();if(x){out.push(x);added=true;}}if(!added)break;}
+  return shuf(out);}
+function start(subj){const s=SUBJ.find(x=>x[0]===subj);const qs=pick(subj);if(!qs.length)return;
+  window.EP={mode:'practice',autostart:true,title:'สนามสอบ · '+s[1],subject:s[3],subj,level:'',scenes:[],questions:qs,summary:'',menu:'00_เมนูหลัก.html',audioDir:'เสียง/'};
+  document.getElementById('app').innerHTML='';const e=document.createElement('script');e.src='engine/engine.js';document.body.append(e);}
+function render(){
+  const sb=document.getElementById('subj');sb.innerHTML='';
+  SUBJ.forEach(([id,name,emo])=>{const ts=T.filter(t=>open(t)&&(id==='mix'||t.subj===id));const n=ts.reduce((a,t)=>a+t.n,0);
+    const b=document.createElement('button');b.className='opt pop';b.disabled=!ts.length;
+    b.innerHTML='<div class="e">'+emo+'</div><div class="T">'+name+'</div><small>'+(ts.length?ts.length+' หัวข้อ':'ยังไม่ได้ดูคลิป')+'</small>';b.onclick=()=>start(id);sb.append(b);});
+  const c=document.getElementById('cnt');c.innerHTML='<span class="T" style="align-self:center">ชุดละ</span>';
+  [10,20,30].forEach(n=>{const b=document.createElement('button');b.textContent=n+' ข้อ';b.className=n===N?'on':'';b.onclick=()=>{N=n;set('kla-exam-n',n);render();};c.append(b);});
+  const anyOpen=T.some(open);document.getElementById('msg').textContent=anyOpen?'เลือกวิชาที่อยากฝึกได้เลย':'ไปดูคลิปในสวนก่อนนะ แล้วค่อยกลับมาฝึก';
+  // ส่วนผู้ปกครอง
+  const pb=document.getElementById('pbody');const fmt=t=>new Date(t).toLocaleDateString('th-TH',{day:'numeric',month:'short'})+' '+new Date(t).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+  let html='<label class="sw"><input type="checkbox" id="all" '+(all?'checked':'')+'> เปิดทุกหัวข้อ แม้น้องยังไม่ได้ดูคลิป (ใช้ทดลอง)</label>';
+  html+='<div class="T"><b>ชุดล่าสุด</b></div>'+(H.length?'<table class="pt"><tr><th>เวลา</th><th>วิชา</th><th>ถูกตั้งแต่ครั้งแรก</th></tr>'+H.slice(-8).reverse().map(r=>'<tr><td>'+fmt(r.t)+'</td><td>'+((SUBJ.find(x=>x[0]===r.subj)||[0,'คละวิชา'])[1])+'</td><td>'+r.ok+' / '+r.n+'</td></tr>').join('')+'</table>':'<p class="note">ยังไม่มีผล</p>');
+  const rows=Object.entries(ST).map(([id,s])=>({t:TI[id],s,p:s.ok/s.n})).filter(x=>x.t).sort((a,b)=>a.p-b.p);
+  html+='<div class="T" style="margin-top:12px"><b>รายหัวข้อ (10 ชุดล่าสุด)</b> · เรียงจากที่ควรทบทวนก่อน</div>'+(rows.length?'<table class="pt"><tr><th>หัวข้อ</th><th>ถูก</th><th>ดูคลิปซ้ำ</th></tr>'+rows.map(x=>'<tr><td>'+x.t.name+'</td><td><span class="bar" style="width:'+Math.max(4,Math.round(x.p*80))+'px;'+(x.p<.7?'background:#e5484d':'')+'"></span> '+x.s.ok+'/'+x.s.n+'</td><td>EP'+x.t.ep+'</td></tr>').join('')+'</table>':'<p class="note">ยังไม่มีผล</p>');
+  pb.innerHTML=html;document.getElementById('all').onchange=e=>{all=e.target.checked;set('kla-exam-all',all);render();};}
+render();
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
+})();
+</script></body></html>

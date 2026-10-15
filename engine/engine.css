@@ -244,3 +244,5 @@ button{font-family:inherit;cursor:pointer}
 .opt{min-width:0}
 .opt .e.sm{font-size:clamp(20px,3.3vw,38px);letter-spacing:-1px;max-width:100%}
 .opt .e.xs{font-size:clamp(16px,2.6vw,30px);letter-spacing:-2px}
+
+.top a.home{background:rgba(255,255,255,.25);color:#fff;border-radius:12px;font-size:clamp(16px,2.4vw,22px);width:2.2em;height:2.2em;display:flex;align-items:center;justify-content:center;text-decoration:none;flex:none}

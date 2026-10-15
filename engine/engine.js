@@ -215,11 +215,29 @@ async function finish(){if(EP.mode)return examEnd();phase='end';react('cheer');Q
 /* จบชุดสนามสอบ: เด็กเห็นแค่ดาวที่ได้ ผลรายข้อเก็บไว้ให้ผู้ปกครองดู */
 async function examEnd(){phase='end';react('cheer');QS=null;prog(1);const n=EP.questions.length,ok=LOG.filter(x=>x&&x.ok).length;
  try{const k='kla-exam-v1';const d=JSON.parse(localStorage.getItem(k)||'[]');d.push({t:Date.now(),subj:EP.subj||'mix',n,ok,items:LOG.map(x=>x?[x.id,x.t,x.ok?1:0]:null)});localStorage.setItem(k,JSON.stringify(d.slice(-80)));}catch(e){}
- const c=h('div','cover');c.innerHTML='<div class="pop">'+SPROUT+'</div><h1>ทำครบ '+n+' ข้อแล้ว</h1><p class="pop gold" style="font-size:clamp(24px,3.6vw,36px)">⭐ ได้ดาว '+ok+' ดวง</p>';
+ const got=Math.max(ok,1),cheer=ok===0;
+ const c=h('div','cover');c.innerHTML='<h1>ทำครบ '+n+' ข้อแล้ว</h1>'+
+  '<div class="starbox"><div class="rays"></div><svg class="bigstar" viewBox="0 0 100 100"><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3a6"/><stop offset=".45" stop-color="#ffd23f"/><stop offset="1" stop-color="#f4a100"/></linearGradient>'+
+  '<linearGradient id="sh" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="sc"><path d="M50 5 L62 37 L96 38 L69 59 L79 93 L50 73 L21 93 L31 59 L4 38 L38 37Z"/></clipPath></defs>'+
+  '<path d="M50 5 L62 37 L96 38 L69 59 L79 93 L50 73 L21 93 L31 59 L4 38 L38 37Z" fill="url(#sg)" stroke="#e09400" stroke-width="3" stroke-linejoin="round"/>'+
+  '<g clip-path="url(#sc)"><rect class="shine" x="-60" y="0" width="40" height="100" fill="url(#sh)" transform="skewX(-20)"/></g>'+
+  '<circle cx="38" cy="50" r="4" fill="#5a3d00"/><circle cx="62" cy="50" r="4" fill="#5a3d00"/><path d="M42 62 Q50 69 58 62" stroke="#5a3d00" stroke-width="3" fill="none" stroke-linecap="round"/></svg>'+
+  '<div class="scount"><b>0</b></div></div><p class="slabel">'+(cheer?'ดาวกำลังใจ':'ได้ดาว')+' <b class="sn">0</b> ดวง</p>';
  const bt=h('div','btns');const a1=h('button','go','↺ ทำชุดใหม่');a1.onclick=()=>location.reload();bt.append(a1);const m=h('a','btn2','🏡 กลับสวน');m.href=EP.menu;bt.append(m);c.append(bt);
- SFX.whoosh();await show(c,true);SFX.fanfare();[[650,0],[1900,3],[2700,5]].forEach(([t,k])=>setTimeout(()=>{if(phase==='end')SFX.pop(k);},t));
- setTimeout(()=>{const sp=c.querySelector('.sprout');if(sp&&phase==='end'){const [x,y]=centerOf(sp);confetti(x,y,34);SFX.sparkle();starBurst(x,y,10);}},3400);
- await say(['หนูทำสนามสอบครบทุกข้อแล้ว เก่งมากเลย','ฝึกบ่อย ๆ จะเก่งขึ้นทุกวันนะ']);}
+ SFX.whoosh();await show(c,true);
+ const box=c.querySelector('.starbox'),star=c.querySelector('.bigstar'),cnt=c.querySelector('.scount b'),sn=c.querySelector('.sn');
+ const setN=v=>{cnt.textContent=v;sn.textContent=v;};
+ const finale=()=>{if(phase!=='end')return;box.classList.add('done');SFX.fanfare();setTimeout(()=>SFX.sparkle(),350);const [x,y]=centerOf(star);confetti(x,y,40);starBurst(x,y,12);
+  for(let i=0;i<10;i++){const t=h('span','twk','✦');const a=i/10*Math.PI*2,r=58+(i%2)*14;t.style.left=(50+Math.cos(a)*r)+'%';t.style.top=(50+Math.sin(a)*r)+'%';t.style.animationDelay=(i*.17)+'s';t.style.color='hsl('+(i*36)+' 95% 60%)';box.append(t);}};
+ if(reduce){setN(got);finale();}
+ else{const k=Math.min(got,20),W=innerWidth,H=innerHeight;let done=0;await wait(400);
+  for(let i=0;i<k;i++){const [tx,ty]=centerOf(star);const side=i%4,r=Math.random();
+   const sx=side===0?-60:side===1?W+60:r*W,sy=side===2?-60:side===3?H+60:r*H;
+   const f=h('span','flystar','⭐');f.style.left=tx+'px';f.style.top=ty+'px';document.body.append(f);
+   const an=f.animate([{transform:'translate('+(sx-tx)+'px,'+(sy-ty)+'px) translate(-50%,-50%) rotate(0deg) scale(1.5)',opacity:.3},{opacity:1,offset:.25},{transform:'translate(0,0) translate(-50%,-50%) rotate('+(540+Math.random()*360)+'deg) scale(.6)',opacity:1}],{duration:950,delay:i*Math.max(90,1400/k),easing:'cubic-bezier(.45,0,.25,1)',fill:'both'});
+   an.onfinish=()=>{f.remove();if(phase!=='end')return;done++;setN(Math.round(done*got/k));tone(700+done*45,.12,'triangle',.09,0,1200+done*45);star.classList.remove('bump');void star.offsetWidth;star.classList.add('bump');if(done===k)setTimeout(finale,250);};}
+  await wait(950+k*Math.max(90,1400/k)+700);}
+ await say([cheer?'พยายามเก่งมาก ได้ดาวกำลังใจหนึ่งดวง':'','หนูทำสนามสอบครบทุกข้อแล้ว เก่งมากเลย','ฝึกบ่อย ๆ จะเก่งขึ้นทุกวันนะ']);}
 function cover(){const c=h('div','cover');c.innerHTML='<div class="char pop">'+KLA+'</div><p>'+z[0]+(LV[EP.level]?' · ระดับ'+LV[EP.level]:'')+'</p><h1>'+NAME+'</h1>';const g=h('button','go pop','▶ เริ่มเลย');
  g.onclick=()=>{ac();SFX.chime();pick();if(!synth||!voice)sub.textContent='เครื่องนี้ไม่มีเสียงพูดภาษาไทย ผู้ปกครองช่วยอ่านคำบรรยายนี้ให้น้องฟังนะ';
   const j=/^#([sq])(\d+)$/.exec(location.hash);if(j&&j[1]==='q'){phase='quiz';tok++;quiz(Math.min(+j[2]-1,EP.questions.length-1));}else lesson(j?Math.min(+j[2]-1,EP.scenes.length-1):0);};c.append(g);show(c);sub.textContent='กด เริ่มเลย ได้เลยนะ';}

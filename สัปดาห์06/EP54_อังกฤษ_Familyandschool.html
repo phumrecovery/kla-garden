@@ -1,0 +1,218 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EP54 Family and school</title></title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet"><link rel="stylesheet" href="../engine/engine.css"></head><body><div id="app"></div>
+<script>window.EP={
+ "ep": "54",
+ "subject": "eng",
+ "level": "hard",
+ "title": "Family and school",
+ "dayEnd": true,
+ "scenes": [
+  {
+   "v": {
+    "type": "kla",
+    "text": "Family and school"
+   },
+   "say": "วันนี้รู้จักคนในครอบครัว และของในโรงเรียนเป็นภาษาอังกฤษกัน"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "👨",
+      "t": "father"
+     },
+     {
+      "e": "👩",
+      "t": "mother"
+     },
+     {
+      "e": "👦",
+      "t": "brother"
+     },
+     {
+      "e": "👧",
+      "t": "sister"
+     }
+    ],
+    "speed": 1.2
+   },
+   "say": "[father] พ่อ [mother] แม่ [brother] พี่ชายหรือน้องชาย [sister] พี่สาวหรือน้องสาว"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "👴",
+      "t": "grandfather"
+     },
+     {
+      "e": "👵",
+      "t": "grandmother"
+     },
+     {
+      "e": "👶",
+      "t": "baby"
+     }
+    ],
+    "speed": 1.2
+   },
+   "say": "[grandfather] ปู่หรือตา [grandmother] ย่าหรือยาย [baby] เด็กทารก"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🧑‍🏫",
+      "t": "teacher"
+     },
+     {
+      "e": "🏫",
+      "t": "school"
+     },
+     {
+      "e": "🎒",
+      "t": "bag"
+     },
+     {
+      "e": "📕",
+      "t": "book"
+     }
+    ],
+    "speed": 1.2
+   },
+   "say": "[teacher] คุณครู [school] โรงเรียน [bag] กระเป๋า [book] หนังสือ"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "✏️",
+      "t": "pencil"
+     },
+     {
+      "e": "🖊️",
+      "t": "pen"
+     },
+     {
+      "e": "📏",
+      "t": "ruler"
+     },
+     {
+      "e": "🖍️",
+      "t": "crayon"
+     }
+    ],
+    "speed": 1.2
+   },
+   "say": "[pencil] ดินสอ [pen] ปากกา [ruler] ไม้บรรทัด [crayon] สีเทียน"
+  },
+  {
+   "v": {
+    "type": "big",
+    "text": "p _ n c i l",
+    "e": "✏️"
+   },
+   "say": "[pencil] สะกดว่า [P, E, N, C, I, L] ตัวที่หายไปคือ [e]"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🖊️",
+      "t": "pen · ปากกา"
+     },
+     {
+      "e": "✏️",
+      "t": "pencil · ดินสอ"
+     }
+    ],
+    "speed": 1.6
+   },
+   "say": "ระวังนะ [pen] คือปากกา [pencil] คือดินสอ"
+  },
+  {
+   "v": {
+    "type": "kla",
+    "text": "pen ≠ pencil"
+   },
+   "say": "เคล็ดลับ [pencil] ยาวกว่า [pen] เพราะมี [cil] ต่อท้าย เหมือนดินสอที่เหลาได้"
+  }
+ ],
+ "questions": [
+  {
+   "q": "father คือใคร",
+   "say": "[father] คือใคร",
+   "opts": [
+    {
+     "e": "👩",
+     "t": "แม่"
+    },
+    {
+     "e": "👨",
+     "t": "พ่อ"
+    },
+    {
+     "e": "👦",
+     "t": "พี่ชาย"
+    }
+   ],
+   "ans": 1,
+   "hint": "[father] กับ [mother] คู่กัน",
+   "why": "[father] คือพ่อ"
+  },
+  {
+   "q": "ภาพนี้คือคำใด",
+   "opts": [
+    "bag",
+    "book",
+    "ball"
+   ],
+   "ans": 1,
+   "hint": "ใช้อ่าน",
+   "why": "ภาพนี้คือ [book]",
+   "v": {
+    "type": "big",
+    "text": null,
+    "e": "📕"
+   }
+  },
+  {
+   "q": "ข้อใดสะกดถูก",
+   "opts": [
+    "shcool",
+    "school",
+    "scool"
+   ],
+   "ans": 1,
+   "hint": "[s c h o o l]",
+   "why": "สะกดถูกคือ [school]"
+  },
+  {
+   "q": "ภาพนี้คือคำใด",
+   "star": true,
+   "opts": [
+    "pen",
+    "pencil",
+    "color"
+   ],
+   "ans": 1,
+   "hint": "ใช้เขียน ลบได้ เหลาได้",
+   "why": "ภาพนี้คือ [pencil] ดินสอ",
+   "v": {
+    "type": "big",
+    "text": null,
+    "e": "✏️"
+   }
+  }
+ ],
+ "summary": "วันนี้เรารู้จักคำเรียกคนในครอบครัว ของใช้ในโรงเรียน และสะกดคำได้",
+ "menu": "../00_เมนูหลัก.html",
+ "audioDir": "../เสียง/"
+};</script>
+<script src="../เสียง/amap.js"></script>
+<script src="../engine/engine.js"></script>
+</body></html>

@@ -1,0 +1,207 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EP67 Food and drinks</title></title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet"><link rel="stylesheet" href="../engine/engine.css"></head><body><div id="app"></div>
+<script>window.EP={
+ "ep": "67",
+ "subject": "eng",
+ "level": "easy",
+ "title": "Food and drinks",
+ "scenes": [
+  {
+   "v": {
+    "type": "kla",
+    "text": "Food and drinks"
+   },
+   "say": "วันนี้ไปร้านอาหาร เรียนชื่ออาหารและเครื่องดื่มเป็นภาษาอังกฤษกัน"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🍚",
+      "t": "rice"
+     },
+     {
+      "e": "🍞",
+      "t": "bread"
+     },
+     {
+      "e": "🥚",
+      "t": "egg"
+     },
+     {
+      "e": "🍜",
+      "t": "noodles"
+     }
+    ],
+    "speed": 1.2
+   },
+   "say": "[rice] ข้าว [bread] ขนมปัง [egg] ไข่ [noodles] ก๋วยเตี๋ยว"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🍗",
+      "t": "chicken"
+     },
+     {
+      "e": "🐟",
+      "t": "fish"
+     },
+     {
+      "e": "🌭",
+      "t": "sausage"
+     },
+     {
+      "e": "🍕",
+      "t": "pizza"
+     }
+    ],
+    "speed": 1.2
+   },
+   "say": "[chicken] ไก่ [fish] ปลา [sausage] ไส้กรอก [pizza] พิซซ่า"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🥛",
+      "t": "milk"
+     },
+     {
+      "e": "💧",
+      "t": "water"
+     },
+     {
+      "e": "🧃",
+      "t": "juice"
+     },
+     {
+      "e": "☕",
+      "t": "coffee"
+     }
+    ],
+    "speed": 1.2
+   },
+   "say": "เครื่องดื่ม [milk] นม [water] น้ำ [juice] น้ำผลไม้ [coffee] กาแฟ"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🍰",
+      "t": "cake"
+     },
+     {
+      "e": "🍦",
+      "t": "ice cream"
+     },
+     {
+      "e": "🍪",
+      "t": "cookie"
+     }
+    ],
+    "speed": 1.2
+   },
+   "say": "ขนม [cake] เค้ก [ice cream] ไอศกรีม [cookie] คุกกี้"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "😋",
+      "t": "I like milk."
+     },
+     {
+      "e": "🙅",
+      "t": "I don't like coffee."
+     }
+    ],
+    "speed": 2
+   },
+   "say": "[I like milk.] ฉันชอบนม [I don't like coffee.] ฉันไม่ชอบกาแฟ"
+  },
+  {
+   "v": {
+    "type": "kla",
+    "text": "food กิน · drinks ดื่ม"
+   },
+   "say": "เคล็ดลับ [food] คือของกิน [drinks] คือของดื่ม"
+  }
+ ],
+ "questions": [
+  {
+   "q": "milk คือภาพใด",
+   "say": "[milk] คือภาพใด",
+   "opts": [
+    {
+     "e": "☕"
+    },
+    {
+     "e": "🥛"
+    },
+    {
+     "e": "🧃"
+    }
+   ],
+   "ans": 1,
+   "hint": "สีขาว ได้มาจากวัว",
+   "why": "[milk] คือนม"
+  },
+  {
+   "q": "ข้อใดเป็นเครื่องดื่ม",
+   "opts": [
+    "bread",
+    "juice",
+    "rice"
+   ],
+   "ans": 1,
+   "hint": "อะไรดื่มได้",
+   "why": "[juice] คือน้ำผลไม้ ดื่มได้"
+  },
+  {
+   "q": "ภาพนี้คือคำใด",
+   "opts": [
+    "cake",
+    "rice",
+    "fish"
+   ],
+   "ans": 1,
+   "hint": "เรากินทุกวัน เป็นเม็ดเล็ก ๆ สีขาว",
+   "why": "ภาพนี้คือ [rice]",
+   "v": {
+    "type": "big",
+    "text": null,
+    "e": "🍚"
+   }
+  },
+  {
+   "q": "ภาพนี้คือคำใด",
+   "star": true,
+   "opts": [
+    "sausage",
+    "egg",
+    "noodles"
+   ],
+   "ans": 1,
+   "hint": "ไก่ออกมาให้",
+   "why": "ภาพนี้คือ [egg]",
+   "v": {
+    "type": "big",
+    "text": null,
+    "e": "🥚"
+   }
+  }
+ ],
+ "summary": "วันนี้เรารู้จักชื่ออาหารและเครื่องดื่มเป็นภาษาอังกฤษ",
+ "menu": "../00_เมนูหลัก.html",
+ "next": "EP68_อังกฤษ_inonunder.html",
+ "audioDir": "../เสียง/"
+};</script>
+<script src="../เสียง/amap.js"></script>
+<script src="../engine/engine.js"></script>
+</body></html>

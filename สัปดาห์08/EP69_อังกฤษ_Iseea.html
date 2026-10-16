@@ -1,0 +1,188 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EP69 I see a</title></title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet"><link rel="stylesheet" href="../engine/engine.css"></head><body><div id="app"></div>
+<script>window.EP={
+ "ep": "69",
+ "subject": "eng",
+ "level": "hard",
+ "title": "I see a",
+ "dayEnd": true,
+ "scenes": [
+  {
+   "v": {
+    "type": "kla",
+    "text": "I see a …"
+   },
+   "say": "วันนี้มาพูดประโยคภาษาอังกฤษสั้น ๆ กัน"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🐱",
+      "t": "I see a cat."
+     },
+     {
+      "e": "🐘",
+      "t": "I see an elephant."
+     }
+    ],
+    "speed": 2
+   },
+   "say": "[I see a cat.] ฉันเห็นแมว [I see an elephant.] ถ้าคำขึ้นต้นด้วยเสียงสระ เช่น [elephant] ใช้ [an]"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🍎",
+      "t": "It is an apple."
+     },
+     {
+      "e": "⚽",
+      "t": "It is a ball."
+     }
+    ],
+    "speed": 2
+   },
+   "say": "[It is an apple.] มันคือแอปเปิล [It is a ball.] มันคือลูกบอล"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🧑‍🏫",
+      "t": "I am a teacher."
+     },
+     {
+      "e": "🧑‍⚕️",
+      "t": "I am a doctor."
+     },
+     {
+      "e": "🧑‍🍳",
+      "t": "I am a cook."
+     }
+    ],
+    "speed": 1.8
+   },
+   "say": "[I am a teacher.] ฉันเป็นครู [I am a doctor.] ฉันเป็นหมอ [I am a cook.] ฉันเป็นพ่อครัว"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "👉🍌",
+      "t": "This is a banana."
+     },
+     {
+      "e": "👉 … 🍇",
+      "t": "That is a grape."
+     }
+    ],
+    "speed": 2
+   },
+   "say": "[This is] สิ่งนี้ ใช้กับของที่อยู่ใกล้ [That is] สิ่งนั้น ใช้กับของที่อยู่ไกล"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🦁",
+      "t": "zoo"
+     },
+     {
+      "e": "🏫",
+      "t": "school"
+     },
+     {
+      "e": "🏦",
+      "t": "bank"
+     },
+     {
+      "e": "🏥",
+      "t": "hospital"
+     }
+    ],
+    "speed": 1.3
+   },
+   "say": "[We go to the zoo to see wild animals.] เราไปสวนสัตว์เพื่อดูสัตว์ป่า [school] โรงเรียน [bank] ธนาคาร [hospital] โรงพยาบาล"
+  },
+  {
+   "v": {
+    "type": "kla",
+    "text": "a / an · This ใกล้ That ไกล"
+   },
+   "say": "เคล็ดลับ ใช้ [an] กับคำที่ขึ้นต้นด้วยเสียงสระ เช่น [an apple, an elephant] นอกนั้นใช้ [a]"
+  }
+ ],
+ "questions": [
+  {
+   "q": "I see a …",
+   "say": "[I see a] เติมคำใด",
+   "opts": [
+    "cat",
+    "dog",
+    "fish"
+   ],
+   "ans": 0,
+   "hint": "สัตว์ที่ร้องเหมียว",
+   "why": "[I see a cat.]",
+   "v": {
+    "type": "big",
+    "text": null,
+    "e": "🐱"
+   }
+  },
+  {
+   "q": "ข้อใดใช้ an ถูกต้อง",
+   "opts": [
+    "an cat",
+    "an apple",
+    "an ball"
+   ],
+   "ans": 1,
+   "hint": "[an] ใช้กับคำที่ขึ้นต้นด้วยเสียงสระ",
+   "why": "[an apple] ถูกต้อง"
+  },
+  {
+   "q": "I am a …",
+   "say": "[I am a] เติมคำใด",
+   "opts": [
+    "teacher",
+    "doctor",
+    "cook"
+   ],
+   "ans": 1,
+   "hint": "คนที่รักษาคนป่วย",
+   "why": "[I am a doctor.]",
+   "v": {
+    "type": "big",
+    "text": null,
+    "e": "🧑‍⚕️"
+   }
+  },
+  {
+   "q": "We go to the … to see wild animals.",
+   "say": "[We go to the] เว้นว่าง [to see wild animals] เติมคำใด",
+   "star": true,
+   "opts": [
+    "zoo",
+    "bank",
+    "school"
+   ],
+   "ans": 0,
+   "hint": "ที่ที่มีสิงโตและช้าง",
+   "why": "[We go to the zoo to see wild animals.]"
+  }
+ ],
+ "summary": "วันนี้เราพูดประโยค I see a … It is a … I am a … This is … That is … ได้",
+ "menu": "../00_เมนูหลัก.html",
+ "next": "EP70_เชาวน์_บนล่างในนอก.html",
+ "audioDir": "../เสียง/"
+};</script>
+<script src="../เสียง/amap.js"></script>
+<script src="../engine/engine.js"></script>
+</body></html>

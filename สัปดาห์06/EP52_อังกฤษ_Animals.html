@@ -1,0 +1,207 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EP52 Animals</title></title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet"><link rel="stylesheet" href="../engine/engine.css"></head><body><div id="app"></div>
+<script>window.EP={
+ "ep": "52",
+ "subject": "eng",
+ "level": "easy",
+ "title": "Animals",
+ "scenes": [
+  {
+   "v": {
+    "type": "kla",
+    "text": "Animals! มาเรียกชื่อสัตว์กัน"
+   },
+   "say": "วันนี้ไปสวนสัตว์ เรียนชื่อสัตว์เป็นภาษาอังกฤษกัน"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🐶",
+      "t": "dog"
+     },
+     {
+      "e": "🐱",
+      "t": "cat"
+     },
+     {
+      "e": "🐟",
+      "t": "fish"
+     },
+     {
+      "e": "🐦",
+      "t": "bird"
+     }
+    ],
+    "speed": 1.2
+   },
+   "say": "[dog] หมา [cat] แมว [fish] ปลา [bird] นก"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🐄",
+      "t": "cow"
+     },
+     {
+      "e": "🐷",
+      "t": "pig"
+     },
+     {
+      "e": "🐔",
+      "t": "chicken"
+     },
+     {
+      "e": "🦆",
+      "t": "duck"
+     }
+    ],
+    "speed": 1.2
+   },
+   "say": "[cow] วัว [pig] หมู [chicken] ไก่ [duck] เป็ด"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🐘",
+      "t": "elephant"
+     },
+     {
+      "e": "🐒",
+      "t": "monkey"
+     },
+     {
+      "e": "🐅",
+      "t": "tiger"
+     },
+     {
+      "e": "🦁",
+      "t": "lion"
+     }
+    ],
+    "speed": 1.2
+   },
+   "say": "[elephant] ช้าง [monkey] ลิง [tiger] เสือ [lion] สิงโต"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🐜",
+      "t": "ant"
+     },
+     {
+      "e": "🐝",
+      "t": "bee"
+     },
+     {
+      "e": "🐍",
+      "t": "snake"
+     }
+    ],
+    "speed": 1.2
+   },
+   "say": "[ant] มด [bee] ผึ้ง [snake] งู"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🥛",
+      "t": "milk · cow"
+     },
+     {
+      "e": "🥚",
+      "t": "egg · chicken"
+     },
+     {
+      "e": "🍯",
+      "t": "honey · bee"
+     }
+    ],
+    "speed": 1.4
+   },
+   "say": "[cow] ให้ [milk] นม และให้เนื้อ [meat] [chicken] ให้ [egg] ไข่ [bee] ให้ [honey] น้ำผึ้ง"
+  },
+  {
+   "v": {
+    "type": "kla",
+    "text": "Which animal gives you milk? → cow"
+   },
+   "say": "ถ้าถามว่า [Which animal gives you milk?] สัตว์ใดให้นม ตอบว่า [cow]"
+  }
+ ],
+ "questions": [
+  {
+   "q": "ภาพนี้คือคำใด",
+   "opts": [
+    "cat",
+    "dog",
+    "pig"
+   ],
+   "ans": 1,
+   "hint": "สัตว์เลี้ยงที่เห่า โฮ่ง ๆ",
+   "why": "ภาพนี้คือ [dog]",
+   "v": {
+    "type": "big",
+    "text": null,
+    "e": "🐶"
+   }
+  },
+  {
+   "q": "monkey คือภาพใด",
+   "say": "[monkey] คือภาพใด",
+   "opts": [
+    {
+     "e": "🐒"
+    },
+    {
+     "e": "🐘"
+    },
+    {
+     "e": "🐅"
+    }
+   ],
+   "ans": 0,
+   "hint": "สัตว์ที่ชอบกินกล้วย ปีนต้นไม้เก่ง",
+   "why": "[monkey] คือลิง"
+  },
+  {
+   "q": "ข้อใดไม่ใช่สัตว์",
+   "opts": [
+    "bird",
+    "ant",
+    "book"
+   ],
+   "ans": 2,
+   "hint": "คำไหนเป็นสิ่งของ",
+   "why": "[book] คือหนังสือ ไม่ใช่สัตว์"
+  },
+  {
+   "q": "Which animal gives you meat and milk?",
+   "say": "[Which animal gives you meat and milk?] สัตว์ใดให้เนื้อและนม",
+   "star": true,
+   "opts": [
+    "ant",
+    "bee",
+    "cow"
+   ],
+   "ans": 2,
+   "hint": "สัตว์ที่ให้นม และกินหญ้า",
+   "why": "[cow] ให้ทั้งเนื้อและนม"
+  }
+ ],
+ "summary": "วันนี้เรารู้จักชื่อสัตว์เป็นภาษาอังกฤษ และสัตว์ให้อะไรกับเรา",
+ "menu": "../00_เมนูหลัก.html",
+ "next": "EP53_อังกฤษ_Mybody.html",
+ "audioDir": "../เสียง/"
+};</script>
+<script src="../เสียง/amap.js"></script>
+<script src="../engine/engine.js"></script>
+</body></html>

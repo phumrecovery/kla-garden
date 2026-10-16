@@ -1,7 +1,7 @@
 /* ทบทวนเลขบ่อย ๆ (ผู้ปกครองขอ 15 ต.ค.): มากน้อย เรียงลำดับ บวกลบ บวกลบต่อเนื่อง และ (ภายหลัง) บวกลบสองหลักมีทด
    ใช้ทั้ง "ข้อพิเศษทบทวนเลข" ท้ายทุกตอน และ "คณิตวันละนิด" ในสนามสอบ
    เพิ่มหัวข้อสองหลักในอนาคต: ใส่ id ลงใน FOCUS (หัวข้อจะเปิดเองเมื่อดูตอนที่สอนแล้ว) */
-window.FOCUS=['m_cmp','m_sym','m_sort','m_symx','m_order','m_add','m_sub','m_chain','m_addsub','m_word'];
+window.FOCUS=['m_cmp','m_sym','m_sort','m_symx','m_order','m_add','m_sub','m_chain','m_addsub','m_word','m_pv','m_cmp2','m_sort2','m_add2','m_add2c','m_add2w','m_sub2','m_sub2b','m_chain2'];
 window.pickFocus=function(n){
   const g=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}};
   const P=g('kla-garden-v1')||{},H=g('kla-exam-v1')||[],RV=g('kla-review-v1')||[],all=g('kla-exam-all');

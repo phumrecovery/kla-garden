@@ -1,0 +1,218 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EP68 in on under</title></title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet"><link rel="stylesheet" href="../engine/engine.css"></head><body><div id="app"></div>
+<script>window.EP={
+ "ep": "68",
+ "subject": "eng",
+ "level": "mid",
+ "title": "in on under",
+ "scenes": [
+  {
+   "v": {
+    "type": "kla",
+    "text": "Where is the cat? แมวอยู่ไหน"
+   },
+   "say": "วันนี้มาเรียนคำบอกตำแหน่งเป็นภาษาอังกฤษกัน"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "pos": "in",
+      "item": "🐱",
+      "t": "in"
+     },
+     {
+      "pos": "on",
+      "item": "🐱",
+      "t": "on"
+     },
+     {
+      "pos": "under",
+      "item": "🐱",
+      "t": "under"
+     }
+    ],
+    "speed": 1.4
+   },
+   "say": "[in] ข้างใน [on] ข้างบน [under] ข้างใต้"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "pos": "behind",
+      "item": "🐱",
+      "t": "behind"
+     },
+     {
+      "pos": "front",
+      "item": "🐱",
+      "t": "in front of"
+     }
+    ],
+    "speed": 1.6
+   },
+   "say": "[behind] ข้างหลัง [in front of] ข้างหน้า"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "pos": "beside",
+      "item": "🐱",
+      "t": "next to"
+     },
+     {
+      "pos": "between",
+      "item": "🐱",
+      "t": "between"
+     }
+    ],
+    "speed": 1.6
+   },
+   "say": "[next to] ข้าง ๆ [between] ระหว่าง"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "pos": "on",
+      "item": "🦉",
+      "t": "The owl is on the table."
+     }
+    ]
+   },
+   "say": "[The owl is on the table.] นกฮูกอยู่บนโต๊ะ"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "pos": "in",
+      "item": "🐶",
+      "t": "The dog is in the box."
+     }
+    ]
+   },
+   "say": "[The dog is in the box.] หมาอยู่ในกล่อง"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "pos": "between",
+      "item": "🐰",
+      "t": "The rabbit is between the boxes."
+     }
+    ]
+   },
+   "say": "[The rabbit is between the boxes.] กระต่ายอยู่ระหว่างกล่อง"
+  },
+  {
+   "v": {
+    "type": "kla",
+    "text": "in ใน · on บน · under ใต้"
+   },
+   "say": "เคล็ดลับ จำคู่สามคำนี้ให้แม่น [in] ใน [on] บน [under] ใต้"
+  }
+ ],
+ "questions": [
+  {
+   "q": "The cat is … the table.",
+   "say": "[The cat is] เว้นว่าง [the table] เติมคำใด",
+   "opts": [
+    "in",
+    "on",
+    "under"
+   ],
+   "ans": 2,
+   "hint": "แมวอยู่ข้างล่างโต๊ะ",
+   "why": "[The cat is under the table.]",
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "pos": "under",
+      "item": "🐱"
+     }
+    ]
+   }
+  },
+  {
+   "q": "in คือภาพใด",
+   "say": "[in] คือภาพใด",
+   "opts": [
+    {
+     "pos": "on",
+     "item": "🐶"
+    },
+    {
+     "pos": "in",
+     "item": "🐶"
+    },
+    {
+     "pos": "under",
+     "item": "🐶"
+    }
+   ],
+   "ans": 1,
+   "hint": "[in] แปลว่าข้างใน",
+   "why": "[in] คือหมาอยู่ในกล่อง"
+  },
+  {
+   "q": "The rabbit is … the boxes.",
+   "say": "[The rabbit is] เว้นว่าง [the boxes] เติมคำใด",
+   "opts": [
+    "between",
+    "on",
+    "in"
+   ],
+   "ans": 0,
+   "hint": "กระต่ายอยู่ตรงกลางสองกล่อง",
+   "why": "[The rabbit is between the boxes.]",
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "pos": "between",
+      "item": "🐰"
+     }
+    ]
+   }
+  },
+  {
+   "q": "The owl is … the box.",
+   "say": "[The owl is] เว้นว่าง [the box] เติมคำใด",
+   "star": true,
+   "opts": [
+    "under",
+    "behind",
+    "in"
+   ],
+   "ans": 1,
+   "hint": "นกฮูกโผล่มาจากข้างหลังกล่อง",
+   "why": "[The owl is behind the box.]",
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "pos": "behind",
+      "item": "🦉"
+     }
+    ]
+   }
+  }
+ ],
+ "summary": "วันนี้เรารู้จักคำบอกตำแหน่ง in on under behind next to between",
+ "menu": "../00_เมนูหลัก.html",
+ "next": "EP69_อังกฤษ_Iseea.html",
+ "audioDir": "../เสียง/"
+};</script>
+<script src="../เสียง/amap.js"></script>
+<script src="../engine/engine.js"></script>
+</body></html>

@@ -30,7 +30,7 @@
 <label class="sw"><input type="checkbox" id="all"> ผู้ปกครอง: เปิดทุกหัวข้อ แม้น้องยังไม่ได้ดูคลิป (ใช้ทดลอง)</label>
 <p class="note" id="foot"></p>
 </div></div></div></div>
-<script src="คลังโจทย์.js"></script>
+<script src="คลังโจทย์.js"></script><script src="engine/focus.js"></script>
 <script src="เสียง/amap.js"></script>
 <script>
 (function(){
@@ -54,8 +54,8 @@ const openOf=subj=>T.filter(t=>open(t)&&(subj==='mix'||t.subj===subj));
 function mockSet(){const q={};let left=0;QUOTA.forEach(([s,n])=>{if(openOf(s).length)q[s]=n;else left+=n;});const ks=Object.keys(q);if(!ks.length)return [];
   for(let i=0;left>0;i++,left--)q[ks[i%ks.length]]++;
   return QUOTA.filter(([s])=>q[s]).flatMap(([s])=>draw(openOf(s),q[s]));}
-function launch(mode,subj,qs){if(!qs.length)return;const s=SUBJ.find(x=>x[0]===subj);
-  window.EP={mode,autostart:true,title:mode==='mock'?'จำลองสอบ 30 ข้อ':'สนามสอบ · '+s[1],subject:mode==='mock'?'ready':s[3],subj,level:'',scenes:[],questions:qs,summary:'',menu:'00_เมนูหลัก.html',audioDir:'เสียง/'};
+function launch(mode,subj,qs,warm){if(!qs.length)return;const s=SUBJ.find(x=>x[0]===subj);
+  window.EP={mode,warm:!!warm,autostart:true,title:warm?'🔢 คณิตวันละนิด':mode==='mock'?'จำลองสอบ 30 ข้อ':'สนามสอบ · '+s[1],subject:mode==='mock'?'ready':s[3],subj,level:'',scenes:[],questions:qs,summary:'',menu:'00_เมนูหลัก.html',audioDir:'เสียง/'};
   document.getElementById('app').innerHTML='';const e=document.createElement('script');e.src='engine/engine.js';document.body.append(e);}
 function render(){
   const tb=document.getElementById('tabs');tb.innerHTML='';[['practice','📝 โหมดฝึก'],['mock','🏫 จำลองสอบ']].forEach(([m,l])=>{const b=document.createElement('button');b.textContent=l;b.className=m===MODE?'on':'';b.onclick=()=>{MODE=m;set('kla-exam-mode',m);render();};tb.append(b);});
@@ -79,7 +79,8 @@ function render(){
     document.getElementById('foot').textContent='แนะนำทำสัปดาห์ละครั้ง ในที่เงียบ ๆ ให้น้องทำเองทั้งชุด';
   }
   const a=document.getElementById('all');a.checked=all;a.onchange=()=>{all=a.checked;set('kla-exam-all',all);render();};}
-render();
+/* #warm = คณิตวันละนิด 5 ข้อ (เปิดจากหน้าสวน) */
+if(location.hash==='#warm'){const qs=pickFocus(5);if(qs.length)launch('practice','math',qs,true);else render();}else render();
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
 })();
 </script></body></html>

@@ -16,6 +16,9 @@ const SPROUT='<svg class="sprout" viewBox="0 0 140 150"><g class="plant"><path c
 const z=Z[EP.subject]||Z.intro;
 document.documentElement.style.setProperty('--c',z[1]);document.documentElement.style.setProperty('--bg',z[2]);
 const NAME=EP.mode?EP.title:'EP'+EP.ep+' '+EP.title;document.title=NAME;const LOG=[];
+/* ข้อพิเศษทบทวนเลข: ทุกตอนแถมโจทย์คณิต 1 ข้อจากคลัง (เฉพาะเรื่องที่ดูแล้ว เน้นเรื่องที่ยังพลาด) ไม่นับดาวทอง */
+if(!EP.mode&&EP.review!==false&&location.hash!=='#all'){try{const base=new URL(EP.menu||'../00_เมนูหลัก.html',location.href);const ld=(u,cb)=>{const e=document.createElement('script');e.src=new URL(u,base).href;e.onload=cb;document.head.append(e);};
+  ld('engine/focus.js',()=>{const go=()=>{const x=window.pickFocus&&pickFocus(1)[0];if(x)EP.questions.push(Object.assign({},x,{bonus:true}));};window.BANK?go():ld('คลังโจทย์.js',go);});}catch(e){}}
 const h=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.innerHTML=x;return e;};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -201,20 +204,20 @@ async function mockIntro(){phase='quiz';const my=++tok;setWho('teach');SFX.chime
 async function lesson(from){if(MOCK)return mockIntro();phase='lesson';const my=++tok;if(synth)synth.cancel();
  for(let i=from;i<EP.scenes.length;i++){cur=i;const s=EP.scenes[i];setWho('kla');if(i>from)SFX.whoosh();await show(vis(s.v||{type:'kla'}),true);if(my!==tok)return;prog(i/total);await say(s.say);if(my!==tok)return;await gap(800,my);if(my!==tok)return;}
  phase='quiz';SFX.chime();await show(h('div','vis','<div class="char pop">'+KLA+'</div><div class="bubble pop">ถึงเวลาตอบคำถามแล้ว 🌟</div>'),true);await say('ถึงเวลาตอบคำถามแล้ว ฟังให้ดีนะ');if(my!==tok)return;quiz(0);}
-async function quiz(qi){if(qi>=EP.questions.length)return finish();const q=EP.questions[qi];prog((EP.scenes.length+qi)/total);setWho(MOCK?'teach':'kla');if(!EP._t0)EP._t0=Date.now();const QS0=MOCK?['ข้อ '+(qi+1),q.say||q.q]:[q.star?'ข้อท้าทาย':'',q.say||q.q];
- const box=h('div','vis');if(q.star)box.append(h('div','star pop','⭐ ข้อท้าทาย ผิดได้ไม่เป็นไร'));if(q.v)box.append(vis(q.v,true));const qt=h('div','qtext',strip(q.q)+' ');const rp=h('button','rep','🔊');rp.title='ฟังคำถามอีกครั้ง';rp.onclick=()=>{if(QS&&!QS.lock){tok++;if(synth)synth.cancel();say(QS0);}};qt.append(rp);if(MOCK)box.append(h('div','qno','ข้อ '+(qi+1)+' / '+EP.questions.length));box.append(qt);
+async function quiz(qi){if(qi>=EP.questions.length)return finish();const q=EP.questions[qi];prog((EP.scenes.length+qi)/total);setWho(MOCK?'teach':'kla');if(!EP._t0)EP._t0=Date.now();const QS0=MOCK?['ข้อ '+(qi+1),q.say||q.q]:[q.bonus?'ข้อพิเศษ ทบทวนเลข':q.star?'ข้อท้าทาย':'',q.say||q.q];
+ const box=h('div','vis');if(q.star)box.append(h('div','star pop','⭐ ข้อท้าทาย ผิดได้ไม่เป็นไร'));if(q.bonus)box.append(h('div','star pop bonus','🔢 ข้อพิเศษ ทบทวนเลข'));if(q.v)box.append(vis(q.v,true));const qt=h('div','qtext',strip(q.q)+' ');const rp=h('button','rep','🔊');rp.title='ฟังคำถามอีกครั้ง';rp.onclick=()=>{if(QS&&!QS.lock){tok++;if(synth)synth.cancel();say(QS0);}};qt.append(rp);if(MOCK)box.append(h('div','qno','ข้อ '+(qi+1)+' / '+EP.questions.length));box.append(qt);
  const opts=h('div','opts');const btns=q.opts.map((o,i)=>{const b=h('button','opt pop','<span class="k">'+'กขคง'[i]+'.</span>'+optHTML(o));b.style.animationDelay=(i*.1)+'s';b.onclick=()=>answer(i,b);opts.append(b);return b;});box.append(opts);
  if(qi>0)SFX.whoosh();await show(box,true);if(q.star)SFX.sparkle();
  QS={qi,q,btns,tries:0,lock:false};say(QS0);}
 async function answer(i,b){const s=QS;if(!s||s.lock)return;s.lock=true;tok++;if(synth)synth.cancel();const q=s.q;
  if(MOCK){LOG[s.qi]={id:q.id,t:q.t,ok:i===q.ans};b.classList.add('picked');SFX.pop(3);s.btns.forEach(x=>x.disabled=true);await wait(650);return quiz(s.qi+1);}
- if(i===q.ans){LOG[s.qi]={id:q.id,t:q.t,ok:s.tries===0};b.classList.add('ok');SFX.ok();react('cheer');const [x,y]=centerOf(b);confetti(x,y,s.tries===0?26:14);if(s.tries===0&&!q.star)score.first++;if(s.tries===0&&q.star){SFX.sparkle();starBurst(x,y,8);}s.btns.forEach(x=>x.disabled=true);await say([rand(PRAISE),q.why]);}
+ if(i===q.ans){LOG[s.qi]={id:q.id,t:q.t,ok:s.tries===0};b.classList.add('ok');SFX.ok();react('cheer');const [x,y]=centerOf(b);confetti(x,y,s.tries===0?26:14);if(s.tries===0&&!q.star&&!q.bonus)score.first++;if(q.bonus&&window.logFocus)logFocus(q.id,q.t,s.tries===0);if(s.tries===0&&q.star){SFX.sparkle();starBurst(x,y,8);}s.btns.forEach(x=>x.disabled=true);await say([rand(PRAISE),q.why]);}
  else{b.classList.add('no');b.disabled=true;SFX.no();react('oops');s.tries++;
   if(s.tries===1){setWho('jook');await say(['เจ้าจุกใบ้ให้นะ',q.hint||'ลองดูดี ๆ อีกครั้งนะ']);setWho('kla');s.lock=false;return;}
-  LOG[s.qi]={id:q.id,t:q.t,ok:false};s.btns.forEach(x=>x.disabled=true);s.btns[q.ans].classList.add('ok');await say(['ไม่เป็นไรนะ คำตอบคือ',labelSay(q.opts[q.ans])||'ข้อ '+'กขคง'[q.ans],q.why]);}
+  LOG[s.qi]={id:q.id,t:q.t,ok:false};if(q.bonus&&window.logFocus)logFocus(q.id,q.t,false);s.btns.forEach(x=>x.disabled=true);s.btns[q.ans].classList.add('ok');await say(['ไม่เป็นไรนะ คำตอบคือ',labelSay(q.opts[q.ans])||'ข้อ '+'กขคง'[q.ans],q.why]);}
  await wait(700);quiz(s.qi+1);}
 function save(gold){try{const k='kla-garden-v1';const d=JSON.parse(localStorage.getItem(k)||'{}');const o=d['EP'+EP.ep]||{};d['EP'+EP.ep]={seed:1,gold:!!(o.gold||gold),t:Date.now()};localStorage.setItem(k,JSON.stringify(d));}catch(e){}}
-async function finish(){if(EP.mode)return examEnd();phase='end';react('cheer');QS=null;prog(1);const need=EP.questions.filter(q=>!q.star).length;const gold=score.first>=need;save(gold);
+async function finish(){if(EP.mode)return examEnd();phase='end';react('cheer');QS=null;prog(1);const need=EP.questions.filter(q=>!q.star&&!q.bonus).length;const gold=score.first>=need;save(gold);
  const c=h('div','cover');c.innerHTML='<div class="pop">'+SPROUT+'</div><h1>ได้เมล็ดพันธุ์ 1 เมล็ด</h1>'+(gold?'<p class="pop gold">⭐ ตอบถูกตั้งแต่ครั้งแรกทุกข้อ ได้ดาวทองด้วย</p>':'')+(EP.dayEnd?'<p>วันนี้ดูครบ 3 ตอนแล้ว ไว้เจอกันรอบหน้านะ</p>':'');
  const bt=h('div','btns');const a1=h('button','btn2','↺ ดูอีกครั้ง');a1.onclick=()=>location.reload();bt.append(a1);
  if(EP.next&&!EP.dayEnd){const a=h('a','go','ตอนต่อไป ▶');a.href=EP.next;a.style.textDecoration='none';bt.append(a);}
@@ -223,7 +226,7 @@ async function finish(){if(EP.mode)return examEnd();phase='end';react('cheer');Q
  await say([EP.summary,'หนูได้เมล็ดพันธุ์หนึ่งเมล็ด',gold?'และได้ดาวทองด้วย':'']);}
 /* จบชุดสนามสอบ: เด็กเห็นแค่ดาวที่ได้ ผลรายข้อเก็บไว้ให้ผู้ปกครองดู */
 async function examEnd(){phase='end';react('cheer');QS=null;prog(1);const n=EP.questions.length,ok=LOG.filter(x=>x&&x.ok).length;
- try{const k='kla-exam-v1';const d=JSON.parse(localStorage.getItem(k)||'[]');d.push({t:Date.now(),kind:MOCK?'mock':'practice',sec:EP._t0?Math.round((Date.now()-EP._t0)/1000):0,subj:EP.subj||'mix',n,ok,items:LOG.map(x=>x?[x.id,x.t,x.ok?1:0]:null)});localStorage.setItem(k,JSON.stringify(d.slice(-80)));}catch(e){}
+ try{const k='kla-exam-v1';const d=JSON.parse(localStorage.getItem(k)||'[]');d.push({t:Date.now(),kind:MOCK?'mock':EP.warm?'warm':'practice',sec:EP._t0?Math.round((Date.now()-EP._t0)/1000):0,subj:EP.subj||'mix',n,ok,items:LOG.map(x=>x?[x.id,x.t,x.ok?1:0]:null)});localStorage.setItem(k,JSON.stringify(d.slice(-80)));}catch(e){}
  const got=Math.max(ok,1),cheer=ok===0;
  const c=h('div','cover');c.innerHTML='<h1>ทำครบ '+n+' ข้อแล้ว</h1>'+
   '<div class="starbox"><div class="rays"></div><svg class="bigstar" viewBox="0 0 100 100"><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3a6"/><stop offset=".45" stop-color="#ffd23f"/><stop offset="1" stop-color="#f4a100"/></linearGradient>'+

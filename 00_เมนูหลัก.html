@@ -72,6 +72,10 @@ a.chip{background:#ffc23d;color:#4a3000;text-decoration:none;box-shadow:0 3px 0 
 .dance{animation:dance .55s ease-in-out infinite alternate}@keyframes dance{to{transform:translateY(-6px) rotate(4deg)}}
 .pet{transition:opacity 1.2s}
 @media (prefers-reduced-motion:reduce){.roamR,.hopR,.roamT,.leg,.throat,.stail,.ftail,.dhead,.flame,.spark,.dance{animation:none!important}}
+.warm{display:flex;align-items:center;gap:12px;margin-bottom:12px;background:linear-gradient(90deg,#dff4ff,#fff7d6);border-radius:20px;padding:10px 16px;text-decoration:none;color:var(--ink);box-shadow:0 4px 0 rgba(0,0,0,.07)}
+.warm .e{font-size:36px}.warm b{font-size:clamp(18px,2.5vw,24px);font-weight:normal}.warm small{display:block;font-size:14px;opacity:.7}
+.warm .st{margin-left:auto;border-radius:999px;padding:3px 12px;font-size:15px;white-space:nowrap;background:#ffc23d;color:#4a3000;animation:nudge 1.4s ease-in-out infinite}
+.warm .st.done{background:#d6f5df;color:#1d6b38;animation:none}.warm.off{opacity:.55;pointer-events:none}
 /* week panel */
 .panel{max-width:1100px;margin:-10px auto 0;position:relative;z-index:2;padding:0 12px 16px}
 .board{background:#fffdf5;border-radius:26px;padding:12px clamp(10px,2vw,20px) 16px;box-shadow:0 6px 0 rgba(90,70,20,.12),0 10px 30px rgba(0,0,0,.08)}
@@ -113,7 +117,7 @@ a.chip{background:#ffc23d;color:#4a3000;text-decoration:none;box-shadow:0 3px 0 
 </style></head><body>
 <div class="top"><div class="t">🏡 สวนมหัศจรรย์ของน้องกล้า</div><span class="chip" id="cnt"></span><button class="chip" id="bMus" title="เพลงและระดับเสียง">🎵</button><a class="chip" href="สนามสอบ.html">🏟️ สนามสอบ</a></div><div class="vol" id="vol"><div class="r"><span>🎵</span><input type="range" id="vM" min="0" max="100" aria-label="ระดับเสียงเพลง"></div><div class="r"><span>🔔</span><input type="range" id="vS" min="0" max="100" aria-label="ระดับเสียงตอนแตะ"></div><button id="bOn"></button><div class="h">🎵 เพลง · 🔔 เสียงตอนแตะของในสวน · เพลงเริ่มเมื่อแตะหน้าจอครั้งแรก</div></div>
 <div class="scene" id="scene"><svg id="sv" viewBox="0 0 1000 460" preserveAspectRatio="xMidYMax meet"></svg><div class="wx" id="wx"></div><div class="mood" id="mood"></div><div class="bub" id="bub"></div></div>
-<div class="panel"><div class="board" id="board"></div>
+<div class="panel"><a class="warm" id="warm" href="สนามสอบ.html#warm"></a><div class="board" id="board"></div>
 <a class="exam" href="สนามสอบ.html"><div class="e">🏟️</div><div><b>สนามสอบ</b> · ฝึกทำข้อสอบ<div style="font-size:14px;opacity:.7">สุ่มโจทย์จากเรื่องที่ดูคลิปแล้ว มีคำใบ้และเฉลย</div></div></a>
 <p class="note">ดูวันจันทร์ พุธ ศุกร์ วันละ 3 ตอน · กดแปลงในสวนเพื่อดูตอนของสัปดาห์นั้น · 🌱 = ดูจบแล้ว · 🌼 = ตอบถูกตั้งแต่ครั้งแรกทุกข้อ (ต้นไม้ออกดอก) · ความคืบหน้าจำไว้ในเครื่องนี้</p></div>
 <script>
@@ -409,6 +413,10 @@ sv.addEventListener('click',e=>{const A=e.target.closest('[data-act]');if(A){act
 addEventListener('resize',()=>{say(bub.textContent);$('wx').style.setProperty('--H',(scene.clientHeight+60)+'px');});
 // ---- start: open the week to watch next, celebrate new seeds since the last visit
 const wk=L.filter(e=>e.ep!=='00'),got=wk.filter(e=>S(e.ep).seed).length,gold=wk.filter(e=>S(e.ep).gold).length;
+{const w=$('warm');let H=[];try{H=JSON.parse(localStorage.getItem('kla-exam-v1')||'[]')}catch(e){}
+  const today=new Date().toDateString(),done=H.filter(r=>r.kind==='warm'&&new Date(r.t).toDateString()===today).length,open=!!S('02').seed;
+  w.innerHTML='<div class="e">🔢</div><div><b>คณิตวันละนิด</b> · ฝึกเลข 5 ข้อ<small>'+(open?'มากน้อย เรียงลำดับ บวก ลบ · ทำทุกวันก่อนดูคลิป':'เปิดให้ฝึกหลังดู EP02 แล้ว')+'</small></div>'+(open?'<span class="st'+(done?' done':'')+'">'+(done?'✓ วันนี้ทำแล้ว'+(done>1?' '+done+' รอบ':''):'วันนี้ยังไม่ได้ทำ')+'</span>':'');
+  w.classList.toggle('off',!open);}
 document.getElementById('cnt').textContent='🌱 '+got+' · 🌼 '+gold;
 let start=WK.length?(WK[WK.length-1].n||0):0;
 for(const W of WK){if(W.days.some(d=>d[2].some(n=>!S(n).seed))){start=W.n===''?0:W.n;break;}}

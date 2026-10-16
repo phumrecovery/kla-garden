@@ -42,7 +42,7 @@ button{font-family:inherit;border:0;border-radius:999px;padding:8px 18px;backgro
 (function(){
 const SUBJ={math:'คณิตศาสตร์',thai:'ภาษาไทย',logic:'เชาวน์ปัญญา',eng:'ภาษาอังกฤษ',sci:'วิทยาศาสตร์',mix:'คละวิชา'};
 const ORDER=['math','logic','thai','eng','sci'];
-let H=[];try{H=JSON.parse(localStorage.getItem('kla-exam-v1')||'[]')}catch(e){}
+let H=[],RV=[];try{H=JSON.parse(localStorage.getItem('kla-exam-v1')||'[]');RV=JSON.parse(localStorage.getItem('kla-review-v1')||'[]')}catch(e){}
 const TI=Object.fromEntries(BANK.topics.map(t=>[t.id,t]));
 const fmt=t=>new Date(t).toLocaleDateString('th-TH',{day:'numeric',month:'short'});
 const fmtT=t=>fmt(t)+' '+new Date(t).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
@@ -50,11 +50,11 @@ const mins=s=>!s?'–':s<60?s+' วินาที':Math.round(s/60)+' นาท
 const pct=(a,b)=>b?Math.round(a*100/b):0;
 const m=document.getElementById('m'),tip=document.getElementById('tip');
 const hover=(el,text)=>{el.onmousemove=e=>{tip.textContent=text;tip.style.display='block';tip.style.left=(e.clientX+12)+'px';tip.style.top=(e.clientY+12)+'px';};el.onmouseleave=()=>tip.style.display='none';el.title=text;};
-if(!H.length){m.innerHTML='<div class="card empty">ยังไม่มีผลการทำสนามสอบ<br>ให้น้องลองทำโหมดฝึกหรือจำลองสอบสักชุดก่อน แล้วกลับมาดูที่นี่</div>';return;}
-const mock=H.filter(r=>r.kind==='mock'),prac=H.filter(r=>r.kind!=='mock');const last=mock[mock.length-1];
+if(!H.length&&!RV.length){m.innerHTML='<div class="card empty">ยังไม่มีผลการทำสนามสอบ<br>ให้น้องลองทำโหมดฝึกหรือจำลองสอบสักชุดก่อน แล้วกลับมาดูที่นี่</div>';return;}
+const mock=H.filter(r=>r.kind==='mock'),warm=H.filter(r=>r.kind==='warm'),prac=H.filter(r=>r.kind!=='mock'&&r.kind!=='warm');const last=mock[mock.length-1];
 // ภาพรวม
 const tiles=document.createElement('div');tiles.className='tiles';
-[[prac.length+' ชุด','โหมดฝึกที่ทำแล้ว'],[mock.length+' ชุด','จำลองสอบที่ทำแล้ว'],[last?last.ok+' / '+last.n:'–','คะแนนจำลองสอบครั้งล่าสุด'],[last?mins(last.sec):'–','เวลาที่ใช้ครั้งล่าสุด']].forEach(([v,l])=>{const d=document.createElement('div');d.className='card tile';d.innerHTML='<div class="v">'+v+'</div><div class="l">'+l+'</div>';tiles.append(d);});
+[[prac.length+' ชุด','โหมดฝึกที่ทำแล้ว'],[warm.length+' ครั้ง','คณิตวันละนิด (ชุดละ 5 ข้อ)'],[RV.length+' ข้อ','ข้อพิเศษทบทวนเลขท้ายตอน'],[mock.length+' ชุด','จำลองสอบที่ทำแล้ว'],[last?last.ok+' / '+last.n:'–','คะแนนจำลองสอบครั้งล่าสุด'],[last?mins(last.sec):'–','เวลาที่ใช้ครั้งล่าสุด']].forEach(([v,l])=>{const d=document.createElement('div');d.className='card tile';d.innerHTML='<div class="v">'+v+'</div><div class="l">'+l+'</div>';tiles.append(d);});
 m.append(tiles);
 // คะแนนจำลองสอบแต่ละครั้ง
 if(mock.length){const c=document.createElement('div');c.className='card';c.innerHTML='<h2>คะแนนจำลองสอบแต่ละครั้ง</h2><p class="sub">ร้อยละของข้อที่ตอบถูก · 10 ครั้งล่าสุด</p>';
@@ -63,8 +63,9 @@ if(mock.length){const c=document.createElement('div');c.className='card';c.inner
   c.append(tr,xl);m.append(c);}
 // รายวิชา จาก 10 ชุดล่าสุด
 const recent=H.slice(-10),bySubj={},byTopic={};
-recent.forEach(r=>(r.items||[]).forEach(x=>{if(!x)return;const t=TI[x[1]];if(!t)return;const a=bySubj[t.subj]=bySubj[t.subj]||{n:0,ok:0};a.n++;a.ok+=x[2];const b=byTopic[x[1]]=byTopic[x[1]]||{n:0,ok:0};b.n++;b.ok+=x[2];}));
-{const c=document.createElement('div');c.className='card';c.innerHTML='<h2>ตอบถูกตั้งแต่ครั้งแรก แยกวิชา</h2><p class="sub">จาก 10 ชุดล่าสุดทั้งโหมดฝึกและจำลองสอบ · ต่ำกว่า 70% แสดงสีแดงพร้อม ⚠</p>';
+const tally=x=>{if(!x)return;const t=TI[x[1]];if(!t)return;const a=bySubj[t.subj]=bySubj[t.subj]||{n:0,ok:0};a.n++;a.ok+=x[2];const b=byTopic[x[1]]=byTopic[x[1]]||{n:0,ok:0};b.n++;b.ok+=x[2];};
+recent.forEach(r=>(r.items||[]).forEach(tally));RV.slice(-60).forEach(tally);
+{const c=document.createElement('div');c.className='card';c.innerHTML='<h2>ตอบถูกตั้งแต่ครั้งแรก แยกวิชา</h2><p class="sub">จาก 10 ชุดล่าสุด (ฝึก จำลองสอบ คณิตวันละนิด) และข้อพิเศษทบทวนเลขท้ายตอน 60 ข้อล่าสุด · ต่ำกว่า 70% แสดงสีแดงพร้อม ⚠</p>';
   const g=document.createElement('div');g.className='hb';
   ORDER.filter(s=>bySubj[s]).forEach(s=>{const a=bySubj[s],p=pct(a.ok,a.n),bad=p<70;const l=document.createElement('div');l.textContent=(bad?'⚠ ':'')+SUBJ[s];
     const tr=document.createElement('div');tr.className='track';tr.innerHTML='<div class="fill'+(bad?' bad':'')+'" style="width:'+p+'%"></div>';hover(tr,SUBJ[s]+' · ถูก '+a.ok+'/'+a.n+' ข้อ ('+p+'%)');
@@ -78,8 +79,8 @@ recent.forEach(r=>(r.items||[]).forEach(x=>{if(!x)return;const t=TI[x[1]];if(!t)
   c.append(w);m.append(c);}
 // ประวัติ
 {const c=document.createElement('div');c.className='card';c.innerHTML='<h2>ประวัติการทำ</h2>';const w=document.createElement('div');w.className='scroll';
-  w.innerHTML='<table><tr><th>เวลา</th><th>แบบ</th><th>วิชา</th><th>ถูกตั้งแต่ครั้งแรก</th><th>เวลาที่ใช้</th></tr>'+H.slice().reverse().slice(0,30).map(r=>'<tr><td>'+fmtT(r.t)+'</td><td>'+(r.kind==='mock'?'🏫 จำลองสอบ':'📝 ฝึก')+'</td><td>'+(SUBJ[r.subj]||'คละวิชา')+'</td><td>'+r.ok+'/'+r.n+'</td><td>'+mins(r.sec)+'</td></tr>').join('')+'</table>';
-  c.append(w);const b=document.createElement('button');b.textContent='🗑️ ล้างผลทั้งหมด';b.style.marginTop='12px';b.onclick=()=>{if(confirm('ล้างผลสนามสอบทั้งหมดในเครื่องนี้? (ความคืบหน้าการดูคลิปไม่ถูกลบ)')){localStorage.removeItem('kla-exam-v1');location.reload();}};c.append(b);m.append(c);}
+  w.innerHTML='<table><tr><th>เวลา</th><th>แบบ</th><th>วิชา</th><th>ถูกตั้งแต่ครั้งแรก</th><th>เวลาที่ใช้</th></tr>'+H.slice().reverse().slice(0,30).map(r=>'<tr><td>'+fmtT(r.t)+'</td><td>'+(r.kind==='mock'?'🏫 จำลองสอบ':r.kind==='warm'?'🔢 วันละนิด':'📝 ฝึก')+'</td><td>'+(SUBJ[r.subj]||'คละวิชา')+'</td><td>'+r.ok+'/'+r.n+'</td><td>'+mins(r.sec)+'</td></tr>').join('')+'</table>';
+  c.append(w);const b=document.createElement('button');b.textContent='🗑️ ล้างผลทั้งหมด';b.style.marginTop='12px';b.onclick=()=>{if(confirm('ล้างผลสนามสอบทั้งหมดในเครื่องนี้? (ความคืบหน้าการดูคลิปไม่ถูกลบ)')){localStorage.removeItem('kla-exam-v1');localStorage.removeItem('kla-review-v1');location.reload();}};c.append(b);m.append(c);}
 const n=document.createElement('p');n.className='sub';n.style.textAlign='center';n.textContent='ผลเก็บไว้ในเครื่องนี้เท่านั้น ถ้าน้องทำบนแท็บเล็ต ให้เปิดหน้านี้บนแท็บเล็ต';m.append(n);
 })();
 </script></body></html>

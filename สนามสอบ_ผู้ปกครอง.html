@@ -79,7 +79,7 @@ recent.forEach(r=>(r.items||[]).forEach(tally));RV.slice(-60).forEach(tally);
   c.append(w);m.append(c);}
 // ประวัติ
 {const c=document.createElement('div');c.className='card';c.innerHTML='<h2>ประวัติการทำ</h2>';const w=document.createElement('div');w.className='scroll';
-  w.innerHTML='<table><tr><th>เวลา</th><th>แบบ</th><th>วิชา</th><th>ถูกตั้งแต่ครั้งแรก</th><th>เวลาที่ใช้</th></tr>'+H.slice().reverse().slice(0,30).map(r=>'<tr><td>'+fmtT(r.t)+'</td><td>'+(r.kind==='mock'?'🏫 จำลองสอบ':r.kind==='warm'?'🔢 วันละนิด':'📝 ฝึก')+'</td><td>'+(SUBJ[r.subj]||'คละวิชา')+'</td><td>'+r.ok+'/'+r.n+'</td><td>'+mins(r.sec)+'</td></tr>').join('')+'</table>';
+  w.innerHTML='<table><tr><th>เวลา</th><th>แบบ</th><th>วิชา</th><th>ถูกตั้งแต่ครั้งแรก</th><th>เวลาที่ใช้</th></tr>'+H.slice().reverse().slice(0,30).map(r=>'<tr><td>'+fmtT(r.t)+'</td><td>'+(r.kind==='mock'?'🏫 จำลองสอบ':r.kind==='warm'?'🔢 วันละนิด':'📝 ฝึก')+'</td><td>'+(SUBJ[r.subj]||'คละวิชา')+'</td><td>'+r.ok+'/'+r.n+(r.to?' <small>(หมดเวลา '+r.to+')</small>':'')+'</td><td>'+mins(r.sec)+'</td></tr>').join('')+'</table>';
   c.append(w);const b=document.createElement('button');b.textContent='🗑️ ล้างผลทั้งหมด';b.style.marginTop='12px';b.onclick=()=>{if(confirm('ล้างผลสนามสอบทั้งหมดในเครื่องนี้? (ความคืบหน้าการดูคลิปไม่ถูกลบ)')){localStorage.removeItem('kla-exam-v1');localStorage.removeItem('kla-review-v1');location.reload();}};c.append(b);m.append(c);}
 const n=document.createElement('p');n.className='sub';n.style.textAlign='center';n.textContent='ผลเก็บไว้ในเครื่องนี้เท่านั้น ถ้าน้องทำบนแท็บเล็ต ให้เปิดหน้านี้บนแท็บเล็ต';m.append(n);
 })();

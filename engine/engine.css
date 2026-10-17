@@ -282,3 +282,9 @@ button{font-family:inherit;cursor:pointer}
 .memob{background:#fff3c4;border-radius:999px;padding:4px 18px;font-size:clamp(20px,3.2vw,32px)}.memob.ask{background:var(--c);color:#fff}
 .memo .card.gone2{background:#f3f0f7;box-shadow:inset 0 0 0 3px #d8d0e6}
 .cert{background:linear-gradient(135deg,#fff7d6,#ffe9a8);border:4px double #c99a00;border-radius:20px;padding:10px 28px;font-size:clamp(26px,4.5vw,44px);color:#7a5a00;display:flex;flex-direction:column;align-items:center}.cert small{font-size:.45em;color:#5a4300}
+/* พักครึ่งทาง (ชุด 50 ข้อ) */
+.restn{font-size:clamp(56px,10vw,110px);font-weight:700;color:var(--c,#7b4fc0);background:#fff;border-radius:50%;width:1.7em;height:1.7em;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 0 rgba(0,0,0,.08)}
+/* แถบเวลาคิด (จำลองสอบ) */
+.tmr{width:min(560px,90%);height:14px;flex:none;border-radius:999px;background:rgba(0,0,0,.08);overflow:hidden;opacity:.35;transition:opacity .3s}
+.tmr.on{opacity:1}.tmr i{display:block;height:100%;width:100%;background:#8fd16a;border-radius:999px;transition:width .1s linear,background .3s}
+.tmr.low i{background:#ff8a5c}.tmr.end{opacity:.5}

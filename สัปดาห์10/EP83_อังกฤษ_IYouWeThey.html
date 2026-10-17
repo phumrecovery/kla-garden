@@ -1,0 +1,214 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EP83 I You We They</title></title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet"><link rel="stylesheet" href="../engine/engine.css"></head><body><div id="app"></div>
+<script>window.EP={
+ "ep": "83",
+ "subject": "eng",
+ "level": "mid",
+ "title": "I You We They",
+ "scenes": [
+  {
+   "v": {
+    "type": "kla",
+    "text": "I You We They"
+   },
+   "say": "วันนี้มาเรียนคำที่ใช้แทนคนกัน"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🙋",
+      "t": "I · ฉัน"
+     },
+     {
+      "e": "👉",
+      "t": "You · เธอ"
+     }
+    ],
+    "speed": 1.4
+   },
+   "say": "[I] ฉัน [You] เธอ"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "👦",
+      "t": "He · เขา ผู้ชาย"
+     },
+     {
+      "e": "👧",
+      "t": "She · เธอ ผู้หญิง"
+     }
+    ],
+    "speed": 1.4
+   },
+   "say": "[He] ใช้กับผู้ชาย [She] ใช้กับผู้หญิง"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "👫",
+      "t": "We · พวกเรา"
+     },
+     {
+      "e": "👨‍👩‍👧",
+      "t": "They · พวกเขา"
+     }
+    ],
+    "speed": 1.4
+   },
+   "say": "[We] พวกเรา [They] พวกเขา"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🏃",
+      "t": "running"
+     },
+     {
+      "e": "💃",
+      "t": "dancing"
+     },
+     {
+      "e": "🍽️",
+      "t": "eating"
+     },
+     {
+      "e": "😴",
+      "t": "sleeping"
+     }
+    ],
+    "speed": 1.2
+   },
+   "say": "กำลังทำอะไรอยู่ เติม [ing] ท้ายคำ [running] กำลังวิ่ง [dancing] กำลังเต้น [eating] กำลังกิน [sleeping] กำลังนอน"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🏊",
+      "t": "swimming"
+     },
+     {
+      "e": "📖",
+      "t": "reading"
+     },
+     {
+      "e": "🎤",
+      "t": "singing"
+     }
+    ],
+    "speed": 1.2
+   },
+   "say": "[swimming] กำลังว่ายน้ำ [reading] กำลังอ่าน [singing] กำลังร้องเพลง"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "💃",
+      "t": "She is dancing."
+     },
+     {
+      "e": "🏃",
+      "t": "He is running."
+     }
+    ],
+    "speed": 2
+   },
+   "say": "[She is dancing.] เธอกำลังเต้น [He is running.] เขากำลังวิ่ง"
+  },
+  {
+   "v": {
+    "type": "kla",
+    "text": "He ผู้ชาย · She ผู้หญิง"
+   },
+   "say": "เคล็ดลับ [He] ใช้กับผู้ชาย [She] ใช้กับผู้หญิง และกำลังทำอะไรอยู่ เติม [ing]"
+  }
+ ],
+ "questions": [
+  {
+   "q": "She ใช้กับใคร",
+   "say": "[She] ใช้กับใคร",
+   "opts": [
+    {
+     "e": "👦",
+     "t": "ผู้ชาย"
+    },
+    {
+     "e": "👧",
+     "t": "ผู้หญิง"
+    },
+    {
+     "e": "🐶",
+     "t": "หมา"
+    }
+   ],
+   "ans": 1,
+   "hint": "[He] กับ [She] คู่กัน",
+   "why": "[She] ใช้กับผู้หญิง"
+  },
+  {
+   "q": "We แปลว่าอะไร",
+   "say": "[We] แปลว่าอะไร",
+   "opts": [
+    "พวกเรา",
+    "ฉัน",
+    "พวกเขา"
+   ],
+   "ans": 0,
+   "hint": "มีเราหลายคน",
+   "why": "[We] แปลว่าพวกเรา"
+  },
+  {
+   "q": "He is …",
+   "say": "[He is] เติมคำใด",
+   "opts": [
+    "swimming",
+    "sleeping",
+    "reading"
+   ],
+   "ans": 0,
+   "hint": "ภาพนี้กำลังทำอะไรในน้ำ",
+   "why": "[He is swimming.]",
+   "v": {
+    "type": "big",
+    "text": null,
+    "e": "🏊"
+   }
+  },
+  {
+   "q": "She is …",
+   "say": "[She is] เติมคำใด",
+   "star": true,
+   "opts": [
+    "dig",
+    "dancing",
+    "eat"
+   ],
+   "ans": 1,
+   "hint": "ภาพนี้กำลังเต้น ต้องมี [ing]",
+   "why": "[She is dancing.]",
+   "v": {
+    "type": "big",
+    "text": null,
+    "e": "💃"
+   }
+  }
+ ],
+ "summary": "วันนี้เรารู้จัก I You He She We They และพูดว่ากำลังทำอะไรด้วย -ing",
+ "menu": "../00_เมนูหลัก.html",
+ "next": "EP84_อังกฤษ_คำถามสั้นๆ.html",
+ "audioDir": "../เสียง/"
+};</script>
+<script src="../เสียง/amap.js"></script>
+<script src="../engine/engine.js"></script>
+</body></html>

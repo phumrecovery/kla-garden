@@ -1,0 +1,179 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EP96 เกมโชว์ รอบรถไฟ ABC</title></title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet"><link rel="stylesheet" href="../engine/engine.css"></head><body><div id="app"></div>
+<script>window.EP={
+ "ep": "96",
+ "subject": "review",
+ "level": "hard",
+ "title": "เกมโชว์ รอบรถไฟ ABC",
+ "dayEnd": true,
+ "scenes": [
+  {
+   "v": {
+    "type": "kla",
+    "text": "รอบรถไฟ ABC!"
+   },
+   "say": "รอบรถไฟ ABC ทบทวนภาษาอังกฤษทั้งหมด"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🔴",
+      "t": "red"
+     },
+     {
+      "e": "🟢",
+      "t": "green"
+     },
+     {
+      "e": "🔵",
+      "t": "blue"
+     },
+     {
+      "e": "🟡",
+      "t": "yellow"
+     }
+    ],
+    "speed": 1.2
+   },
+   "say": "สี [red, green, blue, yellow]"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🐶",
+      "t": "dog"
+     },
+     {
+      "e": "🐱",
+      "t": "cat"
+     },
+     {
+      "e": "🐘",
+      "t": "elephant"
+     }
+    ],
+    "speed": 1.2
+   },
+   "say": "สัตว์ [dog, cat, elephant]"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "pos": "in",
+      "item": "🐱",
+      "t": "in"
+     },
+     {
+      "pos": "on",
+      "item": "🐱",
+      "t": "on"
+     },
+     {
+      "pos": "under",
+      "item": "🐱",
+      "t": "under"
+     }
+    ],
+    "speed": 1.3
+   },
+   "say": "ตำแหน่ง [in, on, under]"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "👀",
+      "t": "I can see with my eyes."
+     }
+    ],
+    "speed": 1
+   },
+   "say": "[I can see with my eyes.]"
+  },
+  {
+   "v": {
+    "type": "kla",
+    "text": "ฟังคำสำคัญ แล้วนึกภาพ"
+   },
+   "say": "เคล็ดลับ ฟังคำภาษาอังกฤษแล้วนึกภาพตาม จะจำได้ง่าย"
+  }
+ ],
+ "questions": [
+  {
+   "q": "The color of the leaf is …",
+   "say": "[The color of the leaf is] เติมคำใด",
+   "opts": [
+    "leaf",
+    "green",
+    "tree"
+   ],
+   "ans": 1,
+   "hint": "ต้องเติมชื่อสี",
+   "why": "[The color of the leaf is green.]",
+   "v": {
+    "type": "big",
+    "text": null,
+    "e": "🍃"
+   }
+  },
+  {
+   "q": "fifteen คือเลขใด",
+   "say": "[fifteen] คือเลขใด",
+   "opts": [
+    "5",
+    "15",
+    "50"
+   ],
+   "ans": 1,
+   "hint": "[teen] แปลว่าสิบกว่า ๆ",
+   "why": "[fifteen] คือสิบห้า"
+  },
+  {
+   "q": "The cat is … the box.",
+   "say": "[The cat is] เว้นว่าง [the box] เติมคำใด",
+   "opts": [
+    "on",
+    "under",
+    "in"
+   ],
+   "ans": 2,
+   "hint": "แมวอยู่ข้างในกล่อง",
+   "why": "[The cat is in the box.]",
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "pos": "in",
+      "item": "🐱"
+     }
+    ]
+   }
+  },
+  {
+   "q": "I can hear with my …",
+   "say": "[I can hear with my] เติมคำใด",
+   "star": true,
+   "opts": [
+    "eyes",
+    "ears",
+    "nose"
+   ],
+   "ans": 1,
+   "hint": "เราได้ยินด้วยอะไร",
+   "why": "[I can hear with my ears.]"
+  }
+ ],
+ "summary": "วันนี้เราทบทวนภาษาอังกฤษ สี ตัวเลข สัตว์ ร่างกาย และตำแหน่ง",
+ "menu": "../00_เมนูหลัก.html",
+ "next": "EP97_ซ้อมสอบ_ซ้อมข้อสอบชุด1.html",
+ "audioDir": "../เสียง/"
+};</script>
+<script src="../เสียง/amap.js"></script>
+<script src="../engine/engine.js"></script>
+</body></html>

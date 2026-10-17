@@ -237,7 +237,7 @@ button{font-family:inherit;cursor:pointer}
 .subr .it.gone{opacity:.35;filter:grayscale(1);transition:opacity .3s,filter .3s}
 .subr .it.gone::after{content:'✗';position:absolute;left:50%;top:50%;transform:translate(-50%,-55%);color:#e5484d;font-size:clamp(34px,6vw,64px);font-weight:bold;animation:pop .3s both}
 /* จำลองสอบ */
-.qno{font-size:clamp(16px,2.4vw,22px);background:#fff;border-radius:999px;padding:2px 14px;color:var(--c)}
+.qno{font-size:clamp(18px,2.8vw,26px);background:var(--c);color:#fff;border-radius:999px;padding:3px 18px;box-shadow:0 3px 0 rgba(0,0,0,.12)}
 .opt.picked{border-color:#8e5bd8;background:#f1e8ff}
 .teach{width:100%;height:auto}
 /* ตัวเลือกที่เป็นอีโมจิหลายตัว ต้องไม่ล้นปุ่ม */
@@ -273,3 +273,12 @@ button{font-family:inherit;cursor:pointer}
 .art .fig,.art .pos,.art .kid{width:clamp(90px,15vw,160px);height:auto;display:block}
 .opt .art .tens .bun,.opt .art .tens .stk{height:clamp(38px,6vw,56px)}
 .card .art .fig,.card .art .pos,.card .art .kid{width:clamp(120px,20vw,210px)}
+
+/* สัปดาห์ 9–11 */
+.art .clk,.art .scl{width:clamp(100px,16vw,170px);height:auto;display:block}
+.card .art .clk{width:clamp(130px,22vw,220px)}.card .art .scl{width:clamp(150px,26vw,260px)}
+.mny{display:inline-flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;max-width:100%}.mny .bill{width:clamp(100px,14vw,160px);height:auto}.mny .coin{height:auto;max-width:clamp(44px,8vw,72px)}
+.card .art .mny .coin{max-width:clamp(48px,8vw,72px)}.opt .art .mny .bill{width:clamp(80px,11vw,120px)}
+.memob{background:#fff3c4;border-radius:999px;padding:4px 18px;font-size:clamp(20px,3.2vw,32px)}.memob.ask{background:var(--c);color:#fff}
+.memo .card.gone2{background:#f3f0f7;box-shadow:inset 0 0 0 3px #d8d0e6}
+.cert{background:linear-gradient(135deg,#fff7d6,#ffe9a8);border:4px double #c99a00;border-radius:20px;padding:10px 28px;font-size:clamp(26px,4.5vw,44px);color:#7a5a00;display:flex;flex-direction:column;align-items:center}.cert small{font-size:.45em;color:#5a4300}

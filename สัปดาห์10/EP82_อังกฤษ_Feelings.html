@@ -1,0 +1,186 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EP82 Feelings</title></title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet"><link rel="stylesheet" href="../engine/engine.css"></head><body><div id="app"></div>
+<script>window.EP={
+ "ep": "82",
+ "subject": "eng",
+ "level": "easy",
+ "title": "Feelings",
+ "scenes": [
+  {
+   "v": {
+    "type": "kla",
+    "text": "How do you feel? รู้สึกอย่างไร"
+   },
+   "say": "วันนี้มาเรียนคำบอกความรู้สึกเป็นภาษาอังกฤษกัน"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "😀",
+      "t": "happy"
+     },
+     {
+      "e": "😢",
+      "t": "sad"
+     },
+     {
+      "e": "😠",
+      "t": "angry"
+     }
+    ],
+    "speed": 1.2
+   },
+   "say": "[happy] ดีใจ มีความสุข [sad] เสียใจ [angry] โกรธ"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "😨",
+      "t": "scared"
+     },
+     {
+      "e": "😲",
+      "t": "surprised"
+     },
+     {
+      "e": "😴",
+      "t": "tired"
+     }
+    ],
+    "speed": 1.2
+   },
+   "say": "[scared] กลัว [surprised] ตกใจหรือประหลาดใจ [tired] เหนื่อย ง่วง"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "😊",
+      "t": "smile"
+     },
+     {
+      "e": "😭",
+      "t": "cry"
+     }
+    ],
+    "speed": 1.4
+   },
+   "say": "[smile] ยิ้ม [cry] ร้องไห้"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "m": "happy ↔ sad"
+     },
+     {
+      "m": "smile ↔ cry"
+     }
+    ],
+    "speed": 1.6
+   },
+   "say": "คำตรงข้าม [happy] ตรงข้ามกับ [sad] [smile] ตรงข้ามกับ [cry]"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "😀",
+      "t": "I am happy."
+     },
+     {
+      "e": "😢",
+      "t": "I am sad."
+     }
+    ],
+    "speed": 2
+   },
+   "say": "[I am happy.] ฉันดีใจ [I am sad.] ฉันเสียใจ"
+  },
+  {
+   "v": {
+    "type": "kla",
+    "text": "happy ↔ sad"
+   },
+   "say": "เคล็ดลับ ดูหน้าตาของภาพ ยิ้มคือ [happy] ร้องไห้คือ [sad]"
+  }
+ ],
+ "questions": [
+  {
+   "q": "ภาพนี้คือคำใด",
+   "opts": [
+    "sad",
+    "happy",
+    "angry"
+   ],
+   "ans": 1,
+   "hint": "หน้ายิ้มแย้ม",
+   "why": "ภาพนี้คือ [happy]",
+   "v": {
+    "type": "big",
+    "text": null,
+    "e": "😀"
+   }
+  },
+  {
+   "q": "angry คือภาพใด",
+   "say": "[angry] คือภาพใด",
+   "opts": [
+    {
+     "e": "😢"
+    },
+    {
+     "e": "😀"
+    },
+    {
+     "e": "😠"
+    }
+   ],
+   "ans": 2,
+   "hint": "หน้าบึ้ง คิ้วขมวด",
+   "why": "[angry] คือโกรธ"
+  },
+  {
+   "q": "ภาพนี้คือคำใด",
+   "opts": [
+    "tired",
+    "scared",
+    "smile"
+   ],
+   "ans": 0,
+   "hint": "หาวนอน อยากนอน",
+   "why": "ภาพนี้คือ [tired]",
+   "v": {
+    "type": "big",
+    "text": null,
+    "e": "😴"
+   }
+  },
+  {
+   "q": "คำใดตรงข้ามกับ sad",
+   "say": "คำใดตรงข้ามกับ [sad]",
+   "star": true,
+   "opts": [
+    "angry",
+    "happy",
+    "fear"
+   ],
+   "ans": 1,
+   "hint": "[sad] คือเสียใจ ตรงข้ามคือ…",
+   "why": "[happy] ตรงข้ามกับ [sad]"
+  }
+ ],
+ "summary": "วันนี้เรารู้จักคำบอกความรู้สึกเป็นภาษาอังกฤษ และคำที่ตรงข้ามกัน",
+ "menu": "../00_เมนูหลัก.html",
+ "next": "EP83_อังกฤษ_IYouWeThey.html",
+ "audioDir": "../เสียง/"
+};</script>
+<script src="../เสียง/amap.js"></script>
+<script src="../engine/engine.js"></script>
+</body></html>

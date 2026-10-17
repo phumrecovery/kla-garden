@@ -142,7 +142,7 @@ function picSVG(n){return '<svg class="pic" viewBox="0 0 100 100">'+({
  wiggler:'<path d="M30 20 Q44 34 34 48 Q24 62 38 76" stroke="#555" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M30 20 L22 12 M30 20 L36 10" stroke="#555" stroke-width="2"/>',
  plant:'<rect x="0" y="70" width="100" height="30" fill="#b07a4f"/><path d="M50 70 L44 88 M50 72 L56 90 M47 80 L38 86 M53 82 L62 87" stroke="#f3e2c7" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M50 70 V24" stroke="#3f8a2e" stroke-width="4"/><ellipse cx="38" cy="52" rx="12" ry="6" fill="#5cc46b" transform="rotate(-25 38 52)"/><ellipse cx="62" cy="44" rx="12" ry="6" fill="#5cc46b" transform="rotate(25 62 44)"/><circle cx="66" cy="60" r="6" fill="#ff8a3d"/><g fill="#ff6f91"><circle cx="50" cy="14" r="6"/><circle cx="41" cy="20" r="6"/><circle cx="59" cy="20" r="6"/><circle cx="44" cy="29" r="6"/><circle cx="56" cy="29" r="6"/></g><circle cx="50" cy="22" r="5" fill="#ffd23f"/>',
  nymph:'<path d="M20 60 Q50 40 80 58 Q50 66 20 60 Z" fill="#7cb342"/><circle cx="20" cy="56" r="8" fill="#7cb342"/><path d="M40 60 L32 78 M52 60 L56 80 M64 58 L76 76 M14 50 L6 36" stroke="#558b2f" stroke-width="3" fill="none"/>'}[n]||'')+'</svg>';}
-const art=o=>o.tens!=null?tensHTML(o.tens):o.fig?figSVG(o.fig):o.pos?posSVG(o):o.kid?kidSVG(o.kid):o.solid?solidSVG(o.solid):o.blk?blocksSVG(o.blk):o.print?printSVG(o.print,o.k):o.pic?picSVG(o.pic):'';
+const art=o=>o.clock?clockSVG(o.clock):o.money?moneyHTML(o.money):o.scale?scaleSVG(o.scale):o.tens!=null?tensHTML(o.tens):o.fig?figSVG(o.fig):o.pos?posSVG(o):o.kid?kidSVG(o.kid):o.solid?solidSVG(o.solid):o.blk?blocksSVG(o.blk):o.print?printSVG(o.print,o.k):o.pic?picSVG(o.pic):'';
 
 
 /* ---------- สัปดาห์ 5–8: มัดไม้ ตั้งบวกลบ ตาราง ทิศทาง รูปเรขาคณิต ตำแหน่ง ซ้ายขวา ---------- */
@@ -176,6 +176,23 @@ function kidSVG(o){const front=o.face!=='back',side=o.hand==='right'?(front?-1:1
  b+='<circle cx="100" cy="56" r="22" fill="#f4c9a0" stroke="#3b3b4f" stroke-width="2.5"/>';
  b+=front?'<path d="M78 50 Q100 22 122 50 Q110 38 100 40 Q90 38 78 50Z" fill="#4a3426"/><circle cx="92" cy="58" r="3" fill="#2d2340"/><circle cx="108" cy="58" r="3" fill="#2d2340"/><path d="M92 67 Q100 73 108 67" stroke="#2d2340" stroke-width="2.5" fill="none" stroke-linecap="round"/>':'<path d="M78 58 Q76 30 100 32 Q124 30 122 58 Q118 74 100 75 Q82 74 78 58Z" fill="#4a3426"/>';
  return '<svg class="kid" viewBox="0 0 200 170">'+b+'</svg>';}
+
+
+/* ---------- สัปดาห์ 9–11: นาฬิกา เงิน ตาชั่ง ---------- */
+function clockSVG(c){const hh=c[0]%12,mm=c[1]||0,ha=(hh+mm/60)*30,ma=mm*6;let b='<circle cx="50" cy="50" r="46" fill="#fff" stroke="#3b3b4f" stroke-width="4"/>';
+ for(let i=1;i<=12;i++){const a=i*Math.PI/6;b+='<text x="'+(50+36*Math.sin(a)).toFixed(1)+'" y="'+(50-36*Math.cos(a)).toFixed(1)+'" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#3b3b4f">'+i+'</text>';}
+ for(let i=0;i<60;i++){if(i%5)b+='<line x1="50" y1="6" x2="50" y2="8.5" stroke="#b9b3c6" stroke-width="1" transform="rotate('+i*6+' 50 50)"/>';}
+ b+='<line x1="50" y1="50" x2="50" y2="27" stroke="#e8701c" stroke-width="5" stroke-linecap="round" transform="rotate('+ha+' 50 50)"/>';
+ b+='<line x1="50" y1="50" x2="50" y2="15" stroke="#2389c9" stroke-width="3.5" stroke-linecap="round" transform="rotate('+ma+' 50 50)"/><circle cx="50" cy="50" r="4" fill="#3b3b4f"/>';
+ return '<svg class="clk" viewBox="0 0 100 100">'+b+'</svg>';}
+const MONEY={1:['#d9dde3',13,'#8a919c'],2:['#f2d27a',13,'#b08a2a'],5:['#d9dde3',16,'#8a919c'],10:['#f2d27a',18,'#9a8a5a'],20:['#7ccf8a'],50:['#6fb6f0'],100:['#f28b82'],500:['#c08fe6'],1000:['#c9a27a']};
+function moneyHTML(list){return '<span class="mny">'+list.map(v=>{const m=MONEY[v]||['#ddd'];
+ if(v<20)return '<svg class="coin" viewBox="0 0 40 40" style="width:'+(m[1]*3.8)+'px"><circle cx="20" cy="20" r="18" fill="'+m[0]+'" stroke="'+m[2]+'" stroke-width="3"/>'+(v===10?'<circle cx="20" cy="20" r="11" fill="#d9dde3"/>':'')+'<text x="20" y="21" text-anchor="middle" dominant-baseline="central" font-size="'+(v>=10?15:17)+'" fill="#3b3b4f">'+v+'</text></svg>';
+ return '<svg class="bill" viewBox="0 0 80 42"><rect x="1.5" y="1.5" width="77" height="39" rx="5" fill="'+m[0]+'" stroke="#3b3b4f" stroke-width="2"/><circle cx="58" cy="21" r="11" fill="#fff" opacity=".5"/><text x="24" y="22" text-anchor="middle" dominant-baseline="central" font-size="17" fill="#2d2340">'+v+'</text><text x="58" y="22" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#2d2340">บาท</text></svg>';}).join('')+'</span>';}
+/* ตาชั่งสองแขน: tilt l = ฝั่งซ้ายหนักกว่า */
+function scaleSVG(o){const t=o.tilt==='l'?-12:o.tilt==='r'?12:0,rad=t*Math.PI/180,lx=100-70*Math.cos(rad),ly=40-70*Math.sin(rad),rx=100+70*Math.cos(rad),ry=40+70*Math.sin(rad);
+ const pan=(x,y,e)=>'<line x1="'+x+'" y1="'+y+'" x2="'+(x-22)+'" y2="'+(y+34)+'" stroke="#8a7f99" stroke-width="2"/><line x1="'+x+'" y1="'+y+'" x2="'+(x+22)+'" y2="'+(y+34)+'" stroke="#8a7f99" stroke-width="2"/><path d="M'+(x-30)+' '+(y+34)+' Q'+x+' '+(y+50)+' '+(x+30)+' '+(y+34)+'Z" fill="#c9a46a" stroke="#7a5a2a" stroke-width="2"/><text x="'+x+'" y="'+(y+26)+'" text-anchor="middle" font-size="30">'+e+'</text>';
+ return '<svg class="scl" viewBox="0 0 200 150"><rect x="94" y="40" width="12" height="96" fill="#a96d33"/><rect x="66" y="132" width="68" height="12" rx="4" fill="#7a4f22"/><line x1="'+lx.toFixed(1)+'" y1="'+ly.toFixed(1)+'" x2="'+rx.toFixed(1)+'" y2="'+ry.toFixed(1)+'" stroke="#5b4630" stroke-width="7" stroke-linecap="round"/><circle cx="100" cy="40" r="7" fill="#e8701c"/>'+pan(lx,ly,o.l)+pan(rx,ry,o.r)+'</svg>';}
 
 /* ---------- ภาพประกอบแต่ละแบบ ---------- */
 function vis(v,still){const d=h('div','vis');d._fx=[];d._later=[];const at=still?0:(v.at||0);const dl=(i,s)=>(still?0:at+i*(s||.55));const T=v.type;
@@ -262,6 +279,11 @@ function vis(v,still){const d=h('div','vis');d._fx=[];d._later=[];const at=still
   hl.forEach((pts,i)=>{const go=()=>{svg.querySelectorAll('.hlp').forEach(e=>e.classList.add('old'));const p=document.createElementNS('http://www.w3.org/2000/svg','polygon');p.setAttribute('points',pts.map(x=>x.join(',')).join(' '));p.setAttribute('class','hlp');svg.prepend(p);cnt.style.visibility='visible';cnt.textContent=(v.unit||'รูปที่ ')+(i+1);SFX.pop(i);};if(!still)later(at+.5+i*sp,go);});
   if(v.text){const tx=h('div','bignum pop',v.text);const tt=still?0:at+.6+hl.length*sp;tx.style.animationDelay=tt+'s';d.append(tx);later(tt,()=>{cnt.style.display='none';SFX.chime();});}}
 
+ else if(T==='memo'){/* จำภาพ: แสดงครบ sec วินาที แล้วของชิ้นหนึ่งหายไป (ในคำถามก็นับถอยหลังด้วย) */const sec=v.sec||5,its=v.items,r=h('div','row memo'),cs=its.map((e,i)=>{const c=h('div','card pop','<div class="e">'+e+'</div>');c.style.animationDelay=(i*.08)+'s';r.append(c);return c;});
+  const bar=h('div','memob pop','👀 จำให้ดีนะ '+sec);d.append(bar,r);const preview=location.hash==='#all';
+  const hide=()=>{if(v.gone!=null){const c=cs[v.gone];c.innerHTML='<div class="e">❓</div>';c.classList.add('gone2');}bar.textContent='อะไรหายไป?';bar.classList.add('ask');};
+  if(preview)hide();else{let k=sec;const iv=setInterval(()=>{if(!d.isConnected){clearInterval(iv);return;}k--;if(k>0){bar.textContent='👀 จำให้ดีนะ '+k;}else{clearInterval(iv);hide();SFX.chime();}},1000+(at?0:0));}}
+
  else if(T==='cards'){const r=h('div','row'+(v.sm?' sm':''));v.items.forEach((c,i)=>{const k=h('div','card pop'+(c.bad?' bad':''));k.innerHTML=(art(c)?'<div class="art">'+art(c)+'</div>':'')+(c.e?'<div class="e'+(c.flip?' flip':'')+(c.vflip?' vflip':'')+([...c.e].length>2?' sm':'')+'">'+c.e+'</div>':'')+(c.big?'<div class="L'+(c.flip?' flip':'')+(c.vflip?' vflip':'')+'">'+c.big+'</div>':'')+(c.t?'<div class="T">'+c.t+'</div>':'');k.style.animationDelay=dl(i,v.speed||.6)+'s';fx(k,i,v.speed||.6);r.append(k);});d.append(r);}
  return d;}
 const optHTML=o=>typeof o==='string'?'<div class="'+([...o].length<=3?'L':'M')+'">'+o+'</div>':(art(o)?'<div class="art">'+art(o)+'</div>':'')+(o.e?'<div class="e'+(o.flip?' flip':'')+(o.vflip?' vflip':'')+([...o.e].length>2?' sm':'')+([...o.e].length>4?' xs':'')+'">'+o.e+'</div>':'')+(o.big?'<div class="L'+(o.flip?' flip':'')+(o.vflip?' vflip':'')+'">'+o.big+'</div>':'')+(o.m?'<div class="M">'+o.m+'</div>':'')+(o.t?'<div class="T">'+o.t+'</div>':'');
@@ -276,7 +298,7 @@ async function lesson(from){if(MOCK)return mockIntro();phase='lesson';const my=+
  for(let i=from;i<EP.scenes.length;i++){cur=i;const s=EP.scenes[i];setWho('kla');if(i>from)SFX.whoosh();await show(vis(s.v||{type:'kla'}),true);if(my!==tok)return;prog(i/total);await say(s.say);if(my!==tok)return;await gap(800,my);if(my!==tok)return;}
  phase='quiz';SFX.chime();await show(h('div','vis','<div class="char pop">'+KLA+'</div><div class="bubble pop">ถึงเวลาตอบคำถามแล้ว 🌟</div>'),true);await say('ถึงเวลาตอบคำถามแล้ว ฟังให้ดีนะ');if(my!==tok)return;quiz(0);}
 async function quiz(qi){if(qi>=EP.questions.length)return finish();const q=EP.questions[qi];prog((EP.scenes.length+qi)/total);setWho(MOCK?'teach':'kla');if(!EP._t0)EP._t0=Date.now();const QS0=MOCK?['ข้อ '+(qi+1),q.say||q.q]:[q.bonus?'ข้อพิเศษ ทบทวนเลข':q.star?'ข้อท้าทาย':'',q.say||q.q];
- const box=h('div','vis');if(q.star)box.append(h('div','star pop','⭐ ข้อท้าทาย ผิดได้ไม่เป็นไร'));if(q.bonus)box.append(h('div','star pop bonus','🔢 ข้อพิเศษ ทบทวนเลข'));if(q.v)box.append(vis(q.v,true));const qt=h('div','qtext',strip(q.q)+' ');const rp=h('button','rep','🔊');rp.title='ฟังคำถามอีกครั้ง';rp.onclick=()=>{if(QS&&!QS.lock){tok++;if(synth)synth.cancel();say(QS0);}};qt.append(rp);if(MOCK)box.append(h('div','qno','ข้อ '+(qi+1)+' / '+EP.questions.length));box.append(qt);
+ const box=h('div','vis');if(q.star)box.append(h('div','star pop','⭐ ข้อท้าทาย ผิดได้ไม่เป็นไร'));if(q.bonus)box.append(h('div','star pop bonus','🔢 ข้อพิเศษ ทบทวนเลข'));if(q.v)box.append(vis(q.v,true));const qt=h('div','qtext',strip(q.q)+' ');const rp=h('button','rep','🔊');rp.title='ฟังคำถามอีกครั้ง';rp.onclick=()=>{if(QS&&!QS.lock){tok++;if(synth)synth.cancel();say(QS0);}};qt.append(rp);if(EP.mode)box.prepend(h('div','qno pop','ข้อ '+(qi+1)+' / '+EP.questions.length));box.append(qt);
  const opts=h('div','opts');const btns=q.opts.map((o,i)=>{const b=h('button','opt pop','<span class="k">'+'กขคง'[i]+'.</span>'+optHTML(o));b.style.animationDelay=(i*.1)+'s';b.onclick=()=>answer(i,b);opts.append(b);return b;});box.append(opts);
  if(qi>0)SFX.whoosh();await show(box,true);if(q.star)SFX.sparkle();
  QS={qi,q,btns,tries:0,lock:false};say(QS0);}
@@ -289,7 +311,7 @@ async function answer(i,b){const s=QS;if(!s||s.lock)return;s.lock=true;tok++;if(
  await wait(700);quiz(s.qi+1);}
 function save(gold){try{const k='kla-garden-v1';const d=JSON.parse(localStorage.getItem(k)||'{}');const o=d['EP'+EP.ep]||{};d['EP'+EP.ep]={seed:1,gold:!!(o.gold||gold),t:Date.now()};localStorage.setItem(k,JSON.stringify(d));}catch(e){}}
 async function finish(){if(EP.mode)return examEnd();phase='end';react('cheer');QS=null;prog(1);const need=EP.questions.filter(q=>!q.star&&!q.bonus).length;const gold=score.first>=need;save(gold);
- const c=h('div','cover');c.innerHTML='<div class="pop">'+SPROUT+'</div><h1>ได้เมล็ดพันธุ์ 1 เมล็ด</h1>'+(gold?'<p class="pop gold">⭐ ตอบถูกตั้งแต่ครั้งแรกทุกข้อ ได้ดาวทองด้วย</p>':'')+(EP.dayEnd?'<p>วันนี้ดูครบ 3 ตอนแล้ว ไว้เจอกันรอบหน้านะ</p>':'');
+ const c=h('div','cover');c.innerHTML='<div class="pop">'+SPROUT+'</div><h1>ได้เมล็ดพันธุ์ 1 เมล็ด</h1>'+(EP.cert?'<div class="cert pop">🏆 เกียรติบัตร<small>เรียนครบ 99 ตอน ตั้งใจเรียน เก่งมาก พร้อมไปสอบแล้ว</small></div>':'')+(gold?'<p class="pop gold">⭐ ตอบถูกตั้งแต่ครั้งแรกทุกข้อ ได้ดาวทองด้วย</p>':'')+(EP.dayEnd?'<p>วันนี้ดูครบ 3 ตอนแล้ว ไว้เจอกันรอบหน้านะ</p>':'');
  const bt=h('div','btns');const a1=h('button','btn2','↺ ดูอีกครั้ง');a1.onclick=()=>location.reload();bt.append(a1);
  if(EP.next&&!EP.dayEnd){const a=h('a','go','ตอนต่อไป ▶');a.href=EP.next;a.style.textDecoration='none';bt.append(a);}
  const m=h('a','btn2','🏡 กลับสวน');m.href=EP.menu;bt.append(m);c.append(bt);SFX.whoosh();await show(c,true);SFX.fanfare();

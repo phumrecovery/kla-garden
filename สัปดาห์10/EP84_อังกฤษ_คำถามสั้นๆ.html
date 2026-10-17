@@ -1,0 +1,177 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EP84 คำถามสั้น ๆ</title></title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet"><link rel="stylesheet" href="../engine/engine.css"></head><body><div id="app"></div>
+<script>window.EP={
+ "ep": "84",
+ "subject": "eng",
+ "level": "hard",
+ "title": "คำถามสั้น ๆ",
+ "dayEnd": true,
+ "scenes": [
+  {
+   "v": {
+    "type": "kla",
+    "text": "ตอบคำถามสั้น ๆ"
+   },
+   "say": "คำถามภาษาอังกฤษมีคำขึ้นต้นต่างกัน มาดูว่าแต่ละคำถามถามเรื่องอะไร"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "m": "What color …?",
+      "t": "สีอะไร"
+     },
+     {
+      "m": "Where …?",
+      "t": "ที่ไหน"
+     },
+     {
+      "m": "Which …?",
+      "t": "อันไหน"
+     },
+     {
+      "m": "How many …?",
+      "t": "กี่อัน"
+     }
+    ],
+    "speed": 1.4
+   },
+   "say": "[What color] ถามสี [Where] ถามที่ไหน [Which] ถามว่าอันไหน [How many] ถามจำนวน"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🌌",
+      "t": "What color is the sky? · blue"
+     }
+    ],
+    "speed": 1
+   },
+   "say": "[What color is the sky?] ท้องฟ้าสีอะไร ตอบว่า [blue] สีฟ้า"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🥛",
+      "t": "Where does milk come from?"
+     },
+     {
+      "e": "🐄",
+      "t": "cow"
+     }
+    ],
+    "speed": 1.6
+   },
+   "say": "[Where does milk come from?] นมมาจากไหน ตอบว่า [cow] วัว"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🥓",
+      "t": "Where does pork come from?"
+     },
+     {
+      "e": "🐷",
+      "t": "pig"
+     }
+    ],
+    "speed": 1.6
+   },
+   "say": "[Where does pork come from?] เนื้อหมูมาจากไหน ตอบว่า [pig] หมู"
+  },
+  {
+   "v": {
+    "type": "cards",
+    "items": [
+     {
+      "e": "🍎🍎🍎",
+      "t": "How many apples? · three"
+     }
+    ],
+    "speed": 1
+   },
+   "say": "[How many apples?] มีแอปเปิลกี่ลูก ตอบว่า [three] สามลูก"
+  },
+  {
+   "v": {
+    "type": "kla",
+    "text": "ฟังคำแรกของคำถาม"
+   },
+   "say": "เคล็ดลับ ฟังคำแรกของคำถามให้ดี จะรู้ว่าต้องตอบสี สถานที่ หรือจำนวน"
+  }
+ ],
+ "questions": [
+  {
+   "q": "What color is a banana?",
+   "say": "[What color is a banana?] กล้วยสีอะไร",
+   "opts": [
+    "red",
+    "yellow",
+    "blue"
+   ],
+   "ans": 1,
+   "hint": "กล้วยสุกสีอะไร",
+   "why": "[A banana is yellow.]",
+   "v": {
+    "type": "big",
+    "text": null,
+    "e": "🍌"
+   }
+  },
+  {
+   "q": "How many cats?",
+   "say": "[How many cats?] มีแมวกี่ตัว",
+   "opts": [
+    "two",
+    "three",
+    "four"
+   ],
+   "ans": 1,
+   "hint": "นับแมว",
+   "why": "[three] สามตัว",
+   "v": {
+    "type": "big",
+    "text": null,
+    "e": "🐱🐱🐱"
+   }
+  },
+  {
+   "q": "Where does milk come from?",
+   "say": "[Where does milk come from?] นมมาจากไหน",
+   "opts": [
+    "cow",
+    "chicken",
+    "fish"
+   ],
+   "ans": 0,
+   "hint": "สัตว์ที่ให้นม",
+   "why": "[Milk comes from a cow.]"
+  },
+  {
+   "q": "Where does pork come from?",
+   "say": "[Where does pork come from?] เนื้อหมูมาจากไหน",
+   "star": true,
+   "opts": [
+    "fish",
+    "pig",
+    "chicken"
+   ],
+   "ans": 1,
+   "hint": "[pork] คือเนื้อหมู",
+   "why": "[Pork comes from a pig.]"
+  }
+ ],
+ "summary": "วันนี้เราตอบคำถามสั้น ๆ What Where Which และ How many ได้",
+ "menu": "../00_เมนูหลัก.html",
+ "next": "EP85_รอบตัว_หนูปลอดภัย.html",
+ "audioDir": "../เสียง/"
+};</script>
+<script src="../เสียง/amap.js"></script>
+<script src="../engine/engine.js"></script>
+</body></html>

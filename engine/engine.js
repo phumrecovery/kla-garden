@@ -64,7 +64,7 @@ let curWho='kla';const setWho=n=>{const ch=n!==curWho;curWho=n;who.innerHTML=n==
 const talk=on=>{who.classList.toggle('talk',on);st.classList.toggle('talk',on&&curWho==='kla');};
 const react=c=>{who.classList.remove('cheer','oops');void who.offsetWidth;who.classList.add(c);setTimeout(()=>who.classList.remove(c),1300);};
 function runFx(el){const my=tok;(el._fx||[]).forEach(f=>{setTimeout(()=>{if(my!==tok||paused)return;SFX.pop(f.i);if(f.el)setTimeout(()=>f.el.classList.add('on'),320);},f.t*1000);});(el._later||[]).forEach(f=>setTimeout(()=>{if(my===tok)f.fn();},f.t*1000));}
-async function show(el,anim){const old=st.firstElementChild;if(anim&&old&&!reduce){old.classList.add('leave');await wait(200);}st.innerHTML='';if(anim&&!reduce)el.classList.add('enter');st.append(el);runFx(el);}
+async function show(el,anim){hideSub=false;const old=st.firstElementChild;if(anim&&old&&!reduce){old.classList.add('leave');await wait(200);}st.innerHTML='';if(anim&&!reduce)el.classList.add('enter');st.append(el);runFx(el);}
 const total=EP.scenes.length+EP.questions.length;const prog=x=>{pg.style.width=Math.round(x*100)+'%';};
 const strip=t=>String(t).replace(/[\[\]]/g,'');
 const isEn=t=>/^[A-Za-z0-9 ,.'!?\-]+$/.test(t.trim())&&/[A-Za-z]/.test(t);
@@ -87,7 +87,9 @@ function speak1(text,lang){const my=tok;const useTTS=synth&&(lang||voice);
   talk(true);
   if(useTTS){synth.cancel();const u=new SpeechSynthesisUtterance(clean(text));u.lang=lang||'th-TH';if(!lang)u.voice=(curWho==='jook'||curWho==='teach'?voiceJ:voice)||voice;else if(voiceEn)u.voice=voiceEn;u.rate=lang?0.8:0.95;u.onend=done;u.onerror=done;synth.speak(u);}
  });}
-async function say(segs,lang){if(!Array.isArray(segs))segs=[segs];segs=segs.filter(Boolean);sub.textContent=segs.map(strip).join(' ');const my=tok;
+/* ระหว่างรอเด็กตอบ ซ่อนคำบรรยายด้านล่าง (กันแอบอ่านเจอคำตอบ) แสดงอีกครั้งหลังกดตัวเลือก */
+let hideSub=false;
+async function say(segs,lang){if(!Array.isArray(segs))segs=[segs];segs=segs.filter(Boolean);sub.classList.toggle('hid',hideSub);sub.textContent=hideSub?'👂 ฟังโจทย์ให้ดี แล้วเลือกคำตอบนะ':segs.map(strip).join(' ');const my=tok;
  for(const g of segs)for(const p of splitSeg(g)){if(my!==tok)return;const rec=await playRec(p.t,my);if(my!==tok)return;if(!rec)await speak1(p.t,p.en?'en-US':lang);}}
 async function gap(ms,my){let t=0;while(t<ms){await wait(100);if(my!==tok)return;if(!paused)t+=100;}}
 
@@ -309,14 +311,14 @@ async function quiz(qi){if(qi>=EP.questions.length)return finish();if(EP.questio
  const box=h('div','vis');if(q.star)box.append(h('div','star pop','⭐ ข้อท้าทาย ผิดได้ไม่เป็นไร'));if(q.bonus)box.append(h('div','star pop bonus','🔢 ข้อพิเศษ ทบทวนเลข'));if(q.v)box.append(vis(q.v,true));const qt=h('div','qtext',strip(q.q)+' ');if(!MOCK){const rp=h('button','rep','🔊');rp.title='ฟังคำถามอีกครั้ง';rp.onclick=()=>{if(QS&&!QS.lock){tok++;if(synth)synth.cancel();say(QS0);}};qt.append(rp);}if(EP.mode)box.prepend(h('div','qno pop','ข้อ '+(qi+1)+' / '+EP.questions.length));box.append(qt);
  const opts=h('div','opts');const btns=q.opts.map((o,i)=>{const b=h('button','opt pop','<span class="k">'+'กขคง'[i]+'.</span>'+optHTML(o));b.style.animationDelay=(i*.1)+'s';b.onclick=()=>answer(i,b);opts.append(b);return b;});box.append(opts);
  if(qi>0)SFX.whoosh();await show(box,true);if(q.star)SFX.sparkle();
- QS={qi,q,btns,tries:0,lock:false};if(MOCK)return mockTimer(qi,q,box,btns,QS0);say(QS0);}
+ QS={qi,q,btns,tries:0,lock:false};hideSub=true;if(MOCK)return mockTimer(qi,q,box,btns,QS0);say(QS0);}
 /* จำลองสอบเหมือนวันจริง: ครูอ่านโจทย์ (และตัวเลือก) 2 รอบ แล้วให้เวลาคิด EP.sec วินาที หมดเวลาแล้วครูบอก แล้วอ่านข้อต่อไป */
 async function mockTimer(qi,q,box,btns,segs){const my=tok;const ms=(EP.sec||15)*1000;const tm=h('div','tmr'),f=h('i');tm.append(f);const qn=box.querySelector('.qno');if(qn)qn.after(tm);else box.prepend(tm);
  await say(segs);if(my!==tok)return;let t=0;tm.classList.add('on');
  while(t<ms){await wait(100);if(my!==tok)return;if(!paused){t+=100;f.style.width=(100-t/ms*100)+'%';if(ms-t<=3000)tm.classList.add('low');if(t%1000===0&&ms-t<3000&&ms-t>0)SFX.pop(1);}}
- const s=QS;if(!s||s.lock)return;s.lock=true;LOG[qi]={id:q.id,t:q.t,ok:false,to:1};btns.forEach(x=>x.disabled=true);tm.classList.add('end');SFX.chime();
+ const s=QS;if(!s||s.lock)return;s.lock=true;LOG[qi]={id:q.id,t:q.t,ok:false,to:1};btns.forEach(x=>x.disabled=true);tm.classList.add('end');SFX.chime();hideSub=false;
  await say('หมดเวลาแล้วค่ะ');if(my!==tok)return;await gap(500,my);if(my!==tok)return;quiz(qi+1);}
-async function answer(i,b){const s=QS;if(!s||s.lock)return;s.lock=true;tok++;if(synth)synth.cancel();const q=s.q;
+async function answer(i,b){const s=QS;if(!s||s.lock)return;s.lock=true;hideSub=false;tok++;if(synth)synth.cancel();const q=s.q;
  if(MOCK){LOG[s.qi]={id:q.id,t:q.t,ok:i===q.ans};b.classList.add('picked');SFX.pop(3);s.btns.forEach(x=>x.disabled=true);await wait(650);return quiz(s.qi+1);}
  if(i===q.ans){LOG[s.qi]={id:q.id,t:q.t,ok:s.tries===0};b.classList.add('ok');SFX.ok();react('cheer');const [x,y]=centerOf(b);confetti(x,y,s.tries===0?26:14);if(s.tries===0&&!q.star&&!q.bonus)score.first++;if(q.bonus&&window.logFocus)logFocus(q.id,q.t,s.tries===0);if(s.tries===0&&q.star){SFX.sparkle();starBurst(x,y,8);}s.btns.forEach(x=>x.disabled=true);await say([rand(PRAISE),q.why]);}
  else{b.classList.add('no');b.disabled=true;SFX.no();react('oops');s.tries++;

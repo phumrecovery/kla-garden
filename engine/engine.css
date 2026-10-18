@@ -288,3 +288,7 @@ button{font-family:inherit;cursor:pointer}
 .tmr{width:min(560px,90%);height:14px;flex:none;border-radius:999px;background:rgba(0,0,0,.08);overflow:hidden;opacity:.35;transition:opacity .3s}
 .tmr.on{opacity:1}.tmr i{display:block;height:100%;width:100%;background:#8fd16a;border-radius:999px;transition:width .1s linear,background .3s}
 .tmr.low i{background:#ff8a5c}.tmr.end{opacity:.5}
+/* ตัวเลือกทุกข้อใช้สีตัวอักษรเดียวกัน (เดิม .L เป็นสีประจำวิชา) */
+.opt .L{color:inherit}
+/* คำบรรยายถูกซ่อนระหว่างรอตอบ */
+.sub.hid{color:#9a8fb0;font-style:italic}

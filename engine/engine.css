@@ -292,3 +292,6 @@ button{font-family:inherit;cursor:pointer}
 .opt .L{color:inherit}
 /* คำบรรยายถูกซ่อนระหว่างรอตอบ */
 .sub.hid{color:#9a8fb0;font-style:italic}
+/* เงาของภาพ (โจทย์หาเงา) */
+.shd{filter:brightness(0);opacity:.8}
+.tri{width:1em;height:1em;display:inline-block;vertical-align:-.12em}

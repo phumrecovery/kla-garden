@@ -54,7 +54,7 @@ if(!H.length&&!RV.length){m.innerHTML='<div class="card empty">ยังไม�
 const mock=H.filter(r=>r.kind==='mock'),warm=H.filter(r=>r.kind==='warm'),prac=H.filter(r=>r.kind!=='mock'&&r.kind!=='warm');const last=mock[mock.length-1];
 // ภาพรวม
 const tiles=document.createElement('div');tiles.className='tiles';
-[[prac.length+' ชุด','โหมดฝึกที่ทำแล้ว'],[warm.length+' ครั้ง','คณิตวันละนิด (ชุดละ 5 ข้อ)'],[RV.length+' ข้อ','ข้อพิเศษทบทวนเลขท้ายตอน'],[mock.length+' ชุด','จำลองสอบที่ทำแล้ว'],[last?last.ok+' / '+last.n:'–','คะแนนจำลองสอบครั้งล่าสุด'],[last?mins(last.sec):'–','เวลาที่ใช้ครั้งล่าสุด']].forEach(([v,l])=>{const d=document.createElement('div');d.className='card tile';d.innerHTML='<div class="v">'+v+'</div><div class="l">'+l+'</div>';tiles.append(d);});
+[[(()=>{let S={};try{S=JSON.parse(localStorage.getItem('kla-seen-v1')||'{}')}catch(e){}return BANK.items.filter(x=>S[x.id]).length+' / '+BANK.items.length;})(),'ข้อในคลังที่เคยทำแล้ว (ทำครบแล้วจึงวนซ้ำ)'],[prac.length+' ชุด','โหมดฝึกที่ทำแล้ว'],[warm.length+' ครั้ง','คณิตวันละนิด (ชุดละ 5 ข้อ)'],[RV.length+' ข้อ','ข้อพิเศษทบทวนเลขท้ายตอน'],[mock.length+' ชุด','จำลองสอบที่ทำแล้ว'],[last?last.ok+' / '+last.n:'–','คะแนนจำลองสอบครั้งล่าสุด'],[last?mins(last.sec):'–','เวลาที่ใช้ครั้งล่าสุด']].forEach(([v,l])=>{const d=document.createElement('div');d.className='card tile';d.innerHTML='<div class="v">'+v+'</div><div class="l">'+l+'</div>';tiles.append(d);});
 m.append(tiles);
 // คะแนนจำลองสอบแต่ละครั้ง
 if(mock.length){const c=document.createElement('div');c.className='card';c.innerHTML='<h2>คะแนนจำลองสอบแต่ละครั้ง</h2><p class="sub">ร้อยละของข้อที่ตอบถูก · 10 ครั้งล่าสุด</p>';

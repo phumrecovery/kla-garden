@@ -43,12 +43,23 @@ const T=BANK.topics;
 const open=t=>all||!!(P['EP'+t.ep]&&P['EP'+t.ep].seed);
 const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 const ST={};H.slice(-10).forEach(r=>(r.items||[]).forEach(x=>{if(!x)return;const o=ST[x[1]]=ST[x[1]]||{n:0,ok:0};o.n++;o.ok+=x[2];}));
-const recent=new Set(H.slice(-3).flatMap(r=>(r.items||[]).filter(Boolean).map(x=>x[0])));
+const SEEN=get('kla-seen-v1',{}),cnt=x=>(SEEN[x.id]||[0])[0],last=x=>(SEEN[x.id]||[0,0])[1];
+/* แนวโจทย์: ข้อความโจทย์ที่ตัดตัวเลขออก + ชนิดภาพ ใช้กันไม่ให้ชุดเดียวกันมีโจทย์แนวเดิมซ้ำ ๆ */
+const stem=x=>x.t+'|'+String(x.say||x.q).replace(/[0-9๐-๙]+/g,'#')+'|'+((x.v&&x.v.type)||'');
 document.getElementById('kla').innerHTML='<svg class="kla" viewBox="0 0 120 140"><g class="bodyg"><g class="leaves"><path d="M60 46 C60 34 60 28 60 22" stroke="#3f8a2e" stroke-width="5" fill="none" stroke-linecap="round"/><ellipse cx="44" cy="20" rx="16" ry="9" fill="#5cc46b" stroke="#3f8a2e" stroke-width="3" transform="rotate(-25 44 20)"/><ellipse cx="76" cy="20" rx="16" ry="9" fill="#5cc46b" stroke="#3f8a2e" stroke-width="3" transform="rotate(25 76 20)"/></g><ellipse cx="60" cy="92" rx="44" ry="42" fill="#7ed37f" stroke="#3f8a2e" stroke-width="4"/><circle cx="46" cy="84" r="7" fill="#2d2340"/><circle cx="74" cy="84" r="7" fill="#2d2340"/><circle cx="48" cy="81" r="2.5" fill="#fff"/><circle cx="76" cy="81" r="2.5" fill="#fff"/><path d="M50 102 Q60 112 70 102" stroke="#2d2340" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="36" cy="100" rx="7" ry="4" fill="#ff9fb0" opacity=".7"/><ellipse cx="84" cy="100" rx="7" ry="4" fill="#ff9fb0" opacity=".7"/></g></svg>';
-/* สุ่ม n ข้อจากหัวข้อที่กำหนด: เวียนหัวข้อให้ทั่ว หัวข้อที่ตอบถูกน้อยกว่า 70% ได้โอกาสเพิ่ม ข้อที่เพิ่งทำไปอยู่ท้ายคิว */
-function draw(ts,n){const rot=[];ts.forEach(t=>{rot.push(t.id);const s=ST[t.id];if(s&&s.n>=3&&s.ok/s.n<.7)rot.push(t.id);});
-  const Q={};ts.forEach(t=>{const it=shuf(BANK.items.filter(x=>x.t===t.id));Q[t.id]=it.filter(x=>!recent.has(x.id)).concat(it.filter(x=>recent.has(x.id)));});
-  const out=[];for(let g=0;g<200&&out.length<n;g++){let add=false;for(const id of shuf(rot.slice())){if(out.length>=n)break;const x=Q[id].shift();if(x){out.push(x);add=true;}}if(!add)break;}return shuf(out);}
+/* สุ่ม n ข้อจากหัวข้อที่กำหนด (ทำครบทุกข้อก่อนค่อยวนซ้ำ)
+   - ในแต่ละหัวข้อ ข้อที่ยังไม่เคยขึ้นมาก่อน รองลงมาคือข้อที่ขึ้นน้อยครั้งและนานแล้ว
+   - หัวข้อที่ฝึกน้อยกว่ามาก่อน หัวข้อที่ตอบถูกน้อยกว่า 70% ได้โอกาสเพิ่ม
+   - ในชุดเดียวกัน เลี่ยงโจทย์แนวเดียวกัน (stem) ถ้ายังมีแนวอื่นให้เลือก */
+function draw(ts,n){
+  const Q={},avg={};ts.forEach(t=>{const it=shuf(BANK.items.filter(x=>x.t===t.id)).sort((a,b)=>cnt(a)-cnt(b)||last(a)-last(b));Q[t.id]=it;avg[t.id]=it.reduce((s,x)=>s+cnt(x),0)/Math.max(1,it.length);});
+  const rot=[];shuf(ts.slice()).sort((a,b)=>avg[a.id]-avg[b.id]).forEach(t=>{rot.push(t.id);const s=ST[t.id];if(s&&s.n>=3&&s.ok/s.n<.7)rot.push(t.id);});
+  const out=[],used=new Set();
+  for(let g=0;g<200&&out.length<n;g++){let add=false;for(const id of rot){if(out.length>=n)break;const q=Q[id];if(!q.length)continue;
+    const c0=cnt(q[0]);let i=q.findIndex(x=>cnt(x)===c0&&!used.has(stem(x)));if(i<0)i=0;const x=q.splice(i,1)[0];used.add(stem(x));out.push(x);add=true;}if(!add)break;}
+  return shuf(out);}
+/* ความคืบหน้า: ทำไปแล้วกี่ข้อ จากข้อทั้งหมดในหัวข้อที่เปิดแล้ว */
+const cover=ts=>{const it=BANK.items.filter(x=>ts.some(t=>t.id===x.t));return [it.filter(x=>cnt(x)>0).length,it.length];};
 const openOf=subj=>T.filter(t=>open(t)&&(subj==='mix'||t.subj===subj));
 /* จำลองสอบ 30 ข้อ: คณิต 8 เชาวน์ 6 ไทย 6 อังกฤษ 5 วิทย์ 5 · 50 ข้อ: 13/10/10/9/8 (พัก 10 วิหลังข้อ 25)
    เรียงเป็นตอนตามวิชา วิชาที่ยังไม่เปิดยกโควตาให้วิชาอื่น */
@@ -64,12 +75,12 @@ function render(){
   if(MODE==='practice'){
     const sb=document.createElement('div');sb.className='subj';
     SUBJ.forEach(([id,name,emo])=>{const ts=openOf(id);const b=document.createElement('button');b.className='opt pop';b.disabled=!ts.length;
-      b.innerHTML='<div class="e">'+emo+'</div><div class="T">'+name+'</div><small>'+(ts.length?ts.length+' หัวข้อ':'ยังไม่ได้ดูคลิป')+'</small>';b.onclick=()=>launch('practice',id,draw(ts,N));sb.append(b);});
+      const cv=cover(ts);b.innerHTML='<div class="e">'+emo+'</div><div class="T">'+name+'</div><small>'+(ts.length?ts.length+' หัวข้อ · ทำแล้ว '+cv[0]+'/'+cv[1]:'ยังไม่ได้ดูคลิป')+'</small>';b.onclick=()=>launch('practice',id,draw(ts,N));sb.append(b);});
     body.append(sb);
     const c=document.createElement('div');c.className='cnt';c.innerHTML='<span class="T" style="align-self:center">ชุดละ</span>';
     [10,20,30,50].forEach(n=>{const b=document.createElement('button');b.textContent=n+' ข้อ';b.className=n===N?'on':'';b.onclick=()=>{N=n;set('kla-exam-n',n);render();};c.append(b);});body.append(c);
     document.getElementById('msg').textContent=any?'เลือกวิชาที่อยากฝึกได้เลย':'ไปดูคลิปในสวนก่อนนะ แล้วค่อยกลับมาฝึก';
-    document.getElementById('foot').textContent='โหมดฝึกมีคำใบ้และเฉลยทุกข้อ · ชุด 50 ข้อมีพัก 10 วินาทีหลังข้อ 25 · สุ่มเฉพาะหัวข้อที่น้องดูคลิปแล้ว';
+    document.getElementById('foot').textContent='โหมดฝึกมีคำใบ้และเฉลยทุกข้อ · ข้อที่ยังไม่เคยทำจะถูกสุ่มก่อน ทำครบแล้วค่อยวนรอบใหม่ · ชุด 50 ข้อมีพัก 10 วินาทีหลังข้อ 25';
   }else{
     const qs=mockSet();const cnt={};qs.forEach(x=>{const s=(T.find(t=>t.id===x.t)||{}).subj;cnt[s]=(cnt[s]||0)+1;});
     const m=document.createElement('div');m.className='mock';

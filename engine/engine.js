@@ -19,7 +19,9 @@ const NAME=EP.mode?EP.title:'EP'+EP.ep+' '+EP.title;document.title=NAME;const LO
 /* ข้อพิเศษทบทวนเลข: ทุกตอนแถมโจทย์คณิต 1 ข้อจากคลัง (เฉพาะเรื่องที่ดูแล้ว เน้นเรื่องที่ยังพลาด) ไม่นับดาวทอง */
 if(!EP.mode&&EP.review!==false&&location.hash!=='#all'){try{const base=new URL(EP.menu||'../00_เมนูหลัก.html',location.href);const ld=(u,cb)=>{const e=document.createElement('script');e.src=new URL(u,base).href;e.onload=cb;document.head.append(e);};
   ld('engine/focus.js',()=>{const go=()=>{const x=window.pickFocus&&pickFocus(1)[0];if(x)EP.questions.push(Object.assign({},x,{bonus:true}));};window.BANK?go():ld('คลังโจทย์.js',go);});}catch(e){}}
-const h=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.innerHTML=x;return e;};
+/* อีโมจิ 🔺 ในบางเครื่องเล็กกว่าตัวอื่นมาก → วาดสามเหลี่ยมแดงขนาดเท่าอีโมจิแทน (ข้อความ/เสียงไม่เปลี่ยน) */
+const TRI='<svg class="tri" viewBox="0 0 20 20"><polygon points="10,2 19,18 1,18" fill="#e5484d" stroke="#b8323a" stroke-width="1.2" stroke-linejoin="round"/></svg>';
+const h=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.innerHTML=String(x).replace(/🔺/g,TRI);return e;};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
@@ -64,7 +66,9 @@ let curWho='kla';const setWho=n=>{const ch=n!==curWho;curWho=n;who.innerHTML=n==
 const talk=on=>{who.classList.toggle('talk',on);st.classList.toggle('talk',on&&curWho==='kla');};
 const react=c=>{who.classList.remove('cheer','oops');void who.offsetWidth;who.classList.add(c);setTimeout(()=>who.classList.remove(c),1300);};
 function runFx(el){const my=tok;(el._fx||[]).forEach(f=>{setTimeout(()=>{if(my!==tok||paused)return;SFX.pop(f.i);if(f.el)setTimeout(()=>f.el.classList.add('on'),320);},f.t*1000);});(el._later||[]).forEach(f=>setTimeout(()=>{if(my===tok)f.fn();},f.t*1000));}
-async function show(el,anim){hideSub=false;const old=st.firstElementChild;if(anim&&old&&!reduce){old.classList.add('leave');await wait(200);}st.innerHTML='';if(anim&&!reduce)el.classList.add('enter');st.append(el);runFx(el);}
+function fixTri(el){const w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.nodeValue.includes('🔺')&&!(n.parentNode instanceof SVGElement)?1:3});const ns=[];while(w.nextNode())ns.push(w.currentNode);
+ ns.forEach(n=>{const sp=document.createElement('span');sp.innerHTML=n.nodeValue.replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])).replace(/🔺/g,TRI);n.replaceWith(sp);});}
+async function show(el,anim){hideSub=false;fixTri(el);const old=st.firstElementChild;if(anim&&old&&!reduce){old.classList.add('leave');await wait(200);}st.innerHTML='';if(anim&&!reduce)el.classList.add('enter');st.append(el);runFx(el);}
 const total=EP.scenes.length+EP.questions.length;const prog=x=>{pg.style.width=Math.round(x*100)+'%';};
 const strip=t=>String(t).replace(/[\[\]]/g,'');
 const isEn=t=>/^[A-Za-z0-9 ,.'!?\-]+$/.test(t.trim())&&/[A-Za-z]/.test(t);
@@ -154,7 +158,7 @@ const tensHTML=n=>'<span class="tens">'+BUN.repeat(Math.floor(n/10))+(n%10?'<spa
 function figSVG(f){const vb=f.vb||[100,100];let b='';
  (f.polys||[]).forEach(q=>{b+='<polygon points="'+q.p.map(x=>x.join(',')).join(' ')+'" fill="'+(q.f||'none')+'" stroke="'+(q.s||'#3b3b4f')+'" stroke-width="'+(q.w||2.5)+'" stroke-linejoin="round"/>';});
  (f.circles||[]).forEach(c=>{b+='<circle cx="'+c[0]+'" cy="'+c[1]+'" r="'+c[2]+'" fill="'+(c[3]||'none')+'" stroke="#3b3b4f" stroke-width="2.5"/>';});
- (f.paths||[]).forEach(c=>{b+='<path d="'+c[0]+'" fill="'+(c[1]||'none')+'" stroke="#3b3b4f" stroke-width="2.5" stroke-linejoin="round"/>';});
+ (f.paths||[]).forEach(c=>{b+='<path d="'+c[0]+'" fill="'+(c[1]||'none')+'" stroke="'+(c[3]||'#3b3b4f')+'" stroke-width="'+(c[2]||2.5)+'" stroke-linejoin="round" stroke-linecap="round"/>';});
  (f.lines||[]).forEach(l=>{b+='<line x1="'+l[0]+'" y1="'+l[1]+'" x2="'+l[2]+'" y2="'+l[3]+'" stroke="#3b3b4f" stroke-width="'+(l[4]||3)+'" stroke-linecap="round"'+(l[5]?' stroke-dasharray="6 5"':'')+'/>';});
  (f.txt||[]).forEach(t=>{b+='<text x="'+t[0]+'" y="'+t[1]+'" text-anchor="middle" dominant-baseline="central" font-size="'+(t[3]||22)+'" fill="'+(t[4]||'#3b3b4f')+'">'+t[2]+'</text>';});
  return '<svg class="fig" viewBox="0 0 '+vb[0]+' '+vb[1]+'">'+b+'</svg>';}
@@ -201,7 +205,7 @@ function vis(v,still){const d=h('div','vis');d._fx=[];d._later=[];const at=still
  const fx=(el,i,s,boing)=>{if(!still)d._fx.push({t:dl(i,s),i,el:boing?el:null});};
  const later=(t,fn)=>{if(still)fn();else d._later.push({t,fn});};
  if(T==='kla'||T==='jook'||T==='both'){const r=h('div','row');if(T!=='jook')r.append(h('div','char pop',KLA));if(T!=='kla')r.append(h('div','char pop',JOOK));d.append(r);if(v.text)d.append(h('div','bubble pop',strip(v.text)));}
- else if(T==='big'){d.append(h('div','card pop',(v.e?'<div class="e">'+v.e+'</div>':'')+(v.text?'<div class="L">'+v.text+'</div>':'')+(v.sub?'<div class="T">'+v.sub+'</div>':'')));}
+ else if(T==='big'){d.append(h('div','card pop',(v.e?'<div class="e'+(v.sh?' shd':'')+'">'+v.e+'</div>':'')+(v.text?'<div class="L">'+v.text+'</div>':'')+(v.sub?'<div class="T">'+v.sub+'</div>':'')));}
  else if(T==='count'){const many=v.n>10;
   if(v.scatter){const b=h('div','scatter'+(many?' many':''));for(let i=0;i<v.n;i++){const p=SC[i%SC.length];const s=h('span','e pop',v.item);s.style.left=p[0]+'%';s.style.top=p[1]+'%';s.style.animationDelay=dl(i,.15)+'s';fx(s,i,.15);b.append(s);}d.append(b);}
   else{const r=h('div','row'+(many?' many':''));for(let i=0;i<v.n;i++){const it=h('div','it pop','<span class="e">'+v.item+'</span>'+(v.num===false||still?'':'<b>'+(i+1)+'</b>'));it.style.animationDelay=dl(i,v.speed)+'s';fx(it,i,v.speed,true);r.append(it);}d.append(r);
@@ -286,14 +290,16 @@ function vis(v,still){const d=h('div','vis');d._fx=[];d._later=[];const at=still
   const hide=()=>{if(v.gone!=null){const c=cs[v.gone];c.innerHTML='<div class="e">❓</div>';c.classList.add('gone2');}bar.textContent='อะไรหายไป?';bar.classList.add('ask');};
   if(preview)hide();else{let k=sec;const iv=setInterval(()=>{if(!d.isConnected){clearInterval(iv);return;}k--;if(k>0){bar.textContent='👀 จำให้ดีนะ '+k;}else{clearInterval(iv);hide();SFX.chime();}},1000+(at?0:0));}}
 
- else if(T==='cards'){const r=h('div','row'+(v.sm?' sm':''));v.items.forEach((c,i)=>{const k=h('div','card pop'+(c.bad?' bad':''));k.innerHTML=(art(c)?'<div class="art">'+art(c)+'</div>':'')+(c.e?'<div class="e'+(c.flip?' flip':'')+(c.vflip?' vflip':'')+([...c.e].length>2?' sm':'')+'">'+c.e+'</div>':'')+(c.big?'<div class="L'+(c.flip?' flip':'')+(c.vflip?' vflip':'')+'">'+c.big+'</div>':'')+(c.t?'<div class="T">'+c.t+'</div>':'');k.style.animationDelay=dl(i,v.speed||.6)+'s';fx(k,i,v.speed||.6);r.append(k);});d.append(r);}
+ else if(T==='cards'){const r=h('div','row'+(v.sm?' sm':''));v.items.forEach((c,i)=>{const k=h('div','card pop'+(c.bad?' bad':''));k.innerHTML=(art(c)?'<div class="art">'+art(c)+'</div>':'')+(c.e?'<div class="e'+(c.sh?' shd':'')+(c.flip?' flip':'')+(c.vflip?' vflip':'')+([...c.e].length>2?' sm':'')+'">'+c.e+'</div>':'')+(c.big?'<div class="L'+(c.flip?' flip':'')+(c.vflip?' vflip':'')+'">'+c.big+'</div>':'')+(c.t?'<div class="T">'+c.t+'</div>':'');k.style.animationDelay=dl(i,v.speed||.6)+'s';fx(k,i,v.speed||.6);r.append(k);});d.append(r);}
  return d;}
-const optHTML=o=>typeof o==='string'?'<div class="'+([...o].length<=3?'L':'M')+'">'+o+'</div>':(art(o)?'<div class="art">'+art(o)+'</div>':'')+(o.e?'<div class="e'+(o.flip?' flip':'')+(o.vflip?' vflip':'')+([...o.e].length>2?' sm':'')+([...o.e].length>4?' xs':'')+'">'+o.e+'</div>':'')+(o.big?'<div class="L'+(o.flip?' flip':'')+(o.vflip?' vflip':'')+'">'+o.big+'</div>':'')+(o.m?'<div class="M">'+o.m+'</div>':'')+(o.t?'<div class="T">'+o.t+'</div>':'');
+const optHTML=o=>typeof o==='string'?'<div class="'+([...o].length<=3?'L':'M')+'">'+o+'</div>':(art(o)?'<div class="art">'+art(o)+'</div>':'')+(o.e?'<div class="e'+(o.sh?' shd':'')+(o.flip?' flip':'')+(o.vflip?' vflip':'')+([...o.e].length>2?' sm':'')+([...o.e].length>4?' xs':'')+'">'+o.e+'</div>':'')+(o.big?'<div class="L'+(o.flip?' flip':'')+(o.vflip?' vflip':'')+'">'+o.big+'</div>':'')+(o.m?'<div class="M">'+o.m+'</div>':'')+(o.t?'<div class="T">'+o.t+'</div>':'');
 const label=o=>typeof o==='string'?o:(o.t||o.big||o.m||'');const labelSay=o=>{if(o&&o.say)return o.say;const l=label(o);return /^[A-Za-z]$/.test(l)?'['+l+']':l;};
 const rand=a=>a[Math.floor(Math.random()*a.length)];
 
 /* ---------- ลำดับการเล่น ---------- */
 const MOCK=EP.mode==='mock';
+/* จดว่าข้อไหนเคยขึ้นแล้วกี่ครั้ง (kla-seen-v1 = {id:[ครั้ง, เวลาล่าสุด]}) ให้สนามสอบสุ่มข้อที่ยังไม่เคยทำก่อน */
+const markSeen=id=>{try{const k='kla-seen-v1';const d=JSON.parse(localStorage.getItem(k)||'{}');const o=d[id]||[0,0];d[id]=[o[0]+1,Math.round(Date.now()/1000)];localStorage.setItem(k,JSON.stringify(d));}catch(e){}};
 /* อ่านตัวเลือกให้ฟัง ("ข้อ ก ... ข้อ ข ...") เฉพาะข้อที่ตัวเลือกเป็นคำ/ตัวเลขทุกตัว ตัวเลือกที่เป็นภาพหรือลูกศรให้ดูเอง */
 const SAYOK=/^[฀-๿A-Za-z0-9 ,.'!?\-+−=<>·\[\]]+$/;
 const optSay=q=>{const ls=q.opts.map(labelSay);return ls.every(l=>l&&SAYOK.test(l)&&/[ก-ฮA-Za-z0-9]/.test(l))?ls.flatMap((l,i)=>['ข้อ '+'กขคง'[i],l]):[];};
@@ -311,7 +317,7 @@ async function quiz(qi){if(qi>=EP.questions.length)return finish();if(EP.questio
  const box=h('div','vis');if(q.star)box.append(h('div','star pop','⭐ ข้อท้าทาย ผิดได้ไม่เป็นไร'));if(q.bonus)box.append(h('div','star pop bonus','🔢 ข้อพิเศษ ทบทวนเลข'));if(q.v)box.append(vis(q.v,true));const qt=h('div','qtext',strip(q.q)+' ');if(!MOCK){const rp=h('button','rep','🔊');rp.title='ฟังคำถามอีกครั้ง';rp.onclick=()=>{if(QS&&!QS.lock){tok++;if(synth)synth.cancel();say(QS0);}};qt.append(rp);}if(EP.mode)box.prepend(h('div','qno pop','ข้อ '+(qi+1)+' / '+EP.questions.length));box.append(qt);
  const opts=h('div','opts');const btns=q.opts.map((o,i)=>{const b=h('button','opt pop','<span class="k">'+'กขคง'[i]+'.</span>'+optHTML(o));b.style.animationDelay=(i*.1)+'s';b.onclick=()=>answer(i,b);opts.append(b);return b;});box.append(opts);
  if(qi>0)SFX.whoosh();await show(box,true);if(q.star)SFX.sparkle();
- QS={qi,q,btns,tries:0,lock:false};hideSub=true;if(MOCK)return mockTimer(qi,q,box,btns,QS0);say(QS0);}
+ QS={qi,q,btns,tries:0,lock:false};hideSub=true;if(q.id&&(EP.mode||q.bonus))markSeen(q.id);if(MOCK)return mockTimer(qi,q,box,btns,QS0);say(QS0);}
 /* จำลองสอบเหมือนวันจริง: ครูอ่านโจทย์ (และตัวเลือก) 2 รอบ แล้วให้เวลาคิด EP.sec วินาที หมดเวลาแล้วครูบอก แล้วอ่านข้อต่อไป */
 async function mockTimer(qi,q,box,btns,segs){const my=tok;const ms=(EP.sec||15)*1000;const tm=h('div','tmr'),f=h('i');tm.append(f);const qn=box.querySelector('.qno');if(qn)qn.after(tm);else box.prepend(tm);
  await say(segs);if(my!==tok)return;let t=0;tm.classList.add('on');
@@ -371,7 +377,7 @@ document.getElementById('bF').onclick=()=>{try{document.fullscreenElement?docume
 /* #all = หน้าตรวจภาพทุกฉากทุกข้อ (สำหรับผู้ปกครอง/ตรวจงาน) */
 if(location.hash==='#all'){const w=h('div','vis');EP.scenes.forEach((s,i)=>{w.append(h('div','qtext','ฉาก '+(i+1)));w.append(vis(s.v||{type:'kla'},true));});
  EP.questions.forEach((q,i)=>{w.append(h('div','qtext','ข้อ '+(i+1)+(q.star?' ⭐ ':' ')+strip(q.q)));if(q.v)w.append(vis(q.v,true));const o=h('div','opts');q.opts.forEach((x,k)=>o.append(h('button','opt'+(k===q.ans?' ok':''),'<span class="k">'+'กขคง'[k]+'.</span>'+optHTML(x))));w.append(o);});
- st.innerHTML='';st.append(w);st.style.display='block';sub.textContent='โหมดตรวจภาพ: ข้อที่มีกรอบเขียวคือคำตอบ';}
+ fixTri(w);st.innerHTML='';st.append(w);st.style.display='block';sub.textContent='โหมดตรวจภาพ: ข้อที่มีกรอบเขียวคือคำตอบ';}
 else if(EP.autostart){ac();pick();lesson(0);}
 else cover();
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){try{navigator.serviceWorker.register(new URL('sw.js',new URL(EP.menu,location.href)).href).catch(()=>{});}catch(e){}}

@@ -393,12 +393,13 @@ const pot=(p)=>{let s='<svg viewBox="0 0 60 66"><path d="M10 38 L50 38 L45 64 L1
     if(p.gold)s+='<text x="52" y="14" text-anchor="middle" font-size="14">⭐</text>';}
   return s+'</svg>';};
 let todayKey=null;
-for(const W of WK){for(const d of W.days){if(d[2].some(n=>!S(n).seed)){todayKey=d[0];break;}}if(todayKey)break;}
+for(const W of WK){for(const d of W.days){if(d[2].some(n=>!S(n).seed)){todayKey=d[2][0];break;}}if(todayKey)break;}
 function renderBoard(w){const st=stat(w);const prev=w>0,next=w<TOTAL;
   let h='<div class="wkh"><button id="pv" '+(prev?'':'disabled')+' aria-label="สัปดาห์ก่อน">◀</button><div class="tt">';
   if(!st){board.innerHTML=h+'สัปดาห์ '+w+'<small>ยังไม่เปิด</small></div><button id="nx" '+(next?'':'disabled')+' aria-label="สัปดาห์ถัดไป">▶</button></div><div class="locked"><div class="big">🌰🔒</div>แปลงนี้ยังไม่เปิด<br><span style="opacity:.7;font-size:.85em">คุณพ่อคุณแม่กำลังเตรียมเมล็ดพันธุ์อยู่ ดูตอนก่อนหน้าให้ครบก่อนนะ</span></div>';}
   else{const t=w===0?'เริ่มต้น':st.W.t.replace(/^สัปดาห์ \d+ · /,'');h+=(w===0?'🚩 ':'สัปดาห์ '+w+' · ')+t+'<small>'+(w===0?'ดูก่อนเริ่มสัปดาห์ 1':'🌱 '+st.d+'/9 · 🌼 '+st.g)+'</small></div><button id="nx" aria-label="สัปดาห์ถัดไป">▶</button></div><div class="days">';
-    st.W.days.forEach(([d,sj,ns])=>{const c=SUB[sj]||['🌱','#8e5bd8','#f2ebff'];const td=d===todayKey;
+    /* ไม่แสดงวันที่ (ทำจริงอาจไม่ตรงวัน) แสดงแค่ชื่อวัน เช่น "จันทร์ 26 ต.ค." → "วันจันทร์" */
+    st.W.days.forEach(([d0,sj,ns])=>{const c=SUB[sj]||['🌱','#8e5bd8','#f2ebff'];const td=ns[0]===todayKey;const d=/\d/.test(d0)?'วัน'+d0.split(' ')[0]:d0;
       h+='<div class="day'+(td?' today':'')+'" style="--dc:'+c[1]+';--dbg:'+c[2]+'">'+(td?'<span class="badge">👉 ดูต่อตรงนี้</span>':'')+'<div class="dh"><span class="ic">'+c[0]+'</span><div>'+d+'<small>'+sj+'</small></div></div>';
       ns.forEach(n=>{const e=L.find(x=>x.ep===n),p=S(n);h+='<a class="ep" href="'+e.href+'">'+pot(p)+'<div><div class="no">EP'+n+(LV[e.level]?'<span class="lv">'+LV[e.level]+'</span>':'')+'</div><div class="nm">'+e.title+'</div></div></a>';});
       h+='</div>';});

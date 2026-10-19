@@ -426,4 +426,8 @@ const lastEp=[...wk].reverse().find(e=>S(e.ep).seed),lastW=lastEp?(WK.find(W=>W.
 requestAnimationFrame(()=>{if(seen!==null&&got>+seen&&lastW){const pp=document.querySelector('.plot[data-w="'+lastW+'"] .pp');select(lastW);pp&&pp.classList.add('boom');setTimeout(()=>burst(lastW),300);say('เย้! ได้เมล็ดใหม่ '+(got-seen)+' เมล็ด ต้นไม้โตขึ้นแล้ว',true);setTimeout(()=>select(start),4200);}
   else say(got?'เก็บได้ '+got+' เมล็ดแล้ว เก่งมาก! '+msgFor(start).replace(/!$/,''):'สวัสดี! กดแปลงดิน แล้วเลือกตอนที่จะดูได้เลย',true);});
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
-</script></body></html>
+</script>
+<!-- เลขเวอร์ชัน: version.js สร้างโดย เผยแพร่เว็บ.py ตอนส่งขึ้นเว็บ (ในเครื่องไม่มีไฟล์นี้ จะขึ้นว่า ในเครื่อง) -->
+<div id="ver" style="position:fixed;left:8px;bottom:6px;font-size:11px;color:#6b5f80;background:rgba(255,255,255,.8);padding:1px 7px;border-radius:8px;pointer-events:none;z-index:50">ในเครื่อง</div>
+<script src="version.js" onload="if(window.APPV)document.getElementById('ver').textContent='v'+APPV"></script>
+</body></html>

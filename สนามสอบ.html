@@ -38,7 +38,7 @@ const SUBJ=[['mix','คละวิชา','🎲','review'],['math','คณิ�
 const QUOTAS={30:[['math',8],['logic',6],['thai',6],['eng',5],['sci',5]],50:[['math',13],['logic',10],['thai',10],['eng',9],['sci',8]]};
 const get=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}};
 const set=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
-const P=get('kla-garden-v1',{}),H=get('kla-exam-v1',[]);let all=get('kla-exam-all',false),N=get('kla-exam-n',30),MODE=get('kla-exam-mode','practice'),MN=get('kla-mock-n',30),MS=get('kla-mock-sec',15);if(!QUOTAS[MN])MN=30;
+const P=get('kla-garden-v1',{}),H=get('kla-exam-v1',[]);let all=get('kla-exam-all',false),N=get('kla-exam-n',30),MODE=get('kla-exam-mode','practice'),MN=get('kla-mock-n',30),MS=get('kla-mock-sec',15),PS=get('kla-paper-sec',5);if(!QUOTAS[MN])MN=30;
 const T=BANK.topics;
 const open=t=>all||!!(P['EP'+t.ep]&&P['EP'+t.ep].seed);
 const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
@@ -67,7 +67,7 @@ function mockSet(){const QUOTA=QUOTAS[MN];const q={};let left=0;QUOTA.forEach(([
   for(let i=0;left>0;i++,left--)q[ks[i%ks.length]]++;
   return QUOTA.filter(([s])=>q[s]).flatMap(([s])=>draw(openOf(s),q[s]));}
 function launch(mode,subj,qs,warm){if(!qs.length)return;const s=SUBJ.find(x=>x[0]===subj);
-  window.EP={mode,sec:MS,warm:!!warm,autostart:true,title:warm?'🔢 คณิตวันละนิด':mode==='mock'?'จำลองสอบ '+qs.length+' ข้อ':'สนามสอบ · '+s[1],subject:mode==='mock'?'ready':s[3],subj,level:'',scenes:[],questions:qs,summary:'',menu:'00_เมนูหลัก.html',audioDir:'เสียง/'};
+  window.EP={mode,sec:MS,paper:warm?0:PS,warm:!!warm,autostart:true,title:warm?'🔢 คณิตวันละนิด':mode==='mock'?'จำลองสอบ '+qs.length+' ข้อ':'สนามสอบ · '+s[1],subject:mode==='mock'?'ready':s[3],subj,level:'',scenes:[],questions:qs,summary:'',menu:'00_เมนูหลัก.html',audioDir:'เสียง/'};
   document.getElementById('app').innerHTML='';const e=document.createElement('script');e.src='engine/engine.js';document.body.append(e);}
 function render(){
   const tb=document.getElementById('tabs');tb.innerHTML='';[['practice','📝 โหมดฝึก'],['mock','🏫 จำลองสอบ']].forEach(([m,l])=>{const b=document.createElement('button');b.textContent=l;b.className=m===MODE?'on':'';b.onclick=()=>{MODE=m;set('kla-exam-mode',m);render();};tb.append(b);});
@@ -92,6 +92,7 @@ function render(){
     document.getElementById('msg').textContent=any?(qs.length<MN?'ตอนนี้มีโจทย์จากเรื่องที่ดูแล้ว '+qs.length+' ข้อ':'พร้อมสอบแล้วใช่ไหม สู้ ๆ นะ'):'ไปดูคลิปในสวนก่อนนะ แล้วค่อยกลับมาสอบ';
     document.getElementById('foot').textContent='แนะนำทำสัปดาห์ละครั้ง ในที่เงียบ ๆ ให้น้องทำเองทั้งชุด';
   }
+  const pp=document.createElement('div');pp.className='cnt';pp.innerHTML='<span class="T" style="align-self:center">✏️ เวลากากบาทกระดาษหลังตอบ</span>';[0,5,10].forEach(n=>{const b=document.createElement('button');b.textContent=n?n+' วิ':'ไม่ใช้';b.className=n===PS?'on':'';b.onclick=()=>{PS=n;set('kla-paper-sec',n);render();};pp.append(b);});body.append(pp);
   const a=document.getElementById('all');a.checked=all;a.onchange=()=>{all=a.checked;set('kla-exam-all',all);render();};}
 /* #warm = คณิตวันละนิด 5 ข้อ (เปิดจากหน้าสวน) */
 if(location.hash==='#warm'){const qs=pickFocus(5);if(qs.length)launch('practice','math',qs,true);else render();}else render();

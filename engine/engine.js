@@ -197,7 +197,7 @@ function moneyHTML(list){return '<span class="mny">'+list.map(v=>{const m=MONEY[
  return '<svg class="bill" viewBox="0 0 80 42"><rect x="1.5" y="1.5" width="77" height="39" rx="5" fill="'+m[0]+'" stroke="#3b3b4f" stroke-width="2"/><circle cx="58" cy="21" r="11" fill="#fff" opacity=".5"/><text x="24" y="22" text-anchor="middle" dominant-baseline="central" font-size="17" fill="#2d2340">'+v+'</text><text x="58" y="22" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#2d2340">บาท</text></svg>';}).join('')+'</span>';}
 /* ตาชั่งสองแขน: tilt l = ฝั่งซ้ายหนักกว่า */
 function scaleSVG(o){const t=o.tilt==='l'?-12:o.tilt==='r'?12:0,rad=t*Math.PI/180,lx=100-70*Math.cos(rad),ly=40-70*Math.sin(rad),rx=100+70*Math.cos(rad),ry=40+70*Math.sin(rad);
- const pan=(x,y,e)=>'<line x1="'+x+'" y1="'+y+'" x2="'+(x-22)+'" y2="'+(y+34)+'" stroke="#8a7f99" stroke-width="2"/><line x1="'+x+'" y1="'+y+'" x2="'+(x+22)+'" y2="'+(y+34)+'" stroke="#8a7f99" stroke-width="2"/><path d="M'+(x-30)+' '+(y+34)+' Q'+x+' '+(y+50)+' '+(x+30)+' '+(y+34)+'Z" fill="#c9a46a" stroke="#7a5a2a" stroke-width="2"/><text x="'+x+'" y="'+(y+26)+'" text-anchor="middle" font-size="30">'+e+'</text>';
+ const pan=(x,y,e)=>'<line x1="'+x+'" y1="'+y+'" x2="'+(x-22)+'" y2="'+(y+34)+'" stroke="#8a7f99" stroke-width="2"/><line x1="'+x+'" y1="'+y+'" x2="'+(x+22)+'" y2="'+(y+34)+'" stroke="#8a7f99" stroke-width="2"/><path d="M'+(x-30)+' '+(y+34)+' Q'+x+' '+(y+50)+' '+(x+30)+' '+(y+34)+'Z" fill="#c9a46a" stroke="#7a5a2a" stroke-width="2"/><text x="'+x+'" y="'+(y+26)+'" text-anchor="middle" font-size="'+({1:30,2:24,3:18}[[...String(e).replace(/️/g,'')].length]||14)+'">'+e+'</text>';
  return '<svg class="scl" viewBox="0 0 200 150"><rect x="94" y="40" width="12" height="96" fill="#a96d33"/><rect x="66" y="132" width="68" height="12" rx="4" fill="#7a4f22"/><line x1="'+lx.toFixed(1)+'" y1="'+ly.toFixed(1)+'" x2="'+rx.toFixed(1)+'" y2="'+ry.toFixed(1)+'" stroke="#5b4630" stroke-width="7" stroke-linecap="round"/><circle cx="100" cy="40" r="7" fill="#e8701c"/>'+pan(lx,ly,o.l)+pan(rx,ry,o.r)+'</svg>';}
 
 /* ---------- ภาพประกอบแต่ละแบบ ---------- */
@@ -302,7 +302,11 @@ const MOCK=EP.mode==='mock';
 const markSeen=id=>{try{const k='kla-seen-v1';const d=JSON.parse(localStorage.getItem(k)||'{}');const o=d[id]||[0,0];d[id]=[o[0]+1,Math.round(Date.now()/1000)];localStorage.setItem(k,JSON.stringify(d));}catch(e){}};
 /* อ่านตัวเลือกให้ฟัง ("ข้อ ก ... ข้อ ข ...") เฉพาะข้อที่ตัวเลือกเป็นคำ/ตัวเลขทุกตัว ตัวเลือกที่เป็นภาพหรือลูกศรให้ดูเอง */
 const SAYOK=/^[฀-๿A-Za-z0-9 ,.'!?\-+−=<>·\[\]]+$/;
-const optSay=q=>{const ls=q.opts.map(labelSay);return ls.every(l=>l&&SAYOK.test(l)&&/[ก-ฮA-Za-z0-9]/.test(l))?ls.flatMap((l,i)=>['ข้อ '+'กขคง'[i],l]):[];};
+/* ไม่อ่านตัวเลือก เมื่อโจทย์วัดการ "ดู/อ่าน" รูปตัวอักษรเอง (อ่านให้ฟังจะกลายเป็นเฉลย): พยัญชนะ สระ สะกด วรรณยุกต์ ตัวพิมพ์เล็กใหญ่ เลขไทย ภาพนี้คือคำใด
+   หรือมีตัวเลือกเป็นตัวอักษรเดี่ยว/เลขไทย · บังคับเองได้ด้วย q.read=true/false */
+const NOREAD=/เขียนถูก|เขียนผิด|เขียนคำ|เขียนตัว|เขียนเป็น|เขียนได้|ตัวพิมพ์|ตัวใหญ่ของ|ตัวเล็กของ|เลขไทย|สะกด|ไม้เอก|ไม้โท|ไม้ตรี|ไม้จัตวา|ไม้ม้วน|ไม้มลาย|สระ|พยัญชนะ|วรรณยุกต์|ตัวอักษร|คือตัวใด|ด้วยตัวใด|ตัวใดคือ|อ่านว่าอะไร|อ่านว่าอย่างไร|ภาษาอังกฤษคือคำใด|คำใดคือ|ภาพนี้คือคำใด|letter|[Cc]apital/;
+const noRead=q=>q.read===false||(q.read!==true&&(NOREAD.test(q.q+' '+(q.say||''))||q.opts.some(o=>/^([ก-ฮ]|[ะ-ฺเ-ๅ็-๎◌\-]+|[A-Za-z]|[A-Z][a-z]|[a-z][A-Z])$|[๐-๙]/.test(label(o)))));
+const optSay=q=>{if(noRead(q))return [];const ls=q.opts.map(labelSay);return ls.every(l=>l&&SAYOK.test(l)&&/[ก-ฮA-Za-z0-9]/.test(l))?ls.flatMap((l,i)=>['ข้อ '+'กขคง'[i],l]):[];};
 /* ชุด 50 ข้อขึ้นไป: พักครึ่งทาง 10 วินาทีก่อนข้อ 26 */
 async function rest(){const my=tok;const cd=h('div','restn pop','10');const msg=MOCK?'ครึ่งทางแล้วค่ะ พักสักครู่นะคะ ยืดแขนยืดขา หายใจลึก ๆ':'พักครึ่งทางกันก่อนนะ ลุกขึ้นยืดเส้นยืดสาย หายใจลึก ๆ';
  await show(h('div','vis','<div class="char pop">'+(MOCK?TEACH:KLA)+'</div><div class="bubble pop">☕ พักครึ่งทาง 10 วินาที</div>'),true);st.firstElementChild.append(cd);SFX.chime();say(msg);
@@ -324,13 +328,19 @@ async function mockTimer(qi,q,box,btns,segs){const my=tok;const ms=(EP.sec||15)*
  while(t<ms){await wait(100);if(my!==tok)return;if(!paused){t+=100;f.style.width=(100-t/ms*100)+'%';if(ms-t<=3000)tm.classList.add('low');if(t%1000===0&&ms-t<3000&&ms-t>0)SFX.pop(1);}}
  const s=QS;if(!s||s.lock)return;s.lock=true;LOG[qi]={id:q.id,t:q.t,ok:false,to:1};btns.forEach(x=>x.disabled=true);tm.classList.add('end');SFX.chime();hideSub=false;
  await say('หมดเวลาแล้วค่ะ');if(my!==tok)return;await gap(500,my);if(my!==tok)return;quiz(qi+1);}
+/* สนามสอบ: หลังตอบ เว้นเวลาให้กากบาทลงกระดาษจริง (EP.paper วินาที) มีวงนับถอยหลัง และปุ่มไปต่อ */
+async function paperWait(){const sec=EP.paper||0;if(!EP.mode||!sec)return true;const my=tok;let skip=false;
+ const el=h('div','paper','<div class="pring"><b>'+sec+'</b></div><div class="ptx">✏️ กากบาทในกระดาษ</div>');const bt=h('button','pgo','ไปต่อ ▶');bt.onclick=()=>{skip=true;};el.append(bt);document.body.append(el);
+ const ring=el.querySelector('.pring'),num=el.querySelector('b');let t=0;const ms=sec*1000;
+ while(t<ms&&!skip){await wait(100);if(my!==tok)break;if(!paused){t+=100;ring.style.setProperty('--p',(t/ms*360)+'deg');num.textContent=Math.ceil((ms-t)/1000);if(t%1000===0&&t<ms)SFX.pop(1);}}
+ el.remove();return my===tok;}
 async function answer(i,b){const s=QS;if(!s||s.lock)return;s.lock=true;hideSub=false;tok++;if(synth)synth.cancel();const q=s.q;
- if(MOCK){LOG[s.qi]={id:q.id,t:q.t,ok:i===q.ans};b.classList.add('picked');SFX.pop(3);s.btns.forEach(x=>x.disabled=true);await wait(650);return quiz(s.qi+1);}
+ if(MOCK){LOG[s.qi]={id:q.id,t:q.t,ok:i===q.ans};b.classList.add('picked');SFX.pop(3);s.btns.forEach(x=>x.disabled=true);await wait(650);if(!await paperWait())return;return quiz(s.qi+1);}
  if(i===q.ans){LOG[s.qi]={id:q.id,t:q.t,ok:s.tries===0};b.classList.add('ok');SFX.ok();react('cheer');const [x,y]=centerOf(b);confetti(x,y,s.tries===0?26:14);if(s.tries===0&&!q.star&&!q.bonus)score.first++;if(q.bonus&&window.logFocus)logFocus(q.id,q.t,s.tries===0);if(s.tries===0&&q.star){SFX.sparkle();starBurst(x,y,8);}s.btns.forEach(x=>x.disabled=true);await say([rand(PRAISE),q.why]);}
  else{b.classList.add('no');b.disabled=true;SFX.no();react('oops');s.tries++;
   if(s.tries===1){setWho('jook');await say(['เจ้าจุกใบ้ให้นะ',q.hint||'ลองดูดี ๆ อีกครั้งนะ']);setWho('kla');s.lock=false;return;}
   LOG[s.qi]={id:q.id,t:q.t,ok:false};if(q.bonus&&window.logFocus)logFocus(q.id,q.t,false);s.btns.forEach(x=>x.disabled=true);s.btns[q.ans].classList.add('ok');await say(['ไม่เป็นไรนะ คำตอบคือ',labelSay(q.opts[q.ans])||'ข้อ '+'กขคง'[q.ans],q.why]);}
- await wait(700);quiz(s.qi+1);}
+ await wait(700);if(!await paperWait())return;quiz(s.qi+1);}
 function save(gold){try{const k='kla-garden-v1';const d=JSON.parse(localStorage.getItem(k)||'{}');const o=d['EP'+EP.ep]||{};d['EP'+EP.ep]={seed:1,gold:!!(o.gold||gold),t:Date.now()};localStorage.setItem(k,JSON.stringify(d));}catch(e){}}
 async function finish(){if(EP.mode)return examEnd();phase='end';react('cheer');QS=null;prog(1);const need=EP.questions.filter(q=>!q.star&&!q.bonus).length;const gold=score.first>=need;save(gold);
  const c=h('div','cover');c.innerHTML='<div class="pop">'+SPROUT+'</div><h1>ได้เมล็ดพันธุ์ 1 เมล็ด</h1>'+(EP.cert?'<div class="cert pop">🏆 เกียรติบัตร<small>เรียนครบ 99 ตอน ตั้งใจเรียน เก่งมาก พร้อมไปสอบแล้ว</small></div>':'')+(gold?'<p class="pop gold">⭐ ตอบถูกตั้งแต่ครั้งแรกทุกข้อ ได้ดาวทองด้วย</p>':'')+(EP.dayEnd?'<p>วันนี้ดูครบ 3 ตอนแล้ว ไว้เจอกันรอบหน้านะ</p>':'');

@@ -295,3 +295,8 @@ button{font-family:inherit;cursor:pointer}
 /* เงาของภาพ (โจทย์หาเงา) */
 .shd{filter:brightness(0);opacity:.8}
 .tri{width:1em;height:1em;display:inline-block;vertical-align:-.12em}
+/* เวลากากบาทลงกระดาษ (สนามสอบ) */
+.paper{position:fixed;left:50%;top:64px;transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:14px;background:#fff;border-radius:999px;padding:10px 12px 10px 10px;box-shadow:0 6px 18px rgba(0,0,0,.15);font-size:clamp(18px,2.6vw,26px)}
+.pring{--p:0deg;width:64px;height:64px;border-radius:50%;background:conic-gradient(#e5e0ef var(--p),#8fd16a 0);display:flex;align-items:center;justify-content:center}
+.pring b{width:50px;height:50px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;color:var(--ink)}
+.pgo{border:0;border-radius:999px;background:var(--c,#8e5bd8);color:#fff;padding:10px 18px;font-size:inherit;cursor:pointer}

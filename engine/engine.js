@@ -328,6 +328,61 @@ async function mockTimer(qi,q,box,btns,segs){const my=tok;const ms=(EP.sec||15)*
  while(t<ms){await wait(100);if(my!==tok)return;if(!paused){t+=100;f.style.width=(100-t/ms*100)+'%';if(ms-t<=3000)tm.classList.add('low');if(t%1000===0&&ms-t<3000&&ms-t>0)SFX.pop(1);}}
  const s=QS;if(!s||s.lock)return;s.lock=true;LOG[qi]={id:q.id,t:q.t,ok:false,to:1};btns.forEach(x=>x.disabled=true);tm.classList.add('end');SFX.chime();hideSub=false;
  await say('หมดเวลาแล้วค่ะ');if(my!==tok)return;await gap(500,my);if(my!==tok)return;quiz(qi+1);}
+/* ---------- เฉลยแบบภาพเคลื่อนไหว 3 มิติ (โหมดฝึก/คลิป): นับกล่องที่ซ้อนกัน · มองจากด้านบน/หน้า · พับภาพคลี่ ---------- */
+function exPlan(q){const t=q.q+' '+(q.say||''),v=q.v||{},a=q.opts[q.ans];
+ let g=v.type==='blocks'?v.g:null;if(!g&&/มากที่สุด|น้อยที่สุด/.test(t)&&a&&a.blk&&a.blk.g)g=a.blk.g;
+ if(g&&!/ติดกับ/.test(t)){if(/ด้านบน/.test(t))return {k:'blk',g,view:'top'};if(/ด้านหน้า/.test(t))return {k:'blk',g,view:'front'};if(/กี่กล่อง|กี่ใบ|กี่ก้อน|มากที่สุด|น้อยที่สุด/.test(t))return {k:'blk',g,view:'count'};}
+ if(/คลี่|พับ/.test(t)){const net=(a&&a.solid)||(/ลูกบาศก์|ลูกเต๋า/.test(t)?'cube':/ทรงกระบอก/.test(t)?'cylinder':/กรวย/.test(t)?'cone':null);if(!net)return null;
+  let nums=null,pair=null;const f=v.items&&v.items[0]&&v.items[0].fig;
+  if(net==='cube'&&f&&f.txt){nums={};f.txt.forEach(([x,y,n])=>{nums[Math.round((x-30)/40)+','+Math.round((y-30)/40)]=n;});}
+  const m=t.match(/ตรงข้ามกับหน้า (\d)/);if(m)pair=[m[1],label(a)];
+  if(net==='cube'&&!nums&&/กี่รูป|กี่หน้า/.test(t))nums={'1,0':1,'0,1':2,'1,1':3,'2,1':4,'3,1':5,'1,2':6};
+  return {k:'net',net,nums,pair};}
+ return null;}
+async function explain(p){const my=tok;let skip=false;const ov=h('div','ex3d'),box=h('div','exbox'),cap=h('div','excap','👀 มาดูกัน'),st3=h('div','x3d'),sc=h('div','sc3'),sk=h('button','pgo','ข้าม ▶');
+ sk.onclick=()=>{skip=true;};st3.append(sc);box.append(cap,st3,sk);ov.append(box);document.body.append(ov);
+ const W=async ms=>{let t=0;while(t<ms&&!skip){await wait(50);if(my!==tok)return false;if(!paused)t+=50;}return my===tok&&!skip;};
+ try{if(p.k==='blk')await exBlocks(p,sc,cap,W);else if(p.net==='cube')await exCube(p,sc,cap,W);else if(p.net==='cylinder')await exCyl(sc,cap,W);else await exCone(sc,cap,W);if(!skip)await W(700);}catch(e){}
+ ov.remove();return my===tok;}
+async function exBlocks(p,sc,cap,W){const g=p.g,R=g.length,C=Math.max(...g.map(r=>r.length)),S=46,cubes=[];
+ for(let z=0;z<9;z++)for(let r=0;r<R;r++)for(let c=0;c<C;c++)if(((g[r]&&g[r][c])||0)>z)cubes.push([r,c,z]);
+ const mz=Math.max(...cubes.map(x=>x[2]))+1;sc.style.setProperty('--s',S+'px');
+ const els=cubes.map(()=>{const e=h('div','cu3',['f','b','l','r','t','d'].map(k=>'<i class="'+k+'"><b></b></i>').join(''));sc.append(e);return e;});
+ const place=k=>cubes.forEach(([r,c,z],i)=>{els[i].style.transform='translate3d('+((c-(C-1)/2)*S*k)+'px,'+((-z+(mz-1)/2)*S*k)+'px,'+((r-(R-1)/2)*S*k)+'px)';});
+ const ISO='rotateX(-25deg) rotateY(-35deg)';sc.style.transform=ISO;place(1);if(!await W(1000))return;
+ if(p.view!=='count'){cap.textContent=p.view==='top'?'⬇️ มองจากด้านบนลงมา':'👀 มองจากด้านหน้าตรง ๆ';sc.style.transition='transform 1.6s ease-in-out';sc.style.transform=p.view==='top'?'rotateX(-90deg) rotateY(0deg)':'rotateX(0deg) rotateY(0deg)';SFX.whoosh();
+  if(!await W(3000))return;sc.style.transform=ISO;await W(1600);return;}
+ cap.textContent='แยกกล่องออก จะเห็นกล่องที่ซ่อนอยู่';els.forEach(e=>e.style.transition='transform .9s ease');place(1.5);SFX.whoosh();if(!await W(1200))return;
+ sc.style.transition='transform '+(cubes.length*.65+1.5).toFixed(1)+'s linear';sc.style.transform='rotateX(-25deg) rotateY(325deg)';
+ for(let i=0;i<cubes.length;i++){els[i].classList.add('hl');els[i].querySelectorAll('b').forEach(b=>b.textContent=i+1);cap.textContent=(cubes[i][2]?'ชั้นที่ '+(cubes[i][2]+1):'ชั้นล่าง')+' · นับได้ '+(i+1)+' กล่อง';SFX.pop(i);if(!await W(650))return;}
+ cap.textContent='รวมทั้งหมด '+cubes.length+' กล่อง';SFX.chime();if(!await W(1600))return;els.forEach(e=>e.style.transition='transform .8s ease');place(1);await W(900);}
+async function exCube(p,sc,cap,W){const S=72,m=p.nums||{};sc.style.setProperty('--s',S+'px');
+ const F=(c,r,cls)=>{const n=m[c+','+r];const e=h('div','nf'+(cls?' '+cls:''),'<b>'+(n==null?'':n)+'</b>');e.dataset.n=n==null?'':n;return e;};
+ const base=F(1,1,'nbase'),top=F(1,0,'nt'),lf=F(0,1,'nl'),rt=F(2,1,'nr'),far=F(3,1,'nr'),bt=F(1,2,'nb');rt.append(far);base.append(top,lf,rt,bt);sc.append(base);
+ const Z=' translateZ('+(S/2)+'px)';sc.style.transform='rotateX(0deg) rotateY(0deg) translateX('+(-S/2)+'px)';
+ cap.textContent='ภาพคลี่ของลูกบาศก์ มีสี่เหลี่ยม 6 รูป';if(!await W(1300))return;
+ sc.style.transition='transform 1s ease';sc.style.transform='rotateX(-20deg) rotateY(-25deg) translateX(0px)'+Z;if(!await W(900))return;
+ cap.textContent='พับขึ้นทีละด้าน';for(const f of [lf,top,bt,rt,far]){f.classList.add('fold');SFX.whoosh();if(!await W(750))return;}
+ cap.textContent='พับแล้วได้ลูกบาศก์';SFX.chime();sc.style.transition='transform 4.5s ease-in-out';sc.style.transform='rotateX(-25deg) rotateY(-385deg) translateX(0px)'+Z;
+ if(p.pair){const hs=[...sc.querySelectorAll('.nf')].filter(e=>p.pair.includes(String(e.dataset.n)));hs.forEach(e=>e.classList.add('hl'));cap.textContent='หน้า '+p.pair[0]+' อยู่ตรงข้ามกับหน้า '+p.pair[1];}
+ await W(4700);}
+async function exCyl(sc,cap,W){const N=20,H=130,R=46,w=2*Math.PI*R/N;cap.textContent='ภาพคลี่ของทรงกระบอก';
+ const st=[];for(let i=0;i<N;i++){const e=h('div','cs');Object.assign(e.style,{width:(w+.6)+'px',height:H+'px',left:(-w/2)+'px',top:(-H/2)+'px'});sc.append(e);st.push(e);}
+ const cc=[h('div','cc'),h('div','cc')];cc.forEach(c=>{Object.assign(c.style,{width:2*R+'px',height:2*R+'px',left:-R+'px',top:-R+'px'});sc.append(c);});
+ st.forEach((e,i)=>e.style.transform='translateX('+((i-(N-1)/2)*w)+'px) rotateY(0deg) translateZ(0px)');cc[0].style.transform='translateY('+(-H/2-R-4)+'px) rotateX(0deg)';cc[1].style.transform='translateY('+(H/2+R+4)+'px) rotateX(0deg)';
+ if(!await W(1300))return;cap.textContent='ม้วนสี่เหลี่ยมเป็นท่อ แล้วปิดวงกลมบนล่าง';SFX.whoosh();
+ [...st,...cc].forEach(e=>e.style.transition='transform 1.6s ease-in-out');st.forEach((e,i)=>e.style.transform='translateX(0px) rotateY('+(i*360/N)+'deg) translateZ('+R+'px)');
+ cc[0].style.transform='translateY('+(-H/2)+'px) rotateX(90deg)';cc[1].style.transform='translateY('+(H/2)+'px) rotateX(90deg)';
+ sc.style.transition='transform 1.6s ease';sc.style.transform='rotateX(-22deg) rotateY(0deg)';if(!await W(1800))return;
+ cap.textContent='พับแล้วได้ทรงกระบอก';SFX.chime();sc.style.transition='transform 4s linear';sc.style.transform='rotateX(-22deg) rotateY(360deg)';await W(4000);}
+async function exCone(sc,cap,W){const N=18,L=140,R=50,th=360*R/L,b=Math.asin(R/L)*180/Math.PI,H=L*Math.cos(b*Math.PI/180),w=2*L*Math.tan(th/N/2*Math.PI/180);cap.textContent='ภาพคลี่ของกรวย';
+ const st=[];for(let i=0;i<N;i++){const e=h('div','ct');Object.assign(e.style,{width:(w+.6)+'px',height:L+'px',left:(-w/2)+'px',top:(-H/2)+'px'});sc.append(e);st.push(e);}
+ const cc=h('div','cc cone');Object.assign(cc.style,{width:2*R+'px',height:2*R+'px',left:-R+'px',top:-R+'px'});sc.append(cc);
+ st.forEach((e,i)=>e.style.transform='rotateY(0deg) rotateX(0deg) rotateZ('+(-th/2+(i+.5)*th/N)+'deg)');cc.style.transform='translateY('+(-H/2+L+R+8)+'px) rotateX(0deg)';
+ if(!await W(1300))return;cap.textContent='ม้วนรูปพัดให้ปลายแหลมอยู่ข้างบน แล้วปิดก้นด้วยวงกลม';SFX.whoosh();
+ [...st,cc].forEach(e=>e.style.transition='transform 1.6s ease-in-out');st.forEach((e,i)=>e.style.transform='rotateY('+(i*360/N)+'deg) rotateX('+b+'deg) rotateZ(0deg)');cc.style.transform='translateY('+(H/2)+'px) rotateX(90deg)';
+ sc.style.transition='transform 1.6s ease';sc.style.transform='rotateX(-18deg) rotateY(0deg)';if(!await W(1800))return;
+ cap.textContent='พับแล้วได้กรวย';SFX.chime();sc.style.transition='transform 4s linear';sc.style.transform='rotateX(-18deg) rotateY(360deg)';await W(4000);}
 /* สนามสอบ: หลังตอบ เว้นเวลาให้กากบาทลงกระดาษจริง (EP.paper วินาที) มีวงนับถอยหลัง และปุ่มไปต่อ */
 async function paperWait(){const sec=EP.paper||0;if(!EP.mode||!sec)return true;const my=tok;let skip=false;
  const el=h('div','paper','<div class="pring"><b>'+sec+'</b></div><div class="ptx">✏️ กากบาทในกระดาษ</div>');const bt=h('button','pgo','ไปต่อ ▶');bt.onclick=()=>{skip=true;};el.append(bt);document.body.append(el);
@@ -336,10 +391,10 @@ async function paperWait(){const sec=EP.paper||0;if(!EP.mode||!sec)return true;c
  el.remove();return my===tok;}
 async function answer(i,b){const s=QS;if(!s||s.lock)return;s.lock=true;hideSub=false;tok++;if(synth)synth.cancel();const q=s.q;
  if(MOCK){LOG[s.qi]={id:q.id,t:q.t,ok:i===q.ans};b.classList.add('picked');SFX.pop(3);s.btns.forEach(x=>x.disabled=true);await wait(650);if(!await paperWait())return;return quiz(s.qi+1);}
- if(i===q.ans){LOG[s.qi]={id:q.id,t:q.t,ok:s.tries===0};b.classList.add('ok');SFX.ok();react('cheer');const [x,y]=centerOf(b);confetti(x,y,s.tries===0?26:14);if(s.tries===0&&!q.star&&!q.bonus)score.first++;if(q.bonus&&window.logFocus)logFocus(q.id,q.t,s.tries===0);if(s.tries===0&&q.star){SFX.sparkle();starBurst(x,y,8);}s.btns.forEach(x=>x.disabled=true);await say([rand(PRAISE),q.why]);}
+ if(i===q.ans){LOG[s.qi]={id:q.id,t:q.t,ok:s.tries===0};b.classList.add('ok');SFX.ok();react('cheer');const [x,y]=centerOf(b);confetti(x,y,s.tries===0?26:14);if(s.tries===0&&!q.star&&!q.bonus)score.first++;if(q.bonus&&window.logFocus)logFocus(q.id,q.t,s.tries===0);if(s.tries===0&&q.star){SFX.sparkle();starBurst(x,y,8);}s.btns.forEach(x=>x.disabled=true);const xp=exPlan(q);if(xp)await Promise.all([say([rand(PRAISE),q.why]),explain(xp)]);else await say([rand(PRAISE),q.why]);}
  else{b.classList.add('no');b.disabled=true;SFX.no();react('oops');s.tries++;
   if(s.tries===1){setWho('jook');await say(['เจ้าจุกใบ้ให้นะ',q.hint||'ลองดูดี ๆ อีกครั้งนะ']);setWho('kla');s.lock=false;return;}
-  LOG[s.qi]={id:q.id,t:q.t,ok:false};if(q.bonus&&window.logFocus)logFocus(q.id,q.t,false);s.btns.forEach(x=>x.disabled=true);s.btns[q.ans].classList.add('ok');await say(['ไม่เป็นไรนะ คำตอบคือ',labelSay(q.opts[q.ans])||'ข้อ '+'กขคง'[q.ans],q.why]);}
+  LOG[s.qi]={id:q.id,t:q.t,ok:false};if(q.bonus&&window.logFocus)logFocus(q.id,q.t,false);s.btns.forEach(x=>x.disabled=true);s.btns[q.ans].classList.add('ok');{const xs=['ไม่เป็นไรนะ คำตอบคือ',labelSay(q.opts[q.ans])||'ข้อ '+'กขคง'[q.ans],q.why],xp=exPlan(q);if(xp)await Promise.all([say(xs),explain(xp)]);else await say(xs);}}
  await wait(700);if(!await paperWait())return;quiz(s.qi+1);}
 function save(gold){try{const k='kla-garden-v1';const d=JSON.parse(localStorage.getItem(k)||'{}');const o=d['EP'+EP.ep]||{};d['EP'+EP.ep]={seed:1,gold:!!(o.gold||gold),t:Date.now()};localStorage.setItem(k,JSON.stringify(d));}catch(e){}}
 async function finish(){if(EP.mode)return examEnd();phase='end';react('cheer');QS=null;prog(1);const need=EP.questions.filter(q=>!q.star&&!q.bonus).length;const gold=score.first>=need;save(gold);

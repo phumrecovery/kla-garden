@@ -315,10 +315,19 @@ const NOREAD=/เขียนถูก|เขียนผิด|เขียน�
 const noRead=q=>q.read===false||(q.read!==true&&(NOREAD.test(q.q+' '+(q.say||''))||q.opts.some(o=>/^([ก-ฮ]|[ะ-ฺเ-ๅ็-๎◌\-]+|[A-Za-z]|[A-Z][a-z]|[a-z][A-Z])$|[๐-๙]/.test(label(o)))));
 const optSay=q=>{if(noRead(q))return [];const ls=q.opts.map(labelSay);return ls.every(l=>l&&SAYOK.test(l)&&/[ก-ฮA-Za-z0-9]/.test(l))?ls.flatMap((l,i)=>['ข้อ '+'กขคง'[i],l]):[];};
 /* ชุด 50 ข้อขึ้นไป: พักครึ่งทาง 10 วินาทีก่อนข้อ 26 */
-async function rest(){const my=tok;const cd=h('div','restn pop','10');const msg=MOCK?'ครึ่งทางแล้วค่ะ พักสักครู่นะคะ ยืดแขนยืดขา หายใจลึก ๆ':'พักครึ่งทางกันก่อนนะ ลุกขึ้นยืดเส้นยืดสาย หายใจลึก ๆ';
- await show(h('div','vis','<div class="char pop">'+(MOCK?TEACH:KLA)+'</div><div class="bubble pop">☕ พักครึ่งทาง 10 วินาที</div>'),true);st.firstElementChild.append(cd);SFX.chime();say(msg);
- for(let k=10;k>0;k--){cd.textContent=k;await gap(1000,my);if(my!==tok)return false;}
- cd.textContent='🙌';SFX.sparkle();await say(MOCK?'พร้อมแล้ว ไปต่อกันเลยค่ะ':'ไปต่อกันเลย');return my===tok;}
+/* พักครึ่งทาง (ชุด 50 ข้อ): ต้นกล้าเต้นตามเพลงสั้น ๆ 10 วินาที เพลงสังเคราะห์เอง ไม่ใช้ไฟล์ */
+function music(sec){const a=ac();if(!a||!sfxOn)return ()=>{};const bus=a.createGain();bus.gain.value=1;bus.connect(a.destination);const t0=a.currentTime+.05,B=.3,F=m=>440*Math.pow(2,(m-69)/12);
+ const N=(m,st,len,type,vol)=>{const t=t0+st*B;if(st*B>sec)return;const o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(F(m),t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+len*B*.95);o.connect(g).connect(bus);o.start(t);o.stop(t+len*B+.05);};
+ const A=[[72,1],[76,1],[79,1],[76,1],[77,1],[81,1],[79,2],[76,1],[79,1],[84,1],[79,1],[77,1],[74,1],[72,2]],Bp=[[74,1],[77,1],[81,1],[77,1],[76,1],[79,1],[84,2],[81,1],[79,1],[77,1],[76,1],[74,1],[76,1],[72,2]];
+ let k=0;[...A,...Bp,[72,1],[76,1],[79,1],[84,2]].forEach(([m,l])=>{N(m,k,l,'triangle',.055);k+=l;});
+ for(let i=0;i*2<k;i++){const r=[48,48,53,53,48,48,43,48][i%8];N(r,i*2,1.6,'sine',.07);N(r+12,i*2+1,.4,'square',.012);}
+ let done=false;return ()=>{if(done)return;done=true;try{bus.gain.setTargetAtTime(.0001,a.currentTime,.05);setTimeout(()=>{try{bus.disconnect()}catch(e){}},500);}catch(e){}};}
+async function rest(){const my=tok;const cd=h('div','restn pop','10');const msg=MOCK?'ครึ่งทางแล้วค่ะ พักสักครู่นะคะ ลุกขึ้นเต้นกับน้องกล้า ยืดแขนยืดขา หายใจลึก ๆ':'พักครึ่งทางกันก่อนนะ ลุกขึ้นมาเต้นกับน้องกล้า ยืดเส้นยืดสาย หายใจลึก ๆ';
+ const notes=['♪','♫','♬','♪','♫','♩','♬'].map((n,i)=>'<span class="nt" style="left:'+(6+i*14)+'%;animation-delay:'+(i*.45).toFixed(2)+'s;--x:'+((i%2?1:-1)*(18+i*5))+'px;color:'+['#8e5bd8','#e8701c','#2389c9','#d64545','#2fae5c','#e0a800','#c2185b'][i]+'">'+n+'</span>').join('');
+ await show(h('div','vis','<div class="party">'+(MOCK?'<div class="char pop">'+TEACH+'</div>':'')+'<div class="char pop dancer">'+KLA+'</div>'+notes+'</div><div class="bubble pop">🎵 พักครึ่งทาง มาเต้นกัน 10 วินาที</div>'),true);st.firstElementChild.append(cd);
+ const stop=music(10.2);say(msg);
+ for(let k=10;k>0;k--){cd.textContent=k;await gap(1000,my);if(paused)stop();if(my!==tok){stop();return false;}}
+ stop();cd.textContent='🙌';SFX.sparkle();await say(MOCK?'พร้อมแล้ว ไปต่อกันเลยค่ะ':'ไปต่อกันเลย');return my===tok;}
 async function mockIntro(){phase='quiz';const my=++tok;setWho('teach');SFX.chime();await show(h('div','vis','<div class="char pop">'+TEACH+'</div><div class="bubble pop">ฟังโจทย์ให้ดี แล้วเลือกคำตอบที่ถูกที่สุด 📝</div>'),true);
  await say(['สวัสดีค่ะ ครูชื่อดอกม่วง วันนี้มาลองทำข้อสอบเหมือนวันสอบจริงกันนะคะ','ครูจะอ่านโจทย์ให้ฟังข้อละสองรอบ แล้วให้เวลาคิดสักครู่ พอหมดเวลา ครูจะอ่านข้อต่อไปเลยนะคะ ข้อไหนไม่แน่ใจ ให้เลือกคำตอบที่คิดว่าใช่ที่สุดค่ะ']);if(my!==tok)return;EP._t0=Date.now();quiz(0);}
 async function lesson(from){if(MOCK)return mockIntro();phase='lesson';const my=++tok;if(synth)synth.cancel();
@@ -405,12 +414,26 @@ async function answer(i,b){const s=QS;if(!s||s.lock)return;s.lock=true;hideSub=f
  await wait(700);if(!await paperWait())return;quiz(s.qi+1);}
 function save(gold){try{const k='kla-garden-v1';const d=JSON.parse(localStorage.getItem(k)||'{}');const o=d['EP'+EP.ep]||{};d['EP'+EP.ep]={seed:1,gold:!!(o.gold||gold),t:Date.now()};localStorage.setItem(k,JSON.stringify(d));}catch(e){}}
 async function finish(){if(EP.mode)return examEnd();phase='end';react('cheer');QS=null;prog(1);const need=EP.questions.filter(q=>!q.star&&!q.bonus).length;const gold=score.first>=need;save(gold);
- const c=h('div','cover');c.innerHTML='<div class="pop">'+SPROUT+'</div><h1>ได้เมล็ดพันธุ์ 1 เมล็ด</h1>'+(EP.cert?'<div class="cert pop">🏆 เกียรติบัตร<small>เรียนครบ 99 ตอน ตั้งใจเรียน เก่งมาก พร้อมไปสอบแล้ว</small></div>':'')+(gold?'<p class="pop gold">⭐ ตอบถูกตั้งแต่ครั้งแรกทุกข้อ ได้ดาวทองด้วย</p>':'')+(EP.dayEnd?'<p>วันนี้ดูครบ 3 ตอนแล้ว ไว้เจอกันรอบหน้านะ</p>':'');
+ const c=h('div','cover');c.innerHTML='<div class="pop">'+SPROUT+'</div><h1>ได้เมล็ดพันธุ์ 1 เมล็ด</h1>'+(EP.cert?'<div class="cert pop">🏆 เกียรติบัตร<small>เรียนครบ 99 ตอน ตั้งใจเรียน เก่งมาก พร้อมไปสอบแล้ว</small></div>':'')+(gold?'<div class="goldrow"><span class="gslot"></span><p class="gold">ตอบถูกตั้งแต่ครั้งแรกทุกข้อ ได้ดาวทอง!</p></div>':'')+(EP.dayEnd?'<p>วันนี้ดูครบ 3 ตอนแล้ว ไว้เจอกันรอบหน้านะ</p>':'');
  const bt=h('div','btns');const a1=h('button','btn2','↺ ดูอีกครั้ง');a1.onclick=()=>location.reload();bt.append(a1);
  if(EP.next&&!EP.dayEnd){const a=h('a','go','ตอนต่อไป ▶');a.href=EP.next;a.style.textDecoration='none';bt.append(a);}
  const m=h('a','btn2','🏡 กลับสวน');m.href=EP.menu;bt.append(m);c.append(bt);SFX.whoosh();await show(c,true);SFX.fanfare();
- [[650,0],[1900,3],[2700,5]].forEach(([t,k])=>setTimeout(()=>{if(phase==='end')SFX.pop(k);},t));setTimeout(()=>{const sp=c.querySelector('.sprout');if(sp&&phase==='end'){const [x,y]=centerOf(sp);confetti(x,y,30);if(gold){SFX.sparkle();starBurst(x,y,10);}}},3400);
- await say([EP.summary,'หนูได้เมล็ดพันธุ์หนึ่งเมล็ด',gold?'และได้ดาวทองด้วย':'']);}
+ [[650,0],[1900,3],[2700,5]].forEach(([t,k])=>setTimeout(()=>{if(phase==='end')SFX.pop(k);},t));setTimeout(()=>{const sp=c.querySelector('.sprout');if(sp&&phase==='end'){const [x,y]=centerOf(sp);confetti(x,y,30);}},3400);
+ /* จบตอน: พูดสั้น ๆ · ได้ดาวทอง → ดาวบินหมุนเข้ามาจากนอกจอ มีประกายวิบวับเป็นทาง แล้วลงที่ช่องข้างข้อความ */
+ const landed=gold?new Promise(r=>setTimeout(()=>{const sl=c.querySelector('.gslot');if(phase!=='end'||!sl)return r();flyStar(sl).then(()=>{c.querySelector('.goldrow').classList.add('on');r();});},3600)):null;
+ await say(rand(['เย้ จบตอนนี้แล้ว เก่งมาก','เก่งมากเลย เรียนจบอีกหนึ่งตอนแล้ว','สุดยอด จบตอนนี้แล้ว']));
+ if(gold){await landed;if(phase==='end')await say('ได้ทั้งเมล็ดพันธุ์ และดาวทองเลย');}else await say('ได้เมล็ดพันธุ์หนึ่งเมล็ด');}
+const GSTAR='<svg viewBox="0 0 100 100"><defs><linearGradient id="gsg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff6b0"/><stop offset=".45" stop-color="#ffd23f"/><stop offset="1" stop-color="#f4a100"/></linearGradient></defs><path d="M50 5 L62 37 L96 38 L69 59 L79 93 L50 73 L21 93 L31 59 L4 38 L38 37Z" fill="url(#gsg)" stroke="#e09400" stroke-width="3" stroke-linejoin="round"/><path d="M34 32 Q42 22 52 24" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" opacity=".85"/></svg>';
+function sparkTrail(x,y){const cs=['#ffd23f','#fff3a6','#ff9ec4','#9be7ff','#ffffff','#ffb347'];for(let i=0;i<2;i++){const t=h('span','trail',Math.random()<.5?'✦':'✧');t.style.left=(x+(Math.random()-.5)*30)+'px';t.style.top=(y+(Math.random()-.5)*30)+'px';t.style.color=rand(cs);t.style.fontSize=(12+Math.random()*18)+'px';document.body.append(t);setTimeout(()=>t.remove(),1000);}}
+function flyStar(slot){return new Promise(res=>{const done=()=>{slot.innerHTML=GSTAR;slot.classList.add('landed');const [x,y]=centerOf(slot);starBurst(x,y,12,'✨');confetti(x,y,24);SFX.fanfare();res();};
+ if(reduce)return done();const r=slot.getBoundingClientRect(),tx=r.left+r.width/2,ty=r.top+r.height/2,sx=-90,sy=innerHeight*.75,cx=innerWidth*.35,cy=-innerHeight*.15;
+ const s=h('div','flystar',GSTAR);document.body.append(s);const D=1800,t0=performance.now();let lt=0;
+ for(let i=0;i<10;i++)tone(700+i*110,.14,'sine',.045,i*.16);
+ const step=now=>{const p=Math.min(1,(now-t0)/D),e=1-Math.pow(1-p,3),u=1-e;const x=u*u*sx+2*u*e*cx+e*e*tx,y=u*u*sy+2*u*e*cy+e*e*ty;
+  const sc=.55+.45*e+(p>.82?Math.sin((p-.82)/.18*Math.PI)*.3:0);s.style.transform='translate('+(x-36)+'px,'+(y-36)+'px) rotate('+(u*1080).toFixed(1)+'deg) scale('+sc.toFixed(3)+')';
+  if(now-lt>26&&p<.96){lt=now;sparkTrail(x,y);}
+  if(p<1&&phase==='end')requestAnimationFrame(step);else{s.remove();if(phase==='end')done();else res();}};
+ requestAnimationFrame(step);});}
 /* จบชุดสนามสอบ: เด็กเห็นแค่ดาวที่ได้ ผลรายข้อเก็บไว้ให้ผู้ปกครองดู */
 async function examEnd(){phase='end';react('cheer');QS=null;prog(1);const n=EP.questions.length,ok=LOG.filter(x=>x&&x.ok).length;
  try{const k='kla-exam-v1';const d=JSON.parse(localStorage.getItem(k)||'[]');d.push({t:Date.now(),kind:MOCK?'mock':EP.warm?'warm':'practice',sec:EP._t0?Math.round((Date.now()-EP._t0)/1000):0,subj:EP.subj||'mix',n,ok,to:LOG.filter(x=>x&&x.to).length,items:LOG.map(x=>x?[x.id,x.t,x.ok?1:0]:null)});localStorage.setItem(k,JSON.stringify(d.slice(-80)));}catch(e){}

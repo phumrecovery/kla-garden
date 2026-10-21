@@ -325,3 +325,24 @@ button{font-family:inherit;cursor:pointer}
 .cs{position:absolute;background:#c8f0c0;border-top:2px solid #3b3b4f;border-bottom:2px solid #3b3b4f;box-sizing:border-box}
 .cc{position:absolute;border-radius:50%;background:#a8e0a0;border:2px solid #3b3b4f;box-sizing:border-box}.cc.cone{background:#d4bdf7}
 .ct{position:absolute;background:#e6d4fb;transform-origin:50% 0;clip-path:polygon(50% 0,100% 100%,0 100%)}
+
+/* พักครึ่งทาง: ต้นกล้าเต้น โน้ตลอย */
+.party{position:relative;display:flex;align-items:flex-end;justify-content:center;gap:12px;min-width:min(520px,86vw);padding-top:40px}
+.dancer svg{transform-origin:50% 100%;animation:dance 1.2s ease-in-out infinite}
+.dancer .leaves{animation:leaf .6s ease-in-out infinite!important}
+@keyframes dance{0%,100%{transform:rotate(-12deg) translateY(0)}25%{transform:rotate(0) translateY(-22px) scale(1.04,.98)}50%{transform:rotate(12deg) translateY(0)}75%{transform:rotate(0) translateY(-22px) scale(1.04,.98)}}
+.party .nt{position:absolute;bottom:20%;font-size:clamp(26px,4vw,40px);font-weight:700;opacity:0;animation:note 2.6s ease-out infinite}
+@keyframes note{0%{opacity:0;transform:translate(0,0) rotate(-12deg) scale(.6)}15%{opacity:1}100%{opacity:0;transform:translate(var(--x),-150px) rotate(18deg) scale(1.1)}}
+@media (prefers-reduced-motion:reduce){.dancer svg,.party .nt{animation:none!important}.party .nt{opacity:.8}}
+
+/* ดาวทองตอนจบตอน: บินหมุนเข้ามา มีประกายเป็นทาง แล้วลงช่อง .gslot */
+.goldrow{display:flex;align-items:center;gap:12px}
+.goldrow .gold{opacity:0;transform:scale(.8);transition:opacity .4s,transform .4s}.goldrow.on .gold{opacity:1;transform:none}
+.gslot{width:clamp(56px,9vw,80px);height:clamp(56px,9vw,80px);display:inline-block;flex:none}
+.gslot.landed svg{width:100%;height:100%;filter:drop-shadow(0 0 8px #ffd23f);animation:gland .6s ease-out,twinkle 2.4s .6s ease-in-out infinite}
+@keyframes gland{0%{transform:scale(1.6)}60%{transform:scale(.88)}100%{transform:scale(1)}}
+@keyframes twinkle{50%{transform:scale(1.1) rotate(8deg);filter:drop-shadow(0 0 18px #ffd23f)}}
+.flystar{position:fixed;left:0;top:0;width:72px;height:72px;z-index:60;pointer-events:none;filter:drop-shadow(0 0 10px #ffe066) drop-shadow(0 0 24px rgba(255,210,63,.75))}
+.flystar svg{width:100%;height:100%}
+.trail{position:fixed;z-index:59;pointer-events:none;transform:translate(-50%,-50%);text-shadow:0 0 6px #fff,0 0 12px currentColor;animation:trail 1s ease-out forwards}
+@keyframes trail{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-10%) scale(.2) rotate(120deg)}}

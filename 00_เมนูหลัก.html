@@ -115,16 +115,30 @@ a.chip{background:#ffc23d;color:#4a3000;text-decoration:none;box-shadow:0 3px 0 
 @keyframes leaf{25%{transform:rotate(-9deg)}75%{transform:rotate(9deg)}}
 .m-open{display:none}
 
-/* หน้าทักทายตอนเปิดแอป (แตะก่อน เพราะเบราว์เซอร์ไม่ให้เล่นเสียงเอง) */
-#hi{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 40%,rgba(255,255,255,.95),rgba(214,240,255,.92));transition:opacity .5s}
-#hi.out{opacity:0;pointer-events:none}
-#hi .hic{display:flex;flex-direction:column;align-items:center;gap:10px;font-family:inherit;text-align:center}
-#hi svg{width:clamp(130px,26vw,190px);height:auto;animation:hiBob 1s ease-in-out infinite alternate}
-@keyframes hiBob{from{transform:translateY(0) rotate(-4deg)}to{transform:translateY(-14px) rotate(4deg)}}
-#hi .hit{font-size:clamp(24px,4.6vw,40px);color:#2d6a3e}
-#hi button{font:inherit;font-size:clamp(22px,3.8vw,32px);border:0;border-radius:999px;padding:12px 34px;background:#2fae5c;color:#fff;box-shadow:0 6px 0 #1f7a40;cursor:pointer;animation:hiPulse 1.4s ease-in-out infinite}
-@keyframes hiPulse{50%{transform:scale(1.06)}}
-#walker.talking svg svg{animation:kTalk .42s ease-in-out infinite alternate}@keyframes kTalk{to{transform:translateY(-6px)}}
+/* หน้าทักทายตอนเปิดแอป: ฉากสวนแบบ 3 มิติ มุมกล้องต่ำใกล้น้องกล้า · แตะก่อน (เบราว์เซอร์ไม่ให้เล่นเสียงเอง) พูดจบแล้วซูมเข้าสวน */
+#hi{position:fixed;inset:0;z-index:200;overflow:hidden;background:#cdeeff}
+#hi .hisc{position:absolute;inset:0;width:100%;height:100%;transition:transform 1s cubic-bezier(.5,0,.7,.4),opacity 1s,filter 1s}
+#hi.out .hisc{transform:scale(1.6) translateY(4%);opacity:0;filter:blur(4px)}
+#hi.out .hitop,#hi.out .hibub,#hi.out button{opacity:0;transition:opacity .4s}
+#hi .cam{animation:cam 9s ease-in-out infinite alternate;transform-origin:500px 420px}
+#hi .far{animation:par 9s ease-in-out infinite alternate}
+@keyframes cam{from{transform:scale(1)}to{transform:scale(1.035) translate(-6px,-3px)}}
+@keyframes par{from{transform:translateX(0)}to{transform:translateX(10px)}}
+#hi .cloud3{animation:cl3 26s linear infinite alternate}@keyframes cl3{from{transform:translateX(-60px)}to{transform:translateX(60px)}}
+#hi .pollen{animation:pol 7s linear infinite}@keyframes pol{0%{transform:translateY(0);opacity:0}15%{opacity:.8}100%{transform:translateY(-220px);opacity:0}}
+#hi .kla3 .bodyg{transform-box:view-box;transform-origin:60px 134px;animation:kBreath 2.4s ease-in-out infinite}
+@keyframes kBreath{50%{transform:scale(1.025,.975)}}
+#hi .kla3 .leaves{transform-box:view-box;transform-origin:60px 46px;animation:leaf 3s ease-in-out infinite}
+#hi .kla3.speak .bodyg{animation:kBob .5s ease-in-out infinite alternate}@keyframes kBob{to{transform:translateY(-3px) rotate(1.5deg)}}
+#hi .hitop{position:absolute;top:5%;left:0;right:0;text-align:center;font-size:clamp(26px,5vw,48px);color:#fff;text-shadow:0 3px 0 #3f8a2e,0 6px 16px rgba(0,0,0,.25)}
+#hi .hibub{position:absolute;left:50%;top:15%;transform:translateX(-50%);width:max-content;max-width:min(86vw,620px);background:#fff;border-radius:24px;padding:12px 22px;font-size:clamp(18px,3.2vw,28px);line-height:1.45;text-align:center;color:#2d2340;box-shadow:0 8px 24px rgba(0,0,0,.15)}
+#hi .hibub::after{content:'';position:absolute;left:50%;bottom:-14px;margin-left:-14px;border:14px solid transparent;border-bottom:0;border-top-color:#fff}
+#hi .hibub[hidden]{display:none}
+#hi .higo{position:absolute;left:50%;bottom:3.5%;transform:translateX(-50%);font:inherit;font-size:clamp(22px,3.8vw,32px);border:0;border-radius:999px;padding:12px 34px;background:#2fae5c;color:#fff;box-shadow:0 6px 0 #1f7a40,0 10px 24px rgba(0,0,0,.2);cursor:pointer;animation:hiPulse 1.4s ease-in-out infinite}
+@keyframes hiPulse{50%{transform:translateX(-50%) scale(1.06)}}
+#hi .hiskip{position:absolute;right:16px;bottom:16px;font:inherit;font-size:16px;border:0;border-radius:999px;padding:6px 14px;background:rgba(255,255,255,.85);color:#2d2340;cursor:pointer}
+#hi .hiskip[hidden],#hi .higo[hidden]{display:none}
+@media (prefers-reduced-motion:reduce){#hi .cam,#hi .far,#hi .cloud3,#hi .pollen,#hi .kla3 .bodyg{animation:none!important}}
 </style></head><body>
 <div class="top"><div class="t">🏡 สวนมหัศจรรย์ของน้องกล้า</div><span class="chip" id="cnt"></span><button class="chip" id="bMus" title="เพลงและระดับเสียง">🎵</button><a class="chip" href="สนามสอบ.html">🏟️ สนามสอบ</a></div><div class="vol" id="vol"><div class="r"><span>🎵</span><input type="range" id="vM" min="0" max="100" aria-label="ระดับเสียงเพลง"></div><div class="r"><span>🔔</span><input type="range" id="vS" min="0" max="100" aria-label="ระดับเสียงตอนแตะ"></div><button id="bOn"></button><div class="h">🎵 เพลง · 🔔 เสียงตอนแตะของในสวน · เพลงเริ่มเมื่อแตะหน้าจอครั้งแรก</div></div>
 <div class="scene" id="scene"><svg id="sv" viewBox="0 0 1000 460" preserveAspectRatio="xMidYMax meet"></svg><div class="wx" id="wx"></div><div class="mood" id="mood"></div><div class="bub" id="bub"></div></div>
@@ -496,23 +510,72 @@ function greetLines(){const now=new Date(),hr=now.getHours(),dw=now.getDay();let
   out.push(c||pk(G.cheer,'c'));
   try{localStorage.setItem('kla-hi-last',JSON.stringify(last))}catch(e){}
   return out;}
-function playPart(t,en){return new Promise(res=>{let fin=false;const done=()=>{if(!fin){fin=true;res();}};
-  const tts=()=>{if(!window.speechSynthesis){setTimeout(done,t.length*90);return;}const u=new SpeechSynthesisUtterance(t);u.lang=en?'en-US':'th-TH';u.rate=en?.85:.95;u.onend=done;u.onerror=done;speechSynthesis.speak(u);setTimeout(done,t.length*220+4000);};
-  const id=AMP[hs(t)];if(!id)return tts();const a=new Audio('เสียง/'+id+'.mp3');a.onended=done;a.onerror=tts;a.play().catch(tts);});}
+// ปากขยับตามเสียง: เสียงไฟล์ mp3 วัดความดังด้วย AnalyserNode · เสียงสำรองของเครื่อง (ไม่มีไฟล์) ขยับเป็นจังหวะแทน
+let curA=null,AN=null,useAN=false,talkSrc=false,ttsTalk=false,lipOn=false,lv=0,MO=null,MC=null,KB=null;const lipBuf=new Uint8Array(512);
+function setMouth(l){if(!MO)return;const o=l>.012;MC.style.display=o?'none':'';MO.style.display=o?'inline':'none';if(o)MO.setAttribute('transform','translate(60 108) scale(1 '+Math.min(1.35,.4+l*9).toFixed(2)+') translate(-60 -108)');}
+function lip(){if(!lipOn){setMouth(0);KB&&KB.classList.remove('speak');return;}let v=0;
+  if(talkSrc&&useAN){AN.getByteTimeDomainData(lipBuf);let q=0;for(const b of lipBuf){const d=(b-128)/128;q+=d*d;}v=Math.sqrt(q/lipBuf.length);}
+  else if(talkSrc||ttsTalk)v=.03+.03*Math.sin(performance.now()/65);
+  lv=lv*.45+v*.55;setMouth(lv);KB&&KB.classList.toggle('speak',talkSrc||ttsTalk);requestAnimationFrame(lip);}
+function playPart(t,en){return new Promise(res=>{let fin=false;const done=()=>{if(!fin){fin=true;talkSrc=false;ttsTalk=false;res();}};
+  const tts=()=>{talkSrc=false;if(!window.speechSynthesis){setTimeout(done,t.length*90);return;}const u=new SpeechSynthesisUtterance(t);u.lang=en?'en-US':'th-TH';u.rate=en?.85:.95;u.onstart=()=>{ttsTalk=true;};u.onend=done;u.onerror=done;speechSynthesis.speak(u);setTimeout(done,t.length*220+4000);};
+  const id=AMP[hs(t)];if(!id)return tts();const a=new Audio('เสียง/'+id+'.mp3');curA=a;
+  useAN=false;try{if(AC&&AC.state==='running'){if(!AN){AN=AC.createAnalyser();AN.fftSize=1024;AN.connect(AC.destination);}AC.createMediaElementSource(a).connect(AN);useAN=true;}}catch(e){}
+  a.onplaying=()=>{talkSrc=true;};a.onended=done;a.onerror=tts;a.play().catch(tts);});}
 async function playLine(l){for(const p of l.split(/(\[[^\]]+\])/)){if(!p.trim())continue;if(p[0]==='[')await playPart(p.slice(1,-1).trim(),true);else await playPart(p.trim(),false);}}
 function jingle(sec){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();}catch(e){return()=>{};}
   const a=AC,bus=a.createGain();bus.connect(a.destination);const t0=a.currentTime+.05,B=.36,F=m=>440*Math.pow(2,(m-69)/12);
   const N=(m,st,l,type,v)=>{if(st*B>sec)return;const t=t0+st*B,o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(F(m),t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+l*B*.95);o.connect(g).connect(bus);o.start(t);o.stop(t+l*B+.05);};
-  let k=0;[[67,1],[71,1],[74,2],[72,1],[71,1],[69,2],[67,1],[69,1],[71,1],[74,1],[72,2],[71,2],[69,1],[71,1],[72,2],[74,1],[76,1],[74,2],[72,1],[71,1],[69,1],[71,1],[67,4]].forEach(([m,l])=>{N(m,k,l,'triangle',.045);N(m+12,k,l*.5,'sine',.012);k+=l;});
-  [43,43,48,48,50,50,43,43,45,45,48,48,50,50,43,43].forEach((m,i)=>N(m,i*2,1.7,'sine',.06));
+  let k=0;[[67,1],[71,1],[74,2],[72,1],[71,1],[69,2],[67,1],[69,1],[71,1],[74,1],[72,2],[71,2],[69,1],[71,1],[72,2],[74,1],[76,1],[74,2],[72,1],[71,1],[69,1],[71,1],[67,4]].forEach(([m,l])=>{N(m,k,l,'triangle',.04);N(m+12,k,l*.5,'sine',.01);k+=l;});
+  [43,43,48,48,50,50,43,43,45,45,48,48,50,50,43,43].forEach((m,i)=>N(m,i*2,1.7,'sine',.05));
   bus.gain.setValueAtTime(1,t0+sec-1.2);bus.gain.linearRampToValueAtTime(.0001,t0+sec);
-  return ()=>{try{bus.gain.cancelScheduledValues(a.currentTime);bus.gain.setTargetAtTime(.0001,a.currentTime,.1);}catch(e){}};}
-async function greet(){const lines=greetLines(),stop=jingle(12.5),k=$('walker');k.classList.add('talking');
-  for(const l of lines){say(l.replace(/[\[\]]/g,''),true);await playLine(l);await new Promise(r=>setTimeout(r,300));}
-  k.classList.remove('talking');setTimeout(()=>say(msgFor(selW),true),2500);}
+  return ()=>{try{bus.gain.cancelScheduledValues(a.currentTime);bus.gain.setTargetAtTime(.0001,a.currentTime,.15);}catch(e){}};}
+// น้องกล้าแบบ 3 มิติ (แสงเงา ไฮไลต์) โครงเดียวกับ KLA · มี m-open / m-close ให้ขยับปาก
+const KLA3='<g class="kla3"><defs><radialGradient id="k3b" cx=".36" cy=".3" r=".78"><stop offset="0" stop-color="#eaffd2"/><stop offset=".45" stop-color="#b5e88a"/><stop offset="1" stop-color="#5fa63e"/></radialGradient><radialGradient id="k3l" cx=".3" cy=".3" r=".95"><stop offset="0" stop-color="#a8f2ae"/><stop offset="1" stop-color="#349447"/></radialGradient><radialGradient id="k3e" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#dbe6ee"/></radialGradient><radialGradient id="k3m" cx=".5" cy=".3" r=".8"><stop offset="0" stop-color="#a8424f"/><stop offset="1" stop-color="#5e1f2a"/></radialGradient></defs>'+
+ '<g class="bodyg"><g class="leaves"><path d="M60 48 C59 36 61 28 60 21" stroke="#2f7a3a" stroke-width="5.5" fill="none" stroke-linecap="round"/><ellipse cx="43" cy="20" rx="17" ry="9.5" fill="url(#k3l)" stroke="#2f7a3a" stroke-width="2" transform="rotate(-25 43 20)"/><ellipse cx="77" cy="20" rx="17" ry="9.5" fill="url(#k3l)" stroke="#2f7a3a" stroke-width="2" transform="rotate(25 77 20)"/><path d="M31 25 Q43 19 55 16 M89 25 Q77 19 65 16" stroke="#2f7a3a" stroke-width="1.3" fill="none" opacity=".6"/><ellipse cx="38" cy="15" rx="6" ry="2.4" fill="#fff" opacity=".5" transform="rotate(-25 38 15)"/></g>'+
+ '<circle cx="60" cy="88" r="46" fill="url(#k3b)" stroke="#4a8f36" stroke-width="2.5"/><ellipse cx="60" cy="126" rx="30" ry="6" fill="#4a8f36" opacity=".18"/><ellipse cx="41" cy="60" rx="15" ry="8" fill="#fff" opacity=".55" transform="rotate(-32 41 60)"/><circle cx="31" cy="72" r="3.5" fill="#fff" opacity=".5"/>'+
+ '<g class="eyes"><ellipse cx="44" cy="82" rx="9.5" ry="11.5" fill="url(#k3e)"/><ellipse cx="76" cy="82" rx="9.5" ry="11.5" fill="url(#k3e)"/><circle class="pupil" cx="46" cy="84" r="5.5" fill="#2d2340"/><circle class="pupil" cx="78" cy="84" r="5.5" fill="#2d2340"/><circle cx="48" cy="81.5" r="1.9" fill="#fff"/><circle cx="80" cy="81.5" r="1.9" fill="#fff"/></g>'+
+ '<circle cx="33" cy="100" r="6.5" fill="#ff9fb0" opacity=".75"/><circle cx="87" cy="100" r="6.5" fill="#ff9fb0" opacity=".75"/>'+
+ '<path class="m-close" d="M48 104 Q60 116 72 104" stroke="#2d2340" stroke-width="4" fill="none" stroke-linecap="round"/><g class="m-open" style="display:none"><ellipse cx="60" cy="108" rx="9.5" ry="7.5" fill="url(#k3m)" stroke="#2d2340" stroke-width="3"/><ellipse cx="60" cy="112" rx="5" ry="2.6" fill="#ff8a9a"/></g></g></g>';
+// ฉากสวน 3 มิติ: ฟ้า ดวงอาทิตย์ เขาไกลจาง โรงเรียนบนเนิน ทางเดินแบบเปอร์สเปกทีฟ แปลงผักใกล้/ไกล ดอกไม้หน้ากล้องเบลอ ละอองแสงลอย
+function scene3D(){const tree=(x,y,k)=>'<g transform="translate('+x+' '+y+') scale('+k+')"><rect x="-5" y="-40" width="10" height="40" rx="3" fill="#8a5a3b"/><circle cx="0" cy="-58" r="30" fill="url(#t3)"/><circle cx="-10" cy="-68" r="9" fill="#fff" opacity=".25"/></g>';
+  const plot=(x,y,k)=>{let s='<g transform="translate('+x+' '+y+') scale('+k+')"><ellipse cx="0" cy="8" rx="94" ry="24" fill="#000" opacity=".14" filter="url(#b2)"/><ellipse cx="0" cy="0" rx="90" ry="24" fill="url(#soil)"/><ellipse cx="0" cy="-4" rx="82" ry="18" fill="#9a6340" opacity=".45"/>';
+    [-56,-20,18,54].forEach((dx,i)=>{s+='<g transform="translate('+dx+' '+(-6+(i%2)*6)+')"><path d="M0 0 Q-3 -16 0 -30" stroke="#3f8a2e" stroke-width="4" fill="none"/><ellipse cx="-10" cy="-26" rx="11" ry="5.5" fill="#6fd17c" stroke="#3f8a2e" stroke-width="1.5" transform="rotate(-25 -10 -26)"/><ellipse cx="10" cy="-30" rx="11" ry="5.5" fill="#6fd17c" stroke="#3f8a2e" stroke-width="1.5" transform="rotate(25 10 -30)"/>'+(i%2?'':'<circle cx="0" cy="-34" r="5" fill="#ff6f91"/><circle cx="0" cy="-34" r="2" fill="#ffd23f"/>')+'</g>';});return s+'</g>';};
+  const fl=(x,y,k,c)=>{let s='<g transform="translate('+x+' '+y+') scale('+k+')"><path d="M0 0 Q-4 -30 0 -60" stroke="#3f8a2e" stroke-width="5" fill="none"/>';for(let i=0;i<6;i++){const a=i*Math.PI/3,px=(Math.cos(a)*12).toFixed(1),py=(-66+Math.sin(a)*12).toFixed(1);s+='<ellipse cx="'+px+'" cy="'+py+'" rx="10" ry="7" fill="'+c+'" transform="rotate('+(i*60)+' '+px+' '+py+')"/>';}return s+'<circle cx="0" cy="-66" r="8" fill="#ffd23f"/></g>';};
+  let p='';for(let i=0;i<14;i++)p+='<circle class="pollen" cx="'+(60+i*67)+'" cy="'+(420+(i*37)%160)+'" r="'+(2+(i%3))+'" fill="#fff" opacity=".7" style="animation-delay:-'+(i*.55).toFixed(2)+'s"/>';
+  return '<svg class="hisc" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice"><defs>'+
+   '<linearGradient id="sky3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6cc4ff"/><stop offset=".7" stop-color="#cdeeff"/><stop offset="1" stop-color="#f4fbff"/></linearGradient>'+
+   '<radialGradient id="sun3"><stop offset="0" stop-color="#fff7c2"/><stop offset=".35" stop-color="#ffe066" stop-opacity=".9"/><stop offset="1" stop-color="#ffe066" stop-opacity="0"/></radialGradient>'+
+   '<linearGradient id="h1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b9e3c6"/><stop offset="1" stop-color="#9fd3ad"/></linearGradient>'+
+   '<linearGradient id="h2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fdc84"/><stop offset="1" stop-color="#7cc463"/></linearGradient>'+
+   '<radialGradient id="lawn3" cx=".5" cy="0" r="1.1"><stop offset="0" stop-color="#a9e486"/><stop offset=".6" stop-color="#7cc95c"/><stop offset="1" stop-color="#4f9e3a"/></radialGradient>'+
+   '<linearGradient id="path3" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#e0b97c"/><stop offset="1" stop-color="#f3dfb4"/></linearGradient>'+
+   '<radialGradient id="soil" cx=".45" cy=".35" r=".8"><stop offset="0" stop-color="#a8704a"/><stop offset="1" stop-color="#6b3f22"/></radialGradient>'+
+   '<radialGradient id="t3" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#8fe08a"/><stop offset="1" stop-color="#3f9e4d"/></radialGradient>'+
+   '<filter id="b1"><feGaussianBlur stdDeviation="1.5"/></filter><filter id="b2"><feGaussianBlur stdDeviation="4"/></filter><filter id="b3" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="7"/></filter></defs>'+
+   '<rect width="1000" height="600" fill="url(#sky3)"/><g class="cam">'+
+   '<circle cx="820" cy="110" r="150" fill="url(#sun3)"/><circle cx="820" cy="110" r="46" fill="#ffe680"/>'+
+   '<g class="cloud3" filter="url(#b1)" fill="#fff" opacity=".9"><ellipse cx="200" cy="100" rx="70" ry="24"/><ellipse cx="240" cy="86" rx="44" ry="26"/><ellipse cx="600" cy="70" rx="56" ry="18"/><ellipse cx="630" cy="60" rx="34" ry="18"/></g>'+
+   '<g class="far" filter="url(#b1)"><path d="M-40 330 Q140 240 320 296 T660 284 T1040 300 V600 H-40Z" fill="url(#h1)"/>'+
+   '<g transform="translate(700 268) scale(.9)"><rect x="-34" y="-30" width="68" height="34" fill="#fff5e6"/><path d="M-42 -28 L0 -58 L42 -28Z" fill="#e5533d"/><rect x="-8" y="-14" width="16" height="18" fill="#8a5a3b"/><rect x="-26" y="-22" width="12" height="10" fill="#7cc6f2"/><rect x="14" y="-22" width="12" height="10" fill="#7cc6f2"/><path d="M0 -58 V-82" stroke="#666" stroke-width="2"/><path d="M0 -82 L16 -77 L0 -72Z" fill="#e5533d"/></g>'+tree(120,318,.6)+tree(900,316,.55)+'</g>'+
+   '<path d="M-40 390 Q220 318 460 362 T1040 352 V600 H-40Z" fill="url(#h2)"/>'+tree(250,368,.9)+tree(830,362,.85)+
+   '<rect x="-40" y="380" width="1080" height="240" fill="url(#lawn3)"/>'+
+   '<path d="M380 620 C420 540 470 470 560 418 C610 392 660 378 696 368 L712 372 C680 384 640 402 600 428 C540 470 540 540 640 620 Z" fill="url(#path3)"/><path d="M380 620 C420 540 470 470 560 418 C610 392 660 378 696 368" stroke="#c99b5c" stroke-width="3" fill="none" opacity=".6"/>'+
+   plot(300,430,.55)+plot(770,436,.55)+plot(150,520,1)+plot(860,528,1)+p+
+   '<ellipse cx="500" cy="528" rx="84" ry="15" fill="#1e4a14" opacity=".28" filter="url(#b2)"/>'+
+   '<svg x="380" y="248" width="240" height="280" viewBox="0 0 120 140" overflow="visible">'+KLA3+'</svg>'+
+   '<g filter="url(#b3)" opacity=".95">'+fl(40,640,1.6,'#ff8fb1')+fl(110,660,1.3,'#ffd23f')+fl(950,650,1.7,'#c9b6ff')+fl(880,670,1.2,'#ff8fb1')+'</g>'+
+   '</g></svg>';}
+// พูดให้จบก่อน แล้วค่อยซูมตัดเข้าสวน (มีปุ่ม ข้าม)
+async function greet(o){const lines=greetLines(),stop=jingle(14);const bub=o.querySelector('.hibub');bub.hidden=false;lipOn=true;lip();let skip=false;
+  const sk=o.querySelector('.hiskip');sk.hidden=false;sk.onclick=e=>{e.stopPropagation();skip=true;try{speechSynthesis.cancel()}catch(x){}if(curA)curA.pause();};
+  for(const l of lines){if(skip)break;bub.textContent=l.replace(/[\[\]]/g,'');await playLine(l);if(skip)break;await new Promise(r=>setTimeout(r,350));}
+  lipOn=false;setMouth(0);if(!skip)await new Promise(r=>setTimeout(r,500));stop();
+  o.classList.add('out');setTimeout(()=>o.remove(),1100);setTimeout(()=>say(msgFor(selW),true),1200);}
 {let hiDone=false;try{hiDone=sessionStorage.getItem('kla-hi')==='1'}catch(e){}
- if(!hiDone&&G){const o=document.createElement('div');o.id='hi';o.innerHTML='<div class="hic">'+KLA+'<div class="hit">สวนมหัศจรรย์ของน้องกล้า</div><button>แตะเพื่อเข้าสวน 🌱</button></div>';document.body.append(o);
-  o.onclick=()=>{try{sessionStorage.setItem('kla-hi','1')}catch(e){}o.classList.add('out');setTimeout(()=>o.remove(),600);greet();};}}
+ if(!hiDone&&G){const o=document.createElement('div');o.id='hi';o.innerHTML=scene3D()+'<div class="hitop">สวนมหัศจรรย์ของน้องกล้า</div><div class="hibub" hidden></div><button class="higo">แตะเพื่อเข้าสวน 🌱</button><button class="hiskip" hidden>ข้าม ▶</button>';document.body.append(o);
+  MO=o.querySelector('.kla3 .m-open');MC=o.querySelector('.kla3 .m-close');KB=o.querySelector('.kla3');
+  let started=false;o.onclick=()=>{if(started)return;started=true;try{sessionStorage.setItem('kla-hi','1')}catch(e){}o.querySelector('.higo').hidden=true;greet(o);};}}
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 <!-- เลขเวอร์ชัน: version.js สร้างโดย เผยแพร่เว็บ.py ตอนส่งขึ้นเว็บ (ในเครื่องไม่มีไฟล์นี้ จะขึ้นว่า ในเครื่อง) -->

@@ -121,7 +121,6 @@ a.chip{background:#ffc23d;color:#4a3000;text-decoration:none;box-shadow:0 3px 0 
 #hi.out .hisc{transform:scale(1.6) translateY(4%);opacity:0;filter:blur(4px)}
 #hi.out .hitop,#hi.out .hibub,#hi.out button{opacity:0;transition:opacity .4s}
 #hi .cam{animation:cam 9s ease-in-out infinite alternate;transform-origin:500px 420px}
-#hi .far{animation:par 9s ease-in-out infinite alternate}
 @keyframes cam{from{transform:scale(1)}to{transform:scale(1.035) translate(-6px,-3px)}}
 @keyframes par{from{transform:translateX(0)}to{transform:translateX(10px)}}
 #hi .cloud3{animation:cl3 26s linear infinite alternate}@keyframes cl3{from{transform:translateX(-60px)}to{transform:translateX(60px)}}
@@ -162,7 +161,7 @@ const NS='http://www.w3.org/2000/svg';
 // ---- stops: 0 = start sign, 1..6 front row, 7..11 back row (further away, smaller)
 const STOP=[{x:40,y:350,kx:92,ky:352,ks:.6}];
 for(let w=1;w<=6;w++){const x=120+(w-1)*150;STOP[w]={x,y:412,s:1,kx:x+60,ky:352,ks:.6};}
-for(let w=7;w<=11;w++){const x=870-(w-7)*150;STOP[w]={x,y:290,s:.78,kx:x+52,ky:238,ks:.47};}
+for(let w=7;w<=11;w++){const x=795-(w-7)*150;/* เหลื่อมครึ่งช่องกับแถวหน้า (120..870) ต้นไม้แถวหน้าไม่บังกระถางแถวหลัง */STOP[w]={x,y:290,s:.78,kx:x+52,ky:238,ks:.47};}
 const wkOf=w=>WK.find(W=>(w===0?W.n==='':W.n===w));
 const stat=w=>{const W=wkOf(w);if(!W)return null;const eps=W.days.flatMap(d=>d[2]);return {W,eps,d:eps.filter(n=>S(n).seed).length,g:eps.filter(n=>S(n).gold).length};};
 // ---- art
@@ -197,10 +196,10 @@ const fire='<g class="fxw" data-act="fire"><circle cy="-14" r="70" fill="url(#fg
   [[-6,0],[4,-.5],[-2,-1],[7,-1.2]].map(([x,d])=>'<circle class="spark" cx="'+x+'" cy="-30" r="1.8" fill="#ffd23f" style="animation-delay:'+d+'s"/>').join('')+'</g>';
 const pet=(n,x,y,k,inner,extra)=>'<g id="pet-'+n+'" class="pet" style="opacity:0;pointer-events:none" transform="translate('+x+' '+y+') scale('+k+')">'+inner+'</g>';
 function petsSVG(){return pet('rabbit',470,324,1,'<g class="roamR"><g class="hopR">'+A.rabbit()+'</g></g>')+
-  pet('frog',514,300,.9,A.frog())+pet('turtle',300,244,.9,'<g class="roamT">'+A.turtle()+'</g>')+
-  pet('squirrel',690,196,.85,A.squirrel())+pet('deer',470,210,.9,A.deer())+pet('fox',962,430,.9,A.fox());}
+  pet('frog',514,300,.9,A.frog())+pet('turtle',270,244,.9,'<g class="roamT">'+A.turtle()+'</g>')+
+  pet('squirrel',720,196,.85,A.squirrel())+pet('deer',570,210,.9,A.deer())+pet('fox',962,430,.9,A.fox());}
 function partySVG(){const d=(x,y,k,flip,inner,dl)=>'<g transform="translate('+x+' '+y+') scale('+(flip?-k:k)+' '+k+')"><g class="dance" style="animation-delay:-'+dl+'s">'+inner+'</g></g>';
-  return '<g id="pet-party" class="pet" style="opacity:0;pointer-events:none" transform="translate(500 214)">'+d(-62,4,.55,0,A.rabbit(),0)+d(-34,12,.55,0,A.frog(),.3)+d(46,-14,.5,0,A.deer(),.1)+fire+d(38,10,.55,1,A.squirrel(),.2)+d(66,4,.55,0,A.fox(),.4)+d(-6,22,.5,1,A.turtle(),.15)+'</g>';}
+  return '<g id="pet-party" class="pet" style="opacity:0;pointer-events:none" transform="translate(570 214)">'+d(-62,4,.55,0,A.rabbit(),0)+d(-34,12,.55,0,A.frog(),.3)+d(46,-14,.5,0,A.deer(),.1)+fire+d(38,10,.55,1,A.squirrel(),.2)+d(66,4,.55,0,A.fox(),.4)+d(-6,22,.5,1,A.turtle(),.15)+'</g>';}
 // ---- ต้นไม้เต็มต้น (ครบ 9 ตอน) ไม่ซ้ำกันทั้ง 11 สัปดาห์ · g = จำนวนตอนที่ได้ดาวทอง แสดงเป็นดอกหรือผลบนต้น
 const TK='<path d="M-8 0 Q-4 -40 -5 -64 L5 -64 Q4 -40 8 0Z" fill="#8a5a3b"/>';
 const blobs=(c,c2)=>'<circle cx="-26" cy="-72" r="28" fill="'+c+'"/><circle cx="26" cy="-74" r="28" fill="'+c+'"/><circle cx="0" cy="-100" r="33" fill="'+(c2||c)+'"/><circle cx="-10" cy="-112" r="12" fill="#fff" opacity=".28"/>';
@@ -241,7 +240,7 @@ const TREE=[
 function plant(d,g,k){
   if(d===0)return '<ellipse cx="0" cy="-7" rx="6" ry="4" fill="#6b3f22"/><path d="M-2 -10 q2 -5 5 -6" stroke="#5cc46b" stroke-width="2" fill="none" opacity=".0"/>';
   const dl=(k*0.37%1).toFixed(2);
-  if(d>=9){let s='<g class="sway" style="animation-delay:-'+dl*3+'s">'+TREE[(k-1)%TREE.length](g)+'</g>';return s;}
+  if(d>=9){let s='<g class="sway" style="animation-delay:-'+dl*3+'s"><g transform="scale(.8)">'+TREE[(k-1)%TREE.length](g)+'</g></g>';return s;}
   const h=22+d*10;let s='<g class="sway" style="animation-delay:-'+dl*3+'s"><path d="M0 0 Q-7 -'+(h/2)+' 0 -'+h+'" stroke="#3f8a2e" stroke-width="4" fill="none" stroke-linecap="round"/>';
   for(let i=1;i<=d;i++){const y=-h*i/(d+1.2)-4,sd=i%2?-1:1;
     s+= i<=g? '<line x1="0" y1="'+y+'" x2="'+(sd*10)+'" y2="'+(y-6)+'" stroke="#3f8a2e" stroke-width="2.5"/>'+flower(sd*13,y-9,i%2?'#ff6f91':'#ffb3c7',1)
@@ -278,7 +277,7 @@ function build(){
   // path: start → front row → curve → back row → school
   const pd='M24 350 L870 350 C975 350 975 236 870 236 L150 236';
   s+='<path d="'+pd+'" stroke="#e3c58d" stroke-width="38" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="'+pd+'" stroke="#f6e6c3" stroke-width="13" fill="none" stroke-dasharray="14 22" stroke-linecap="round"/>';
-  s+='<g id="pud" data-act="pud" style="opacity:0" fill="#8fc7ef" opacity=".8"><ellipse cx="495" cy="302" rx="30" ry="8"/><ellipse cx="640" cy="440" rx="40" ry="9"/><ellipse cx="960" cy="420" rx="26" ry="7"/><ellipse cx="795" cy="266" rx="22" ry="5"/></g>';
+  s+='<g id="pud" data-act="pud" style="opacity:0" fill="#8fc7ef" opacity=".8"><ellipse cx="495" cy="302" rx="30" ry="8"/><ellipse cx="640" cy="440" rx="40" ry="9"/><ellipse cx="960" cy="420" rx="26" ry="7"/><ellipse cx="720" cy="266" rx="22" ry="5"/></g>';
   // school = exam field
   s+='<g class="hit" id="school" transform="translate(98 232)"><rect x="-80" y="-170" width="160" height="200" fill="#000" fill-opacity="0"/><rect x="-58" y="-68" width="116" height="68" rx="4" fill="#fff4dc" stroke="#c9a46a" stroke-width="3"/><path d="M-70 -66 L0 -108 L70 -66Z" fill="#e8505b" stroke="#b83a44" stroke-width="3" stroke-linejoin="round"/><path class="sc" d="M-66 -68 L0 -106 L66 -68 Q50 -62 40 -70 Q26 -60 14 -72 Q0 -62 -12 -72 Q-26 -60 -38 -70 Q-50 -62 -66 -68Z" fill="#fff"/><circle cx="0" cy="-82" r="9" fill="#ffd23f" stroke="#c9a46a" stroke-width="2"/><rect x="-44" y="-52" width="22" height="18" rx="3" fill="#9fdcff"/><rect x="22" y="-52" width="22" height="18" rx="3" fill="#9fdcff"/><rect x="-13" y="-36" width="26" height="36" rx="12" fill="#8e5bd8"/>';
   s+='<line x1="52" y1="-70" x2="52" y2="-130" stroke="#7a6a5a" stroke-width="3"/><path class="flag" d="M52 -130 L84 -122 L52 -112Z" fill="#ffc23d"/>';
@@ -577,7 +576,7 @@ function scene3D(){const tree=(x,on,k)=>'<g data-on="'+on+'" data-x="'+x+'" data
    '<g data-on="hf" data-x="700" data-k=".9" data-sink="6"><ellipse cx="0" cy="4" rx="46" ry="7" fill="#5f9e6a" opacity=".35"/><rect x="-34" y="-30" width="68" height="34" fill="#fff5e6"/><path d="M-42 -28 L0 -58 L42 -28Z" fill="#e5533d"/><rect x="-8" y="-14" width="16" height="18" fill="#8a5a3b"/><rect x="-26" y="-22" width="12" height="10" fill="#7cc6f2"/><rect x="14" y="-22" width="12" height="10" fill="#7cc6f2"/><path d="M0 -58 V-82" stroke="#666" stroke-width="2"/><path d="M0 -82 L16 -77 L0 -72Z" fill="#e5533d"/></g>'+tree(120,'hf',.6)+tree(900,'hf',.55)+'</g>'+
    '<path id="hm" d="M-40 390 Q220 318 460 362 T1040 352 V600 H-40Z" fill="url(#hz_h2)"/>'+tree(250,'hm',.9)+tree(830,'hm',.85)+
    '<rect x="-40" y="380" width="1080" height="240" fill="url(#hz_lawn3)"/>'+
-   '<path d="M380 620 C420 540 470 470 560 418 C610 392 660 378 696 368 L712 372 C680 384 640 402 600 428 C540 470 540 540 640 620 Z" fill="url(#hz_path3)"/><path d="M380 620 C420 540 470 470 560 418 C610 392 660 378 696 368" stroke="#c99b5c" stroke-width="3" fill="none" opacity=".6"/>'+
+   '<path id="hz_road" d="M380 620 C420 540 470 470 560 418 C610 392 660 378 696 368 L712 372 C680 384 640 402 600 428 C540 470 540 540 640 620 Z" fill="url(#hz_path3)"/><path id="hz_rim" d="M380 620 C420 540 470 470 560 418 C610 392 660 378 696 368" stroke="#c99b5c" stroke-width="3" fill="none" opacity=".6"/>'+
    plot(300,430,.55)+plot(770,436,.55)+plot(150,520,1)+plot(860,528,1)+p+
    flyers()+'<ellipse cx="500" cy="528" rx="84" ry="15" fill="#1e4a14" opacity=".28" filter="url(#hz_b2)"/>'+
    '<svg x="380" y="248" width="240" height="280" viewBox="0 0 120 140" overflow="visible">'+KLA3+'</svg>'+
@@ -591,7 +590,7 @@ async function greet(o){const lines=greetLines(),stop=jingle(14);const bub=o.que
   o.classList.add('out');setTimeout(()=>o.remove(),1100);setTimeout(()=>say(msgFor(selW),true),1200);}
 {let hiDone=false;try{hiDone=sessionStorage.getItem('kla-hi')==='1'}catch(e){}
  if(!hiDone&&G){const o=document.createElement('div');o.id='hi';o.innerHTML=scene3D()+'<div class="hitop">สวนมหัศจรรย์ของน้องกล้า</div><div class="hibub" hidden></div><button class="higo">แตะเพื่อเข้าสวน 🌱</button><button class="hiskip" hidden>ข้าม ▶</button>';document.body.append(o);
-  o.querySelectorAll('[data-on]').forEach(g=>{const P=o.querySelector('#'+g.dataset.on),x=+g.dataset.x,L=P.getTotalLength();let by=1e9;for(let d=0;d<L;d+=2){const q=P.getPointAtLength(d);if(Math.abs(q.x-x)<2&&q.y<by)by=q.y;}g.setAttribute('transform','translate('+x+' '+(by+(+g.dataset.sink||4))+') scale('+(+g.dataset.k||1)+')');});MO=o.querySelector('.kla3 .m-open');MC=o.querySelector('.kla3 .m-close');KB=o.querySelector('.kla3');
+  o.querySelectorAll('[data-on]').forEach(g=>{const P=o.querySelector('#'+g.dataset.on),x=+g.dataset.x,L=P.getTotalLength();let by=1e9;for(let d=0;d<L;d+=2){const q=P.getPointAtLength(d);if(Math.abs(q.x-x)<2&&q.y<by)by=q.y;}const gy=by+(+g.dataset.sink||4);g.setAttribute('transform','translate('+x+' '+gy+') scale('+(+g.dataset.k||1)+')');if(x===700&&g.dataset.on==='hf')g.dataset.gy=gy;});{const sc=o.querySelector('[data-on="hf"][data-x="700"]'),Y=(+sc.dataset.gy).toFixed(1);o.querySelector('#hz_road').setAttribute('d','M380 620 C420 540 470 470 560 418 C610 392 660 378 688 364 C694 340 696 318 696 '+Y+' L704 '+Y+' C705 318 708 342 714 370 C680 384 640 402 600 428 C540 470 540 540 640 620 Z');o.querySelector('#hz_rim').setAttribute('d','M380 620 C420 540 470 470 560 418 C610 392 660 378 688 364 C694 340 696 318 696 '+Y);}MO=o.querySelector('.kla3 .m-open');MC=o.querySelector('.kla3 .m-close');KB=o.querySelector('.kla3');
   let started=false;o.onclick=()=>{if(started)return;started=true;try{sessionStorage.setItem('kla-hi','1')}catch(e){}o.querySelector('.higo').hidden=true;greet(o);};}}
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>

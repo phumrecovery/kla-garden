@@ -318,7 +318,7 @@ function bee(path,dur,dl){return '<g><g><animateMotion dur="'+dur+'s" begin="'+d
 // sky=[top,bottom] hill lawn=[top,bottom] tree cloud sun=[x,y,scale,color]|0 moon=[x,y]|0 tint=[color,opacity] rb=rainbow crit=butterflies/bees fx=particles
 const PETS=['rabbit','frog','turtle','squirrel','deer','fox','party'];
 const DAY={pets:[],sky:['#7cc8ff','#dff5ff'],hill:'#b9e69c',lawn:['#9fdb7e','#78c158'],tree:'#4fae55',cloud:'#fff',sun:[905,95,1,'#ffd23f'],moon:0,tint:['#000',0],rb:0,crit:1,birds:1,kite:0,pud:0,snow:0,stars:0,ff:0,lit:0,fx:''};
-const NIGHT={sky:['#151b47','#34437e'],cloud:'#5d6698',sun:0,moon:[820,100],tint:['#3d4a96',.5],crit:0,birds:0,stars:1,lit:1,ff:1};
+const NIGHT={sky:['#151b47','#34437e'],cloud:'#5d6698',sun:0,moon:[820,100],tint:['#3d4a96',0],crit:0,birds:0,stars:1,lit:1,ff:1};
 /* ช่วงเวลาจริงของเครื่อง (นาทีของวัน) ใช้ทั้งคำทักทาย ฉากต้อนรับ และท้องฟ้าในสวน */
 /* เวลาจริงของเครื่อง (ทดสอบได้ด้วย ?t=18:20 ต่อท้ายลิงก์) */
 const NOW=()=>{const d=new Date(),q=location.search.match(/[?&]t=(\d+):(\d+)/);if(q)d.setHours(+q[1],+q[2],0,0);return d;};
@@ -337,7 +337,7 @@ const PH={
  afternoon:{n:'🌞 ยามบ่าย',sky:['#6cbcff','#e2f4ff'],sun:[760,100,1,'#ffd23f']},
  evening:{n:'🌆 ยามเย็น',sky:['#7fbfee','#fde3bd'],sun:[880,150,1.1,'#ffb43d'],tint:['#ffb070',.1],cloud:'#fff1e0'},
  sunset:{n:'🌇 พระอาทิตย์ตก',sky:['#9b6ab8','#ffb37a'],hill:'#c6d98e',sun:[880,195,1.35,'#ff9a3d'],tint:['#ff9a6a',.22],cloud:'#ffd2c2',crit:0},
- dusk:{n:'🌆 หัวค่ำ',sky:['#2c2a6b','#b0678f'],cloud:'#8b7fb0',sun:0,moon:[820,120],tint:['#4a3f8a',.38],crit:0,birds:0,stars:1,lit:1,ff:0},
+ dusk:{n:'🌆 หัวค่ำ',sky:['#2c2a6b','#b0678f'],cloud:'#8b7fb0',sun:0,moon:[820,120],tint:['#4a3f8a',0],crit:0,birds:0,stars:1,lit:1,ff:0},
  night:Object.assign({},NIGHT,{n:'🌙 กลางคืน'}),
  late:Object.assign({},NIGHT,{n:'🌙 ดึกแล้ว'})};
 /* บรรยากาศประจำสัปดาห์: ฤดู อากาศ และสัตว์ (ไม่กำหนดเวลา) · nn = ชื่อตอนกลางคืน */
@@ -658,10 +658,10 @@ function scene3D(){const SP=skyNow(),dark=SP.dk>=.2,{f}=seasonNow();
    '<path id="hz_road" d="M380 620 C420 540 470 470 560 418 C610 392 660 378 696 368 L712 372 C680 384 640 402 600 428 C540 470 540 540 640 620 Z" fill="url(#hz_path3)"/><path id="hz_rim" d="M380 620 C420 540 470 470 560 418 C610 392 660 378 696 368" stroke="#c99b5c" stroke-width="3" fill="none" opacity=".6"/>'+
    (f.pud||f.rain?'<g fill="#9fd3f5" opacity=".55"><ellipse cx="250" cy="470" rx="46" ry="9"/><ellipse cx="700" cy="560" rx="60" ry="11"/><ellipse cx="900" cy="470" rx="34" ry="7"/></g>':'')+
    plots()+(f.rain||f.snow?'':p)+
-   '<rect x="-40" y="-40" width="1080" height="680" fill="'+SP.w[0]+'" opacity="'+SP.w[1].toFixed(3)+'"/><rect x="-40" y="-40" width="1080" height="680" fill="#141a48" opacity="'+(SP.dk*.6).toFixed(3)+'"/>'+(dark||f.rain||f.snow?'':flyers())+'<ellipse cx="500" cy="528" rx="84" ry="15" fill="#1e4a14" opacity=".28" filter="url(#hz_b2)"/>'+
+   '<rect x="-40" y="-40" width="1080" height="680" fill="'+SP.w[0]+'" opacity="'+SP.w[1].toFixed(3)+'"/>'+(dark||f.rain||f.snow?'':flyers())+'<ellipse cx="500" cy="528" rx="84" ry="15" fill="#1e4a14" opacity=".28" filter="url(#hz_b2)"/>'+
    '<svg x="380" y="248" width="240" height="280" viewBox="0 0 120 140" overflow="visible">'+KLA3+'</svg>'+
    '<g filter="url(#hz_b3)" opacity=".95">'+fl(40,640,1.6,'#ff8fb1')+fl(110,660,1.3,'#ffd23f')+fl(950,650,1.7,'#c9b6ff')+fl(880,670,1.2,'#ff8fb1')+'</g>'+
-   /* ตัวน้องกล้ากับดอกไม้หน้าสุดมืดลงครึ่งเดียว ยังมองเห็นชัด */'<rect x="-40" y="-40" width="1080" height="680" fill="#141a48" opacity="'+(SP.dk*.45).toFixed(3)+'"/>'+(dark&&!f.rain?fireflies():'')+seasonFX(f,dark)+
+   /* กลางคืนมืดเฉพาะท้องฟ้า พื้นสวนยังสว่างเห็นต้นไม้ชัด */(dark&&!f.rain?fireflies():'')+seasonFX(f,dark)+
    '</g></svg>';}
 // พูดให้จบก่อน แล้วค่อยซูมตัดเข้าสวน (มีปุ่ม ข้าม)
 async function greet(o){const lines=greetLines(),stop=jingle(14);const bub=o.querySelector('.hibub');bub.hidden=false;lipOn=true;lip();let skip=false;

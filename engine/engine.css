@@ -346,3 +346,8 @@ button{font-family:inherit;cursor:pointer}
 .flystar svg{width:100%;height:100%}
 .trail{position:fixed;z-index:59;pointer-events:none;transform:translate(-50%,-50%);text-shadow:0 0 6px #fff,0 0 12px currentColor;animation:trail 1s ease-out forwards}
 @keyframes trail{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-10%) scale(.2) rotate(120deg)}}
+/* หน้าจบตอน: ให้ปุ่ม ดูอีกครั้ง / ตอนต่อไป / กลับสวน อยู่ในจอเสมอ (แท็บเล็ตแนวนอนจอเตี้ย: ต้นกล้าซ้าย ข้อความกับปุ่มขวา) */
+.endc .endtx{display:flex;flex-direction:column;align-items:center;gap:12px}
+.endc .sprout{width:clamp(120px,min(28vw,32vh),250px)}
+@media (orientation:landscape) and (max-height:820px){.endc{flex-direction:row;gap:clamp(16px,4vw,56px)}.endc .sprout{width:clamp(130px,min(30vw,52vh),260px)}
+ .endc .endtx{gap:clamp(6px,1.6vh,12px)}.endc h1{font-size:clamp(26px,min(5.5vw,8vh),56px)}.endc .cert{padding:6px 22px;font-size:clamp(22px,min(4.5vw,6.5vh),44px)}.endc .gslot{width:clamp(48px,10vh,80px);height:clamp(48px,10vh,80px)}}

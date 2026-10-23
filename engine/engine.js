@@ -414,10 +414,10 @@ async function answer(i,b){const s=QS;if(!s||s.lock)return;s.lock=true;hideSub=f
  await wait(700);if(!await paperWait())return;quiz(s.qi+1);}
 function save(gold){try{const k='kla-garden-v1';const d=JSON.parse(localStorage.getItem(k)||'{}');const o=d['EP'+EP.ep]||{};d['EP'+EP.ep]={seed:1,gold:!!(o.gold||gold),t:Date.now()};localStorage.setItem(k,JSON.stringify(d));}catch(e){}}
 async function finish(){if(EP.mode)return examEnd();phase='end';react('cheer');QS=null;prog(1);const need=EP.questions.filter(q=>!q.star&&!q.bonus).length;const gold=score.first>=need;save(gold);
- const c=h('div','cover');c.innerHTML='<div class="pop">'+SPROUT+'</div><h1>ได้เมล็ดพันธุ์ 1 เมล็ด</h1>'+(EP.cert?'<div class="cert pop">🏆 เกียรติบัตร<small>เรียนครบ 99 ตอน ตั้งใจเรียน เก่งมาก พร้อมไปสอบแล้ว</small></div>':'')+(gold?'<div class="goldrow"><span class="gslot"></span><p class="gold">ตอบถูกตั้งแต่ครั้งแรกทุกข้อ ได้ดาวทอง!</p></div>':'')+(EP.dayEnd?'<p>วันนี้ดูครบ 3 ตอนแล้ว ไว้เจอกันรอบหน้านะ</p>':'');
+ const c=h('div','cover endc');c.innerHTML='<div class="pop">'+SPROUT+'</div><div class="endtx"><h1>ได้เมล็ดพันธุ์ 1 เมล็ด</h1>'+(EP.cert?'<div class="cert pop">🏆 เกียรติบัตร<small>เรียนครบ 99 ตอน ตั้งใจเรียน เก่งมาก พร้อมไปสอบแล้ว</small></div>':'')+(gold?'<div class="goldrow"><span class="gslot"></span><p class="gold">ตอบถูกตั้งแต่ครั้งแรกทุกข้อ ได้ดาวทอง!</p></div>':'')+(EP.dayEnd?'<p>วันนี้ดูครบ 3 ตอนแล้ว ไว้เจอกันรอบหน้านะ</p>':'')+'</div>';
  const bt=h('div','btns');const a1=h('button','btn2','↺ ดูอีกครั้ง');a1.onclick=()=>location.reload();bt.append(a1);
  if(EP.next&&!EP.dayEnd){const a=h('a','go','ตอนต่อไป ▶');a.href=EP.next;a.style.textDecoration='none';bt.append(a);}
- const m=h('a','btn2','🏡 กลับสวน');m.href=EP.menu;bt.append(m);c.append(bt);SFX.whoosh();await show(c,true);SFX.fanfare();
+ const m=h('a','btn2','🏡 กลับสวน');m.href=EP.menu;bt.append(m);c.querySelector('.endtx').append(bt);SFX.whoosh();await show(c,true);SFX.fanfare();
  [[650,0],[1900,3],[2700,5]].forEach(([t,k])=>setTimeout(()=>{if(phase==='end')SFX.pop(k);},t));setTimeout(()=>{const sp=c.querySelector('.sprout');if(sp&&phase==='end'){const [x,y]=centerOf(sp);confetti(x,y,30);}},3400);
  /* จบตอน: พูดสั้น ๆ · ได้ดาวทอง → ดาวบินหมุนเข้ามาจากนอกจอ มีประกายวิบวับเป็นทาง แล้วลงที่ช่องข้างข้อความ */
  const landed=gold?new Promise(r=>setTimeout(()=>{const sl=c.querySelector('.gslot');if(phase!=='end'||!sl)return r();flyStar(sl).then(()=>{c.querySelector('.goldrow').classList.add('on');r();});},3600)):null;

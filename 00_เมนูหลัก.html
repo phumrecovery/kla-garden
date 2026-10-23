@@ -129,8 +129,8 @@ a.chip{background:#ffc23d;color:#4a3000;text-decoration:none;box-shadow:0 3px 0 
 @keyframes kBreath{50%{transform:scale(1.025,.975)}}
 #hi .kla3 .leaves{transform-box:view-box;transform-origin:60px 46px;animation:leaf 3s ease-in-out infinite}
 #hi .kla3.speak .bodyg{animation:kBob .5s ease-in-out infinite alternate}@keyframes kBob{to{transform:translateY(-3px) rotate(1.5deg)}}
-#hi .hz_fall{animation:hzfall linear infinite;transform-box:fill-box;transform-origin:center}@keyframes hzfall{from{transform:translate(0,-80px) rotate(0)}to{transform:translate(var(--dx),720px) rotate(var(--r))}}
-#hi .hz_rain{animation:hzrain linear infinite}@keyframes hzrain{from{transform:translate(0,-80px)}to{transform:translate(-60px,680px)}}
+#hi .hz_fall{animation:hzfall linear infinite;transform-box:fill-box;transform-origin:center}@keyframes hzfall{from{transform:translate(0,var(--y0,-80px)) rotate(0)}to{transform:translate(var(--dx),720px) rotate(var(--r))}}
+#hi .hz_rain{animation:hzrain linear infinite}@keyframes hzrain{from{transform:translate(0,var(--y0,-80px))}to{transform:translate(-60px,680px)}}
 #hi .hz_shoot{animation:hzshoot 5s ease-out infinite;opacity:0}@keyframes hzshoot{0%,78%{transform:translate(0,0);opacity:0}80%{opacity:1}92%{transform:translate(-260px,130px);opacity:0}100%{opacity:0}}
 #hi .hz_work{transform-box:fill-box;transform-origin:center;animation:hzwork 2.6s ease-out infinite;opacity:0}@keyframes hzwork{0%{transform:scale(.1);opacity:0}8%{opacity:1}60%{transform:scale(1);opacity:.9}100%{transform:scale(1.15);opacity:0}}
 #hi .hz_kite{transform-box:fill-box;transform-origin:50% 100%;animation:hzkite 2.6s ease-in-out infinite alternate}@keyframes hzkite{from{transform:rotate(-7deg) translate(-6px,3px)}to{transform:rotate(8deg) translate(8px,-8px)}}
@@ -624,11 +624,17 @@ function moonSVG(x,y,p,op){const r=34,k=r*Math.abs(Math.cos(2*Math.PI*p)),wax=p<
 function scene3D(){const SP=skyNow(),dark=SP.dk>=.2,{f}=seasonNow();
   if(f.rain){if(!dark)SP.s=SP.s.map(c=>mix(c,'#8d9bb0',.65));SP.sun=null;}
   const lite=c=>mix(c,'#ffffff',.18),deep=c=>mix(c,'#000000',.1),hillC=f.hill?[lite(f.hill),f.hill,deep(f.hill)]:null,lawnC=f.lawn||null,treeC=f.tree?[mix(f.tree,'#ffffff',.35),f.tree]:null;const tree=(x,on,k)=>'<g data-on="'+on+'" data-x="'+x+'" data-k="'+k+'"><ellipse cx="0" cy="2" rx="26" ry="6" fill="#2f6b2a" opacity=".25"/><rect x="-5" y="-40" width="10" height="40" rx="3" fill="#8a5a3b"/><circle cx="0" cy="-58" r="30" fill="url(#hz_t3)"/><circle cx="-10" cy="-68" r="9" fill="#fff" opacity=".25"/></g>';
-  const plot=(x,y,k)=>{let s='<g transform="translate('+x+' '+y+') scale('+k+')"><ellipse cx="0" cy="8" rx="94" ry="24" fill="#000" opacity=".14" filter="url(#hz_b2)"/><ellipse cx="0" cy="0" rx="90" ry="24" fill="url(#hz_soil)"/><ellipse cx="0" cy="-4" rx="82" ry="18" fill="#9a6340" opacity=".45"/>';
-    [-56,-20,18,54].forEach((dx,i)=>{s+='<g transform="translate('+dx+' '+(-6+(i%2)*6)+')"><path d="M0 0 Q-3 -16 0 -30" stroke="#3f8a2e" stroke-width="4" fill="none"/><ellipse cx="-10" cy="-26" rx="11" ry="5.5" fill="#6fd17c" stroke="#3f8a2e" stroke-width="1.5" transform="rotate(-25 -10 -26)"/><ellipse cx="10" cy="-30" rx="11" ry="5.5" fill="#6fd17c" stroke="#3f8a2e" stroke-width="1.5" transform="rotate(25 10 -30)"/>'+(i%2?'':'<circle cx="0" cy="-34" r="5" fill="#ff6f91"/><circle cx="0" cy="-34" r="2" fill="#ffd23f"/>')+'</g>';});return s+'</g>';};
+  /* แปลงของแต่ละสัปดาห์ตามที่น้องเรียนจริง (ต้นไม้แบบเดียวกับในสวน): เรียนครบ = ต้นไม้โตเต็มต้น · กำลังเรียน = ต้นกล้าตามจำนวนตอน · ยังไม่เริ่ม = ดินเปล่า
+     วางสลับซ้าย-ขวาตามถนน สัปดาห์ 1 อยู่หน้าสุด ไล่ขึ้นไปหาโรงเรียน (สนามสอบ) */
+  const SPOT=[,[175,560,1],[825,565,1],[300,478,.72],[700,482,.72],[175,440,.58],[830,445,.58],[315,415,.48],[705,418,.48],[220,398,.42],[835,400,.42],[770,378,.36]];
+  const plots=()=>SPOT.map((t,w)=>[w,t]).filter(x=>x[1]).sort((a,b)=>a[1][1]-b[1][1]).map(([w,[x,y,k]])=>{const st=stat(w),d=st?st.d:0;
+    return '<g transform="translate('+x+' '+y+') scale('+k+')"><ellipse cx="0" cy="8" rx="64" ry="17" fill="#000" opacity=".14" filter="url(#hz_b2)"/><ellipse cx="0" cy="2" rx="58" ry="16" fill="url(#hz_soil)"/><ellipse cx="0" cy="-1" rx="50" ry="11" fill="#9a6340" opacity=".45"/>'+
+      (d?plant(d,st.g,w):'')+'<g transform="translate(-62 8)"><rect x="-2.5" y="-26" width="5" height="26" fill="#8a5a3b"/><rect x="-15" y="-42" width="30" height="20" rx="5" fill="#d9955a" stroke="#8a5a3b" stroke-width="2"/><text x="0" y="-27" text-anchor="middle" font-size="14" fill="#4a2d14">'+w+'</text></g></g>';}).join('');
   const fl=(x,y,k,c)=>{let s='<g transform="translate('+x+' '+y+') scale('+k+')"><path d="M0 0 Q-4 -30 0 -60" stroke="#3f8a2e" stroke-width="5" fill="none"/>';for(let i=0;i<6;i++){const a=i*Math.PI/3,px=(Math.cos(a)*12).toFixed(1),py=(-66+Math.sin(a)*12).toFixed(1);s+='<ellipse cx="'+px+'" cy="'+py+'" rx="10" ry="7" fill="'+c+'" transform="rotate('+(i*60)+' '+px+' '+py+')"/>';}return s+'<circle cx="0" cy="-66" r="8" fill="#ffd23f"/></g>';};
   let p='';for(let i=0;i<14;i++)p+='<circle class="pollen" cx="'+(60+i*67)+'" cy="'+(420+(i*37)%160)+'" r="'+(2+(i%3))+'" fill="#fff" opacity=".7" style="animation-delay:-'+(i*.55).toFixed(2)+'s"/>';
-  return '<svg class="hisc" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice"><defs>'+
+  /* จอแนวตั้ง: เห็นกว้างเกือบเต็มฉาก (แปลงทุกสัปดาห์อยู่ในจอ) แล้วต่อท้องฟ้าขึ้นไปด้านบนแทนการตัดข้าง */
+  const asp=innerWidth/Math.max(1,innerHeight),VW=asp<1.2?820:1000,VH=asp<1.2?Math.round(VW/asp):600,vy=600-VH,vb=asp<1.2?((1000-VW)/2)+' '+vy+' '+VW+' '+VH:'0 0 1000 600';
+  return '<svg class="hisc" viewBox="'+vb+'" preserveAspectRatio="xMidYMax slice" style="--y0:'+(vy-80)+'px"><defs>'+
    '<linearGradient id="hz_sky3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+SP.s[0]+'"/><stop offset=".75" stop-color="'+SP.s[1]+'"/><stop offset="1" stop-color="'+SP.s[2]+'"/></linearGradient>'+
    '<radialGradient id="hz_sun3"><stop offset="0" stop-color="#fff7c2"/><stop offset=".35" stop-color="#ffe066" stop-opacity=".9"/><stop offset="1" stop-color="#ffe066" stop-opacity="0"/></radialGradient>'+
    '<linearGradient id="hz_h1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+(hillC?hillC[0]:'#8fcf86')+'"/><stop offset=".5" stop-color="'+(hillC?hillC[1]:'#7dbf74')+'"/><stop offset="1" stop-color="'+(hillC?hillC[2]:'#6fb366')+'"/></linearGradient>'+
@@ -638,8 +644,8 @@ function scene3D(){const SP=skyNow(),dark=SP.dk>=.2,{f}=seasonNow();
    '<radialGradient id="hz_soil" cx=".45" cy=".35" r=".8"><stop offset="0" stop-color="#a8704a"/><stop offset="1" stop-color="#6b3f22"/></radialGradient>'+
    '<radialGradient id="hz_t3" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="'+(treeC?treeC[0]:'#8fe08a')+'"/><stop offset="1" stop-color="'+(treeC?treeC[1]:'#3f9e4d')+'"/></radialGradient>'+
    '<filter id="hz_b0"><feGaussianBlur stdDeviation=".6"/></filter><filter id="hz_b1"><feGaussianBlur stdDeviation="1.5"/></filter><filter id="hz_b2"><feGaussianBlur stdDeviation="4"/></filter><filter id="hz_b3" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="7"/></filter></defs>'+
-   '<rect width="1000" height="600" fill="url(#hz_sky3)"/><g class="cam">'+
-   ''+(SP.star?'<g fill="#fff" opacity="'+SP.star.toFixed(2)+'">'+Array.from({length:40},(_,i)=>'<circle cx="'+((i*137)%1000)+'" cy="'+((i*71)%300)+'" r="'+(i%4?1.3:2.2)+'" opacity="'+(.5+(i%3)*.2)+'"><animate attributeName="opacity" values=".2;1;.2" dur="'+(2+i%4)+'s" repeatCount="indefinite" begin="-'+(i%5)+'s"/></circle>').join('')+'</g>':'')+
+   '<rect y="'+vy+'" width="1000" height="'+(600-vy)+'" fill="url(#hz_sky3)"/><g class="cam">'+
+   ''+(SP.star?'<g fill="#fff" opacity="'+SP.star.toFixed(2)+'">'+Array.from({length:40},(_,i)=>'<circle cx="'+((i*137)%1000)+'" cy="'+(vy+(i*71)%(300-vy))+'" r="'+(i%4?1.3:2.2)+'" opacity="'+(.5+(i%3)*.2)+'"><animate attributeName="opacity" values=".2;1;.2" dur="'+(2+i%4)+'s" repeatCount="indefinite" begin="-'+(i%5)+'s"/></circle>').join('')+'</g>':'')+
      (SP.moon?moonSVG(Math.round(SP.moon[0]),Math.round(SP.moon[1]),SP.moon[2],SP.moon[3]):'')+
      (SP.sun?'<circle cx="'+SP.sun[0].toFixed(0)+'" cy="'+SP.sun[1].toFixed(0)+'" r="'+(SP.sun[2]*3.2).toFixed(0)+'" fill="url(#hz_sun3)"/><circle cx="'+SP.sun[0].toFixed(0)+'" cy="'+SP.sun[1].toFixed(0)+'" r="'+SP.sun[2].toFixed(0)+'" fill="'+SP.sun[3]+'"/>':'')+''+
    (f.rb&&!dark?'<g opacity="'+(f.rb*.55).toFixed(2)+'" fill="none" stroke-width="15">'+['#ff6b6b','#ffa94d','#ffe066','#69db7c','#4dabf7','#9775fa'].map((c,i)=>'<path d="M'+(80+i*15)+' 360 A'+(420-i*15)+' '+(270-i*15)+' 0 0 1 '+(920-i*15)+' 360" stroke="'+c+'"/>').join('')+'</g>':'')+
@@ -651,7 +657,7 @@ function scene3D(){const SP=skyNow(),dark=SP.dk>=.2,{f}=seasonNow();
    '<rect x="-40" y="380" width="1080" height="240" fill="url(#hz_lawn3)"/>'+
    '<path id="hz_road" d="M380 620 C420 540 470 470 560 418 C610 392 660 378 696 368 L712 372 C680 384 640 402 600 428 C540 470 540 540 640 620 Z" fill="url(#hz_path3)"/><path id="hz_rim" d="M380 620 C420 540 470 470 560 418 C610 392 660 378 696 368" stroke="#c99b5c" stroke-width="3" fill="none" opacity=".6"/>'+
    (f.pud||f.rain?'<g fill="#9fd3f5" opacity=".55"><ellipse cx="250" cy="470" rx="46" ry="9"/><ellipse cx="700" cy="560" rx="60" ry="11"/><ellipse cx="900" cy="470" rx="34" ry="7"/></g>':'')+
-   plot(300,430,.55)+plot(770,436,.55)+plot(150,520,1)+plot(860,528,1)+(f.rain||f.snow?'':p)+
+   plots()+(f.rain||f.snow?'':p)+
    '<rect x="-40" y="-40" width="1080" height="680" fill="'+SP.w[0]+'" opacity="'+SP.w[1].toFixed(3)+'"/><rect x="-40" y="-40" width="1080" height="680" fill="#141a48" opacity="'+(SP.dk*.6).toFixed(3)+'"/>'+(dark||f.rain||f.snow?'':flyers())+'<ellipse cx="500" cy="528" rx="84" ry="15" fill="#1e4a14" opacity=".28" filter="url(#hz_b2)"/>'+
    '<svg x="380" y="248" width="240" height="280" viewBox="0 0 120 140" overflow="visible">'+KLA3+'</svg>'+
    '<g filter="url(#hz_b3)" opacity=".95">'+fl(40,640,1.6,'#ff8fb1')+fl(110,660,1.3,'#ffd23f')+fl(950,650,1.7,'#c9b6ff')+fl(880,670,1.2,'#ff8fb1')+'</g>'+

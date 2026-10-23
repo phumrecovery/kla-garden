@@ -34,6 +34,9 @@ a.chip{background:#ffc23d;color:#4a3000;text-decoration:none;box-shadow:0 3px 0 
 #sk0,#sk1,#l0,#l1{transition:stop-color 1.4s}
 #h1,#clouds,.dt,#sunc,#tint{transition:fill 1.4s,opacity 1.4s}
 #sun,#moon{transition:transform 1.6s ease-in-out,opacity 1.4s}
+#sk0,#sk1,#l0,#l1{transition:stop-color 1.6s}
+/* หน้าดวงอาทิตย์/ดวงจันทร์: แสดงเฉพาะส่วนที่ .on (ตา ปาก) */
+.chr [data-v]{display:none}.chr [data-v].on{display:inline}
 #rb,#pud,#crit,#birds,#kite,#stars,#ffs,#lit,.sc{transition:opacity 1.4s}
 .still *{transition:none!important}
 .tw{animation:tw 1.8s ease-in-out infinite alternate}@keyframes tw{to{opacity:.25}}
@@ -244,6 +247,32 @@ const TREE=[
  // 11 ต้นไม้ทองประดับโคม (เทศกาลเก็บเกี่ยว)
  g=>TK+blobs('#ffcf3f','#ffdb6e')+deco(g,(x,y)=>'<path d="M'+x+' '+(y-12)+' v4" stroke="#8a5a3b" stroke-width="1.2"/><rect x="'+(x-5)+'" y="'+(y-8)+'" width="10" height="13" rx="4" fill="#e5484d" stroke="#a83232" stroke-width="1"/><rect x="'+(x-3)+'" y="'+(y-9)+'" width="6" height="2" fill="#ffd23f"/><rect x="'+(x-3)+'" y="'+(y+4)+'" width="6" height="2" fill="#ffd23f"/>')
 ];
+/* ดวงอาทิตย์/ดวงจันทร์ เป็นตัวละคร: ตา (เปิด ยิ้มหยี หลับ ตาโต) ปาก (ยิ้ม โอ หาว หัวเราะ เขิน แลบลิ้น) แก้ม คิ้ว มือสองข้าง
+   วาดในกรอบรัศมี 38 หน่วย (ดวงจันทร์ย่อ .9) จุดกลางหน้า = 0,0 · ส่วนที่ขยับห่อด้วย <g> ที่ไม่มี transform เพื่อให้ขยับรอบจุดกลางของตัวเอง */
+function chrSVG(kind){const sun=kind==='sun',ink=sun?'#5a4300':'#6b5a1e',skin=sun?'#ffd23f':'#fff3b0',edge=sun?'#e3a400':'#d6c46a',
+  L='stroke="'+ink+'" fill="none" stroke-linecap="round"',dv=(v,on,x)=>'data-v="'+v+'"'+(on?' class="on"':'')+(x||'');
+  const eye=(x,c)=>'<g transform="translate('+x+' -5)"><g class="'+c+'">'+
+    '<g '+dv('open',sun)+'><ellipse rx="3.8" ry="4.8" fill="'+ink+'"/><circle cx="1.3" cy="-1.8" r="1.35" fill="#fff"/></g>'+
+    '<path '+dv('happy')+' d="M-5 1.5 Q0 -4.5 5 1.5" '+L+' stroke-width="2.6"/>'+
+    '<path '+dv('sleep',!sun)+' d="M-5 -1 Q0 4 5 -1" '+L+' stroke-width="2.6"/>'+
+    '<g '+dv('wide')+'><circle r="6.2" fill="#fff" stroke="'+ink+'" stroke-width="1.6"/><circle r="3.6" fill="'+ink+'"/><circle cx="1.3" cy="-1.4" r="1.2" fill="#fff"/></g></g></g>';
+  const hf=sun?'#ffb84a':'#f1dc86',hs=sun?'#c97f00':'#a8934a';  /* มือสีเข้มกว่าหน้าเล็กน้อย จะได้เห็นชัดตอนปิดตา/ปิดปาก */
+  const hand=(x,c)=>'<g transform="translate('+x+' 18)"><g class="h '+c+'" style="opacity:0"><ellipse cy="1.2" rx="8.6" ry="7.6" fill="#000" opacity=".12"/><ellipse rx="8" ry="7.2" fill="'+hf+'" stroke="'+hs+'" stroke-width="2.2"/><path d="M-3.2 -6.4 v3.6 M0.8 -7 v3.6 M4.6 -6.2 v3" stroke="'+hs+'" stroke-width="1.4" stroke-linecap="round"/></g></g>';
+  let b=sun?'<g class="rays">'+Array.from({length:12},(_,i)=>'<rect x="-4" y="-66" width="8" height="20" rx="4" fill="#ffd23f" transform="rotate('+i*30+')"/>').join('')+'</g><circle id="sunc" r="38" style="fill:#ffd23f"/>'
+   :'<circle r="60" fill="#fff6c8" opacity=".18"/><circle r="38" fill="'+skin+'"/><circle cx="-19" cy="-22" r="4.5" fill="#efe09a"/><circle cx="18" cy="-24" r="3" fill="#efe09a"/><circle cx="-3" cy="-29" r="2.4" fill="#efe09a"/>';
+  b+='<g class="brows" style="opacity:0"><path d="M-17 -15.5 Q-12 -19 -7 -15.5" '+L+' stroke-width="2.2"/><path d="M7 -15.5 Q12 -19 17 -15.5" '+L+' stroke-width="2.2"/></g>'+
+   '<g class="blush" style="opacity:.55"><ellipse cx="-22" cy="7" rx="6" ry="3.4" fill="#ff8a7a"/><ellipse cx="22" cy="7" rx="6" ry="3.4" fill="#ff8a7a"/></g>'+eye(-12,'eL')+eye(12,'eR')+
+   '<g transform="translate(0 11)"><g class="mo">'+
+    '<path '+dv('smile',1)+' d="M-9 -2 Q0 7 9 -2" '+L+' stroke-width="3.2"/>'+
+    '<g '+dv('o')+'><ellipse rx="4.4" ry="5.6" fill="#7a2e12"/><ellipse cy="2.6" rx="2.4" ry="1.6" fill="#ff7d7d"/></g>'+
+    '<g '+dv('yawn')+'><g class="yw"><ellipse rx="6.8" ry="8.6" fill="#7a2e12"/><ellipse cy="4.4" rx="4" ry="2.8" fill="#ff7d7d"/></g></g>'+
+    '<g '+dv('laugh')+'><path d="M-10.5 -3 Q0 13 10.5 -3Z" fill="#7a2e12" stroke="'+ink+'" stroke-width="2" stroke-linejoin="round"/><path d="M-5 4.2 Q0 8.6 5 4.2 Q0 2.4 -5 4.2Z" fill="#ff7d7d"/></g>'+
+    '<path '+dv('wavy')+' d="M-9 0 q2.25 -2.6 4.5 0 t4.5 0 t4.5 0 t4.5 0" '+L+' stroke-width="2.6"/>'+
+    '<g '+dv('tongue')+'><path d="M-9 -2 Q0 6 9 -2" '+L+' stroke-width="3"/><path d="M-0.5 1.6 q0 7.5 4.6 7.5 q4.6 0 4.6 -7.5Z" fill="#ff6f7d" stroke="#c94a5a" stroke-width="1.2"/><path d="M4.1 3 v4" stroke="#c94a5a" stroke-width="1"/></g>'+
+   '</g></g>';
+  if(!sun)b+='<g class="cap" style="opacity:0"><path d="M-30 -18 C-24 -44 4 -54 24 -40 C34 -32 42 -18 48 -6 L40 -4 C34 -16 26 -24 14 -28 Q-8 -34 -30 -18Z" fill="#7b8cf0" stroke="#5563c4" stroke-width="2"/><path d="M-32 -16 Q-4 -38 22 -28" stroke="#fff" stroke-width="7" stroke-linecap="round" fill="none"/><circle cx="46" cy="-4" r="6" fill="#fff" stroke="#d9d9f2" stroke-width="1.5"/></g>';
+  b+=hand(-40,'hL')+hand(40,'hR');
+  return '<g class="fxw chr" data-act="'+kind+'"><circle r="64" fill="#000" fill-opacity="0"/>'+(sun?b:'<g transform="scale(.9)">'+b+'</g>')+'</g>';}
 function plant(d,g,k){
   if(d===0)return '<ellipse cx="0" cy="-7" rx="6" ry="4" fill="#6b3f22"/><path d="M-2 -10 q2 -5 5 -6" stroke="#5cc46b" stroke-width="2" fill="none" opacity=".0"/>';
   const dl=(k*0.37%1).toFixed(2);
@@ -267,7 +296,7 @@ function build(){
   s+='<rect x="-1500" width="4000" height="460" fill="url(#sky)"/>';
   // rainbow + sun
   s+='<g id="rb" data-act="rb" opacity=".38" fill="none" stroke-width="11">'+['#ff6b6b','#ffb347','#ffe66d','#7ed957','#6ec6ff','#b28dff'].map((c,i)=>'<path d="M'+(60+i*11)+' 220 A'+(170-i*11)+' '+(170-i*11)+' 0 0 1 '+(400-i*11)+' 220" stroke="'+c+'"/>').join('')+'</g>';
-  s+='<g id="sun" style="transform:translate(905px,95px)"><g class="fxw" data-act="sun"><g class="rays">'+Array.from({length:12},(_,i)=>'<rect x="-4" y="-66" width="8" height="20" rx="4" fill="#ffd23f" transform="rotate('+i*30+')"/>').join('')+'</g><circle id="sunc" r="38" style="fill:#ffd23f"/><circle cx="-12" cy="-4" r="4" fill="#5a4300"/><circle cx="12" cy="-4" r="4" fill="#5a4300"/><path d="M-12 10 Q0 20 12 10" stroke="#5a4300" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="-22" cy="8" r="5" fill="#ff9f68" opacity=".7"/><circle cx="22" cy="8" r="5" fill="#ff9f68" opacity=".7"/></g></g>';
+  s+='<g id="sun" style="transform:translate(905px,95px)">'+chrSVG('sun')+'</g><g id="moon" style="opacity:0;transform:translate(820px,100px)">'+chrSVG('moon')+'</g>';
   s+='<g id="clouds" style="fill:#fff">';[[110,150,-20],[165,210,-90],[130,120,-60],[150,180,-150]].forEach(([y,dur,dl],i)=>{const k=[1,.8,.65,.9][i];s+='<g class="cloud" style="animation-duration:'+dur+'s;animation-delay:'+dl+'s"><g transform="translate(0 '+y+') scale('+k+')" opacity=".95"><g class="fxw" data-act="cloud"><ellipse cx="0" cy="0" rx="50" ry="22"/><circle cx="-22" cy="-12" r="22"/><circle cx="12" cy="-20" r="28"/><circle cx="38" cy="-4" r="20"/></g></g></g>';});s+='</g>';
   // birds
   s+='<g id="birds"><g class="cloud" style="animation-duration:90s;animation-delay:-30s" stroke="#5b6b8c" stroke-width="3" fill="none" stroke-linecap="round"><g class="fxw" data-act="bird"><rect x="-6" y="62" width="76" height="44" fill="#000" fill-opacity="0" stroke="none"/><path d="M0 80 q8 -8 16 0 q8 -8 16 0"/><path d="M40 96 q6 -6 12 0 q6 -6 12 0"/></g></g></g>';
@@ -302,8 +331,7 @@ function build(){
   s+=petsSVG();
   s+='<g id="flowers"></g><g id="walker"><g class="hop"><g class="fxw" data-act="kla"><svg width="120" height="140" viewBox="0 0 120 140" overflow="visible">'+KLA+'</svg></g></g></g>';
   s+='<rect id="tint" x="-1500" width="4000" height="460" style="mix-blend-mode:multiply;pointer-events:none;opacity:0;fill:#000"/><g id="glow" style="pointer-events:none">'+partySVG();
-  seed=5;s+='<g id="stars" style="opacity:0">';for(let i=0;i<34;i++){const x=rnd()*1000,y=10+rnd()*150;s+='<g transform="translate('+x.toFixed(0)+' '+y.toFixed(0)+')"><path class="tw" style="animation-delay:-'+(rnd()*2).toFixed(1)+'s" d="M0 -5 L1.4 -1.4 L5 0 L1.4 1.4 L0 5 L-1.4 1.4 L-5 0 L-1.4 -1.4Z" fill="#fff6c8" transform="scale('+(0.6+rnd()*0.9).toFixed(2)+')"/></g>';}s+='</g>';
-  s+='<g id="moon" style="opacity:0;transform:translate(820px,100px)"><g class="fxw" data-act="moon"><circle r="54" fill="#fff6c8" opacity=".18"/><circle r="34" fill="#fff3b0"/><circle cx="-12" cy="-10" r="6" fill="#efe09a"/><circle cx="10" cy="12" r="8" fill="#efe09a"/><circle cx="14" cy="-12" r="4" fill="#efe09a"/><path d="M-10 4 Q-6 8 -2 4 M4 4 Q8 8 12 4" stroke="#8a7a3a" stroke-width="2.5" fill="none" stroke-linecap="round"/></g></g>';
+  seed=5;s+='<g id="stars" style="opacity:0">';for(let i=0;i<34;i++){const x=rnd()*1000,y=10+rnd()*150;if(Math.hypot(x-820,y-108)<62)continue;s+='<g transform="translate('+x.toFixed(0)+' '+y.toFixed(0)+')"><g class="st"><path class="tw" style="animation-delay:-'+(rnd()*2).toFixed(1)+'s" d="M0 -5 L1.4 -1.4 L5 0 L1.4 1.4 L0 5 L-1.4 1.4 L-5 0 L-1.4 -1.4Z" fill="#fff6c8" transform="scale('+(0.6+rnd()*0.9).toFixed(2)+')"/></g></g>';}s+='</g>';
   s+='<g id="lit" style="opacity:0" fill="#ffe27a"><rect x="54" y="180" width="22" height="18" rx="3"/><rect x="120" y="180" width="22" height="18" rx="3"/><circle cx="98" cy="150" r="9" fill="#fff3b0"/></g>';
   s+='<g id="ffs" style="opacity:0">';for(let i=0;i<14;i++){const x=40+rnd()*920,y=250+rnd()*190;s+='<g transform="translate('+x.toFixed(0)+' '+y.toFixed(0)+')"><g class="ff" style="animation-delay:-'+(rnd()*4).toFixed(1)+'s;animation-duration:'+(3+rnd()*3).toFixed(1)+'s"><circle r="9" fill="#e8ff7a" opacity=".3"/><circle r="3.5" fill="#f6ffb0"/></g></g>';}s+='</g></g>';
   // ชั้นกดเลือกแปลง (บนสุด): ผีเสื้อ ผึ้ง สัตว์ และน้องกล้าบินผ่าน/ยืนบังแปลงอยู่บ่อย → ให้การกดตรงแปลงเลือกสัปดาห์เสมอ
@@ -330,6 +358,9 @@ function sunTimes(d){const R=Math.PI/180,lat=13.75,lon=100.5,N=Math.floor((d-new
   return [720-4*(lon+ha)-eq+tz,720-4*(lon-ha)-eq+tz];}
 const phaseNow=()=>{const d=NOW(),m=d.getHours()*60+d.getMinutes(),[r,s]=sunTimes(d);return m<300?'late':m<r+45?'dawn':m<660?'morning':m<780?'noon':m<s-75?'afternoon':m<s-20?'evening':m<s+15?'sunset':m<s+60?'dusk':m<1320?'night':'late';};
 const DARK=['dusk','night','late'];
+/* กดดวงอาทิตย์ → กลางคืน · กดดวงจันทร์ → กลางวัน (จำไว้จนปิดแอป) · เปิดแอปใหม่ใช้เวลาจริงของเครื่อง */
+let skyOv=(()=>{try{return sessionStorage.getItem('kla-sky')||null}catch(e){return null}})();
+const skyPhase=()=>{const r=phaseNow(),d=DARK.includes(r);return skyOv==='day'&&d?'morning':skyOv==='night'&&!d?'night':r;};
 const PH={
  dawn:{n:'🌅 เช้าตรู่',sky:['#ff9f8a','#ffe6c0'],sun:[180,190,1.15,'#ffc23d'],tint:['#ffb48a',.16],cloud:'#ffe9e0'},
  morning:{n:'🌤️ ยามเช้า',sky:['#8fd3ff','#eaf8ff'],sun:[300,120,1,'#ffd23f']},
@@ -354,7 +385,7 @@ const TH=[
  {n:'ฤดูหนาว หิมะโปรยปราย',pets:['fox'],hill:'#eef4fb',lawn:['#d2e8c8','#b4d6a4'],tree:'#3f8f6a',wcloud:'#f4f8ff',snow:1,fx:'snow'},
  {n:'หิมะขาวโพลน',hill:'#dfe7f4',lawn:['#c4d9be','#a7c69b'],tree:'#3f8f6a',snow:1,fx:'snow'},
  {n:'งานฉลอง ปาร์ตี้รอบกองไฟ',pets:['party'],fx:'works'}];
-function moodOf(w){const ph=phaseNow(),dark=DARK.includes(ph),f=TH[w]||{},t=Object.assign({},DAY,PH[ph]);
+function moodOf(w){const ph=skyPhase(),dark=DARK.includes(ph),f=TH[w]||{},t=Object.assign({},DAY,PH[ph]);
   ['hill','lawn','tree','pets','snow'].forEach(k=>{if(f[k]!==undefined)t[k]=f[k];});
   if(f.rain){if(!dark)Object.assign(t,{sky:['#7d8ea6','#c3cdd9'],cloud:'#a9b3c3',sun:0,tint:['#7d8cab',.32]});Object.assign(t,{crit:0,birds:0,pud:1});}
   if(f.pud)t.pud=1;if(!dark){if(f.rb)t.rb=f.rb;if(f.kite)t.kite=1;if(f.wcloud)t.cloud=f.wcloud;}
@@ -403,10 +434,95 @@ function drop(x,y,ch,dist,dur=1100,size){const f=fxEl(x,y,ch,size),dx=rr(-12,12)
   f.animate([{transform:'translate(-50%,-50%) rotate(0)',opacity:1},{transform:'translate(calc(-50% + '+dx+'px),calc(-50% + '+dist+'px)) rotate(40deg)',opacity:1,offset:.7},{transform:'translate(calc(-50% + '+dx*1.5+'px),calc(-50% + '+(dist-14)+'px)) rotate(10deg)',opacity:1,offset:.82},{transform:'translate(calc(-50% + '+dx*2+'px),calc(-50% + '+dist+'px)) rotate(0)',opacity:0}],{duration:dur,easing:'ease-in'}).onfinish=()=>f.remove();}
 let talkT=null;function talk(t){clearTimeout(talkT);say(t,true);talkT=setTimeout(()=>say(msgFor(selW)),3800);}
 const isNight=()=>[6,10,11].includes(curMood),isSnow=()=>[9,10].includes(curMood);
-const KLA_SAY=['ฮิฮิ จั๊กจี้!','กล้าชอบสวนนี้มากเลย','ลองแตะดวงอาทิตย์ดูสิ','ลองแตะก้อนเมฆดูสิ','ผีเสื้อสวยจัง จับได้ไหมนะ','วันนี้ดูคลิปด้วยกันนะ','ต้นไม้โตเพราะหนูตั้งใจเรียน'];
+const KLA_SAY=['ฮิฮิ จั๊กจี้!','กล้าชอบสวนนี้มากเลย','ลองแตะดวงอาทิตย์ดูสิ','ลองแตะดวงจันทร์ดูสิ','ลองแตะก้อนเมฆดูสิ','ผีเสื้อสวยจัง จับได้ไหมนะ','วันนี้ดูคลิปด้วยกันนะ','ต้นไม้โตเพราะหนูตั้งใจเรียน'];
+/* ---- ดวงอาทิตย์/ดวงจันทร์ทำท่าทาง แล้วสลับกลางวัน-กลางคืน ---- */
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function setFace(c,f){[['.eL',f.eL],['.eR',f.eR],['.mo',f.m]].forEach(([q,v])=>c.querySelectorAll(q+' [data-v]').forEach(e=>e.classList.toggle('on',e.dataset.v===v)));}
+const FACE0={sun:{eL:'open',eR:'open',m:'smile'},moon:{eL:'sleep',eR:'sleep',m:'smile'}};
+const HT=(dx,dy,r=0,k=1,o=1)=>({transform:'translate('+dx+'px,'+dy+'px) rotate('+r+'deg) scale('+k+')',opacity:o});
+const H0=HT(0,0,0,.4,0);
+/* มือ: ตำแหน่งเทียบจุดพักข้างตัว (ซ้าย -40,18 · ขวา 40,18) */
+const EMO={
+ yawn:{sun:'ดวงอาทิตย์หาวหวอด ง่วงแล้ว ขอไปนอนก่อนนะ',moon:'ดวงจันทร์หาวแล้ว ง่วงจัง ขอไปนอนก่อนนะ',d:2500,run(c,A,at,kind){setFace(c,{eL:'sleep',eR:'sleep',m:'yawn'});
+   A('.yw',[{transform:'scale(.3)'},{transform:'scale(1.15)',offset:.35},{transform:'scale(1)',offset:.75},{transform:'scale(.45)'}],2300);
+   A('.hR',[H0,{...HT(-30,-6),offset:.25},{...HT(-30,-9),offset:.4},{...HT(-30,-5),offset:.52},{...HT(-30,-9),offset:.64},{...HT(-30,-6),offset:.8},H0],2300);
+   A(null,[{transform:'rotate(0)'},{transform:'rotate(-7deg) translateY(-3px)',offset:.4},{transform:'rotate(-7deg)',offset:.75},{transform:'rotate(0)'}],2300);
+   if(kind==='moon')A('.cap',[{opacity:0,transform:'translate(0,-22px)'},{opacity:1,transform:'translate(0,0)',offset:.2},{opacity:1,transform:'translate(0,0)'}],2500);
+   tone([392,370,349,330,311,294],.16,'sine',.07);at(1300,(x,y)=>spray(x+24,y-24,['💤','z','Z'],{n:3,r:34,up:44,size:'22px'}));}},
+ surprise:{sun:'ว้าย! ตกใจหมด ได้เวลาพระจันทร์แล้วเหรอ',moon:'ว้าย! เช้าแล้วเหรอเนี่ย',d:2400,run(c,A,at){setFace(c,{eL:'wide',eR:'wide',m:'o'});
+   A('.brows',[{opacity:0,transform:'translateY(2px)'},{opacity:1,transform:'translateY(-2px)',offset:.15},{opacity:1,transform:'translateY(-2px)',offset:.85},{opacity:0,transform:'translateY(0)'}],2400);
+   ['.eL','.eR'].forEach(q=>A(q,[{transform:'scale(.6)'},{transform:'scale(1.18)',offset:.25},{transform:'scale(1)'}],700));
+   A(null,[{transform:'translateY(0) scale(1)'},{transform:'translateY(-16px) scale(1.08)',offset:.16},{transform:'translateY(0) scale(1)',offset:.34},{transform:'translateY(0)'}],2400);
+   A('.hL',[H0,{...HT(10,-14),offset:.15},{...HT(10,-14,-12),offset:.3},{...HT(10,-14,10),offset:.45},{...HT(10,-14),offset:.85},H0],2400);
+   A('.hR',[H0,{...HT(-10,-14),offset:.15},{...HT(-10,-14,12),offset:.3},{...HT(-10,-14,-10),offset:.45},{...HT(-10,-14),offset:.85},H0],2400);
+   tone([660,990,1320],.06,'square',.05);at(150,(x,y)=>spray(x,y-48,['❗','❕'],{n:2,r:26,up:30}));}},
+ shy:{sun:'อุ๊ย เขินจัง ขอไปแอบหลังภูเขาก่อนนะ',moon:'อุ๊ย เขินจัง ขอไปหลบก่อนนะ',d:2500,run(c,A,at){setFace(c,{eL:'happy',eR:'happy',m:'wavy'});
+   A('.blush',[{opacity:.55,transform:'scale(1)'},{opacity:1,transform:'scale(1.25)',offset:.3},{opacity:1,transform:'scale(1.12)',offset:.55},{opacity:1,transform:'scale(1.25)',offset:.8},{opacity:.55,transform:'scale(1)'}],2500);
+   A('.hL',[H0,{...HT(28,-23),offset:.2},{...HT(28,-21),offset:.5},{...HT(28,-23),offset:.8},H0],2500);
+   A('.hR',[H0,{...HT(-28,-23),offset:.2},{...HT(-28,-21),offset:.5},{...HT(-28,-23),offset:.8},H0],2500);
+   A(null,[{transform:'rotate(0)'},{transform:'rotate(-6deg)',offset:.2},{transform:'rotate(6deg)',offset:.4},{transform:'rotate(-6deg)',offset:.6},{transform:'rotate(5deg)',offset:.8},{transform:'rotate(0)'}],2500);
+   tone([660,784,660,784],.13,'triangle',.06);at(600,(x,y)=>spray(x,y-20,['💕','💗'],{n:3,r:40,up:36}));at(1500,(x,y)=>spray(x,y-20,['💕'],{n:2,r:34,up:36}));}},
+ wave:{sun:'บ๊ายบาย พรุ่งนี้เช้าเจอกันใหม่นะ',moon:'บ๊ายบาย ดวงอาทิตย์มาแล้ว อรุณสวัสดิ์',d:2600,run(c,A,at){setFace(c,{eL:'happy',eR:'happy',m:'laugh'});
+   A('.hR',[H0,{...HT(-4,-44),offset:.15},{...HT(-4,-44,-25),offset:.27},{...HT(-4,-44,25),offset:.39},{...HT(-4,-44,-25),offset:.51},{...HT(-4,-44,25),offset:.63},{...HT(-4,-44,-15),offset:.75},{...HT(-4,-44),offset:.86},H0],2600,'0px 9px');
+   A(null,[{transform:'translateY(0)'},{transform:'translateY(-5px)',offset:.3},{transform:'translateY(0)',offset:.5},{transform:'translateY(-5px)',offset:.7},{transform:'translateY(0)'}],2600);
+   tone([523,659,784,659],.12,'triangle',.06);at(500,(x,y)=>spray(x+30,y-30,['✨'],{n:3,r:26,up:20,size:'18px'}));}},
+ funny:{sun:'แลบลิ้นแผล่บ ล้อเล่นน่า ฮิฮิ',moon:'แลบลิ้นแผล่บ ล้อเล่นน่า ฮิฮิ',d:2400,run(c,A,at){setFace(c,{eL:'happy',eR:'open',m:'tongue'});
+   A(null,[{transform:'scale(1,1)'},{transform:'scale(1.14,.86)',offset:.14},{transform:'scale(.9,1.1)',offset:.28},{transform:'scale(1.12,.88)',offset:.42},{transform:'scale(.94,1.06)',offset:.56},{transform:'scale(1)',offset:.7},{transform:'scale(1)'}],2400);
+   A('.hL',[H0,{...HT(2,-34),offset:.15},{...HT(2,-34,-22),offset:.3},{...HT(2,-34,18),offset:.45},{...HT(2,-34,-22),offset:.6},{...HT(2,-34,18),offset:.75},{...HT(2,-34),offset:.85},H0],2400,'0px 9px');
+   tone([660,520,660,520,784],.09,'square',.05);at(400,(x,y)=>spray(x,y-30,['ฮิ','ฮิ','😜'],{n:3,r:40,up:34,size:'22px'}));}},
+ peek:{sun:'จ๊ะเอ๋! ได้เวลาพระจันทร์แล้ว',moon:'จ๊ะเอ๋! เช้าแล้วจ้า',d:2500,run(c,A,at){setFace(c,{eL:'open',eR:'open',m:'smile'});
+   A('.hL',[H0,{...HT(28,-23),offset:.15},{...HT(28,-23),offset:.42},{...HT(-4,-22),offset:.5},{...HT(-4,-22),offset:.85},H0],2500);
+   A('.hR',[H0,{...HT(-28,-23),offset:.15},{...HT(-28,-23),offset:.42},{...HT(4,-22),offset:.5},{...HT(4,-22),offset:.85},H0],2500);
+   A(null,[{transform:'translateY(0) scale(1)'},{transform:'translateY(0) scale(.95)',offset:.42},{transform:'translateY(-12px) scale(1.08)',offset:.52},{transform:'translateY(0) scale(1)',offset:.65},{transform:'translateY(0) scale(1)'}],2500);
+   at(1050,(x,y)=>{setFace(c,{eL:'wide',eR:'wide',m:'laugh'});tone([784,1047,1319],.07,'triangle',.07);spray(x,y-10,['✨','⭐'],{n:6,r:56,up:10});});}},
+ cheer:{sun:'วันนี้ตั้งใจเรียนเก่งมาก พักผ่อนให้พอนะ',moon:null,d:2500,run(c,A,at){setFace(c,{eL:'happy',eR:'happy',m:'laugh'});
+   const up=(dx)=>[H0,{...HT(dx,-48),offset:.15},{...HT(dx,-40),offset:.27},{...HT(dx,-48),offset:.39},{...HT(dx,-40),offset:.51},{...HT(dx,-48),offset:.63},{...HT(dx,-48),offset:.85},H0];
+   A('.hL',up(4),2500);A('.hR',up(-4),2500);
+   A(null,[{transform:'translateY(0)'},{transform:'translateY(-8px)',offset:.15},{transform:'translateY(0)',offset:.27},{transform:'translateY(-8px)',offset:.39},{transform:'translateY(0)',offset:.51},{transform:'translateY(-8px)',offset:.63},{transform:'translateY(0)',offset:.75},{transform:'translateY(0)'}],2500);
+   tone([523,659,784,1047],.1,'triangle',.07);at(500,(x,y)=>spray(x,y-30,['⭐','✨','🌟'],{n:6,r:60,up:30}));}},
+ sweat:{only:'sun',sun:'เหนื่อยจัง ส่องแสงมาทั้งวัน ขอพักก่อนนะ',d:2500,run(c,A,at){setFace(c,{eL:'sleep',eR:'sleep',m:'wavy'});
+   A('.hR',[H0,{...HT(-26,-38),offset:.2},{...HT(-54,-38),offset:.45},{...HT(-26,-38),offset:.65},{...HT(-26,-38),offset:.8},H0],2500);
+   A(null,[{transform:'translateY(0) scale(1)'},{transform:'translateY(5px) scale(.97,.95)',offset:.3},{transform:'translateY(5px) scale(.97,.95)',offset:.75},{transform:'translateY(0) scale(1)'}],2500);
+   tone([494,440,392],.18,'sine',.06);at(500,(x,y)=>spray(x-24,y-30,['💦'],{n:3,r:28,up:10,size:'20px'}));}},
+ stretch:{only:'moon',moon:'บิดขี้เกียจ อ๊า~ ได้เวลาตื่นแล้ว',d:2500,run(c,A,at){setFace(c,{eL:'sleep',eR:'sleep',m:'yawn'});
+   A('.yw',[{transform:'scale(.3)'},{transform:'scale(1)',offset:.35},{transform:'scale(.9)',offset:.75},{transform:'scale(.4)'}],2400);
+   A('.hL',[H0,{...HT(-6,-56),offset:.25},{...HT(-10,-60),offset:.55},{...HT(-6,-56),offset:.8},H0],2400);
+   A('.hR',[H0,{...HT(6,-56),offset:.25},{...HT(10,-60),offset:.55},{...HT(6,-56),offset:.8},H0],2400);
+   A(null,[{transform:'scale(1,1)'},{transform:'translateY(-6px) scale(.96,1.1)',offset:.4},{transform:'translateY(-6px) scale(.96,1.1)',offset:.7},{transform:'scale(1,1)'}],2400);
+   tone([330,392,440,523],.15,'sine',.06);at(1300,(x,y)=>spray(x,y-40,['✨'],{n:3,r:30,up:20,size:'18px'}));}}};
+function emoLine(k,kind){if(k==='cheer'&&kind==='moon'){const nx=wk.find(e=>!S(e.ep).seed);return nx?'ตื่นแล้ว! ไปเรียนตอน '+nx.title+' กันเถอะ สู้ ๆ':'ตื่นแล้ว! ไปทบทวนกันเถอะ สู้ ๆ';}return EMO[k][kind];}
+function pickEmo(kind){let last={};try{last=JSON.parse(sessionStorage.getItem('kla-emo')||'{}')}catch(e){}
+  const ks=Object.keys(EMO).filter(k=>(!EMO[k].only||EMO[k].only===kind)&&k!==last[kind]),k=ks[Math.floor(Math.random()*ks.length)];
+  last[kind]=k;try{sessionStorage.setItem('kla-emo',JSON.stringify(last))}catch(e){}return k;}
+/* เล่นท่าทาง k ของ kind แล้วคืนฟังก์ชันคืนหน้าปกติ (เรียกหลังตัวละครตกหลังเขาแล้ว จะไม่เห็นหน้าเด้งกลับ) */
+async function emote(kind,k){const c=$(kind).querySelector('.chr'),E=EMO[k],an=[],tm=[];
+  const A=(q,fr,dur,orig)=>{const el=q?c.querySelector(q):c;if(!el)return;if(orig)el.style.transformOrigin=orig;an.push(el.animate(fr,{duration:dur,easing:'ease-in-out',fill:'forwards'}));};
+  const at=(ms,fn)=>tm.push(setTimeout(()=>{const [x,y]=cen(c);fn(x,y);},ms));
+  E.run(c,A,at,kind);await sleep(E.d);
+  return ()=>{tm.forEach(clearTimeout);an.forEach(a=>a.cancel());setFace(c,FACE0[kind]);c.querySelectorAll('[style*="transform-origin"]').forEach(e=>e.style.transformOrigin='');};}
+let flipBusy=false;
+async function flipSky(from){if(flipBusy)return;flipBusy=true;
+  const toNight=from==='sun',k=pickEmo(from);clearTimeout(talkT);say((from==='sun'?'☀️ ':'🌙 ')+emoLine(k,from),true);
+  const done=await emote(from,k);
+  const real=phaseNow();skyOv=toNight?(DARK.includes(real)?null:'night'):(DARK.includes(real)?'day':null);try{sessionStorage.setItem('kla-sky',skyOv||'')}catch(e){}
+  // ตัวเดิมค่อย ๆ ตกลงหลังภูเขา
+  const el=$(from),mx=/translate\(([-\d.]+)px/.exec(el.style.transform),x=mx?+mx[1]:860;
+  el.style.transition='transform 1.2s cubic-bezier(.55,0,.8,.45),opacity .6s 1s';el.style.transform='translate('+x+'px,440px)';
+  tone(toNight?[784,659,523,392]:[392,523,659,784],.14,'triangle',.06);
+  await sleep(650);
+  // อีกตัวโผล่ขึ้นมาจากหลังภูเขา เด้งดึ๋ง แล้วท้องฟ้า สนาม ดาว รุ้ง เปลี่ยนตาม
+  const W=curMood<0?selW:curMood,t=moodOf(W),ot=$(toNight?'moon':'sun'),pos=toNight?t.moon:t.sun;
+  if(pos){ot.style.transition='none';ot.style.transform='translate('+pos[0]+'px,460px)'+(toNight?'':' scale('+pos[2]+')');ot.style.opacity=1;ot.getBoundingClientRect();
+    ot.style.transition='transform 1.5s cubic-bezier(.34,1.45,.6,1),opacity .4s';}
+  curMood=-1;mood(W);
+  if(toNight)$('stars').querySelectorAll('.st').forEach((g,i)=>g.animate([{transform:'scale(0)'},{transform:'scale(1.6)',offset:.6},{transform:'scale(1)'}],{duration:500,delay:500+i*45,easing:'ease-out',fill:'backwards'}));
+  else{const r=$('sun').querySelector('.rays');if(r)r.animate([{transform:'rotate(0) scale(.6)'},{transform:'rotate(300deg) scale(1.15)',offset:.7},{transform:'rotate(360deg) scale(1)'}],{duration:1500,easing:'ease-out'});
+    if(t.rb)$('rb').querySelectorAll('path').forEach((p,i)=>{p.setAttribute('pathLength','1');p.style.strokeDasharray='1';p.animate([{strokeDashoffset:1},{strokeDashoffset:0}],{duration:900,delay:700+i*130,easing:'ease-out',fill:'backwards'}).onfinish=()=>{p.style.strokeDasharray='';};});}
+  await sleep(1700);done();el.style.transition='';ot.style.transition='';
+  say(toNight?'ดวงจันทร์ขึ้นมาแล้ว ดาวเต็มฟ้าเลย':'ดวงอาทิตย์ขึ้นแล้ว ท้องฟ้าสดใส'+(t.rb?' มีรุ้งด้วย!':''),true);clearTimeout(talkT);talkT=setTimeout(()=>say(msgFor(selW)),3800);
+  flipBusy=false;}
 function act(k,el,e){const [x,y]=cen(el);
- if(k==='sun'){wig(el,[{transform:'rotate(0) scale(1)'},{transform:'rotate(200deg) scale(1.35)',offset:.5},{transform:'rotate(360deg) scale(1)'}],900);tone([523,659,784,1047],.08);spray(x,y,['✨','🌟','💛','✨'],{n:10,r:80,up:0});talk('ดวงอาทิตย์ยิ้มให้เลย อุ่นจัง');}
- else if(k==='moon'){wig(el,[{transform:'rotate(0)'},{transform:'rotate(-14deg)'},{transform:'rotate(12deg)'},{transform:'rotate(0)'}],800);tone([880,1175,1568],.12,'triangle',.08);[0,350,700].forEach(t=>setTimeout(shoot,t));talk('ดาวตกมาแล้ว อธิษฐานเลย!');}
+ if(k==='sun'||k==='moon'){flipSky(k);return;}
  else if(k==='cloud'){wig(el,[{transform:'scale(1)'},{transform:'scale(1.25,.8)',offset:.3},{transform:'scale(.9,1.12)',offset:.6},{transform:'scale(1)'}],600);tone([392,330],.12,'triangle');
    const ch=isSnow()?'❄️':isNight()?'✨':'💧';for(let i=0;i<8;i++)setTimeout(()=>drop(x+rr(-40,40),y+12,ch,rr(110,190),rr(900,1300),'18px'),i*90);}
  else if(k==='bfly'){wig(el,[{transform:'rotate(0) scale(1)'},{transform:'rotate(360deg) scale(1.8)'},{transform:'rotate(720deg) scale(1)'}],900);tone([784,988,1175],.07);spray(x,y,['💗','💖','✨'],{n:6,r:40,up:10});}

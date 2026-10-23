@@ -129,6 +129,13 @@ a.chip{background:#ffc23d;color:#4a3000;text-decoration:none;box-shadow:0 3px 0 
 @keyframes kBreath{50%{transform:scale(1.025,.975)}}
 #hi .kla3 .leaves{transform-box:view-box;transform-origin:60px 46px;animation:leaf 3s ease-in-out infinite}
 #hi .kla3.speak .bodyg{animation:kBob .5s ease-in-out infinite alternate}@keyframes kBob{to{transform:translateY(-3px) rotate(1.5deg)}}
+#hi .hz_fall{animation:hzfall linear infinite;transform-box:fill-box;transform-origin:center}@keyframes hzfall{from{transform:translate(0,-80px) rotate(0)}to{transform:translate(var(--dx),720px) rotate(var(--r))}}
+#hi .hz_rain{animation:hzrain linear infinite}@keyframes hzrain{from{transform:translate(0,-80px)}to{transform:translate(-60px,680px)}}
+#hi .hz_shoot{animation:hzshoot 5s ease-out infinite;opacity:0}@keyframes hzshoot{0%,78%{transform:translate(0,0);opacity:0}80%{opacity:1}92%{transform:translate(-260px,130px);opacity:0}100%{opacity:0}}
+#hi .hz_work{transform-box:fill-box;transform-origin:center;animation:hzwork 2.6s ease-out infinite;opacity:0}@keyframes hzwork{0%{transform:scale(.1);opacity:0}8%{opacity:1}60%{transform:scale(1);opacity:.9}100%{transform:scale(1.15);opacity:0}}
+#hi .hz_kite{transform-box:fill-box;transform-origin:50% 100%;animation:hzkite 2.6s ease-in-out infinite alternate}@keyframes hzkite{from{transform:rotate(-7deg) translate(-6px,3px)}to{transform:rotate(8deg) translate(8px,-8px)}}
+#hi .himood{position:absolute;top:calc(5% + clamp(40px,7vw,66px));left:50%;transform:translateX(-50%);background:rgba(255,255,255,.85);border-radius:999px;padding:3px 14px;font-size:clamp(13px,2vw,18px);white-space:nowrap;color:#3d3a52;box-shadow:0 2px 0 rgba(0,0,0,.08)}
+#hi.out .himood{opacity:0;transition:opacity .4s}
 #hi .hitop{position:absolute;top:5%;left:0;right:0;text-align:center;font-size:clamp(26px,5vw,48px);color:#fff;text-shadow:0 3px 0 #3f8a2e,0 6px 16px rgba(0,0,0,.25)}
 #hi .hibub{position:absolute;left:50%;top:15%;transform:translateX(-50%);width:max-content;max-width:min(86vw,620px);background:#fff;border-radius:24px;padding:12px 22px;font-size:clamp(18px,3.2vw,28px);line-height:1.45;text-align:center;color:#2d2340;box-shadow:0 8px 24px rgba(0,0,0,.15)}
 #hi .hibub::after{content:'';position:absolute;left:50%;bottom:-14px;margin-left:-14px;border:14px solid transparent;border-bottom:0;border-top-color:#fff}
@@ -313,7 +320,15 @@ const PETS=['rabbit','frog','turtle','squirrel','deer','fox','party'];
 const DAY={pets:[],sky:['#7cc8ff','#dff5ff'],hill:'#b9e69c',lawn:['#9fdb7e','#78c158'],tree:'#4fae55',cloud:'#fff',sun:[905,95,1,'#ffd23f'],moon:0,tint:['#000',0],rb:0,crit:1,birds:1,kite:0,pud:0,snow:0,stars:0,ff:0,lit:0,fx:''};
 const NIGHT={sky:['#151b47','#34437e'],cloud:'#5d6698',sun:0,moon:[820,100],tint:['#3d4a96',.5],crit:0,birds:0,stars:1,lit:1,ff:1};
 /* ช่วงเวลาจริงของเครื่อง (นาทีของวัน) ใช้ทั้งคำทักทาย ฉากต้อนรับ และท้องฟ้าในสวน */
-const phaseNow=()=>{const d=new Date(),m=d.getHours()*60+d.getMinutes();return m<300?'late':m<420?'dawn':m<660?'morning':m<780?'noon':m<960?'afternoon':m<1065?'evening':m<1120?'sunset':m<1200?'dusk':m<1320?'night':'late';};
+/* เวลาจริงของเครื่อง (ทดสอบได้ด้วย ?t=18:20 ต่อท้ายลิงก์) */
+const NOW=()=>{const d=new Date(),q=location.search.match(/[?&]t=(\d+):(\d+)/);if(q)d.setHours(+q[1],+q[2],0,0);return d;};
+/* เวลาพระอาทิตย์ขึ้น-ตกจริงของวันนี้ ที่กรุงเทพฯ (นาทีนับจากเที่ยงคืน) · สูตรประมาณของ NOAA คลาดไม่เกิน ~2 นาที */
+function sunTimes(d){const R=Math.PI/180,lat=13.75,lon=100.5,N=Math.floor((d-new Date(d.getFullYear(),0,0))/864e5),g=2*Math.PI/365*(N-1);
+  const eq=229.18*(.000075+.001868*Math.cos(g)-.032077*Math.sin(g)-.014615*Math.cos(2*g)-.040849*Math.sin(2*g));
+  const dc=.006918-.399912*Math.cos(g)+.070257*Math.sin(g)-.006758*Math.cos(2*g)+.000907*Math.sin(2*g)-.002697*Math.cos(3*g)+.00148*Math.sin(3*g);
+  const ha=Math.acos(Math.cos(90.833*R)/(Math.cos(lat*R)*Math.cos(dc))-Math.tan(lat*R)*Math.tan(dc))/R,tz=-d.getTimezoneOffset();
+  return [720-4*(lon+ha)-eq+tz,720-4*(lon-ha)-eq+tz];}
+const phaseNow=()=>{const d=NOW(),m=d.getHours()*60+d.getMinutes(),[r,s]=sunTimes(d);return m<300?'late':m<r+45?'dawn':m<660?'morning':m<780?'noon':m<s-75?'afternoon':m<s-20?'evening':m<s+15?'sunset':m<s+60?'dusk':m<1320?'night':'late';};
 const DARK=['dusk','night','late'];
 const PH={
  dawn:{n:'🌅 เช้าตรู่',sky:['#ff9f8a','#ffe6c0'],sun:[180,190,1.15,'#ffc23d'],tint:['#ffb48a',.16],cloud:'#ffe9e0'},
@@ -517,7 +532,7 @@ requestAnimationFrame(()=>{if(seen!==null&&got>+seen&&lastW){const pp=document.q
 const G=window.GREET,AMP=window.AMAP||{};
 const hs=t=>{let x=5381;for(const ch of t)x=((x*33)^ch.codePointAt(0))>>>0;return x.toString(16).padStart(8,'0');};
 const pick=a=>a[Math.floor(Math.random()*a.length)];
-function greetLines(){const now=new Date(),hr=now.getHours(),dw=now.getDay();let last={};try{last=JSON.parse(localStorage.getItem('kla-hi-last')||'{}')}catch(e){}
+function greetLines(){const now=NOW(),hr=now.getHours(),dw=now.getDay();let last={};try{last=JSON.parse(localStorage.getItem('kla-hi-last')||'{}')}catch(e){}
   const pk=(a,k)=>{const b=a.length>1?a.filter(x=>x!==last[k]):a;return last[k]=pick(b);};
   const ph=phaseNow(),pool=G.hello[ph==='sunset'?'evening':ph]||G.hello.afternoon;const out=[pk(got===0?G.hello.first:pool,'h')];if(ph==='late'&&got>0){out.push(G.ctx.sleep);try{localStorage.setItem('kla-hi-last',JSON.stringify(last))}catch(e){}return out;}/* ดึกแล้ว: ไม่ชวนเรียนต่อ */
   const nx=wk.find(e=>!S(e.ep).seed);
@@ -576,11 +591,39 @@ function flyers(){const bf=(path,dur,c1,c2,k,dl)=>'<g><g transform="scale('+k+')
    bee('M820 470 C860 430 930 460 905 500 C880 540 790 520 820 470Z',5,.9,0)+
    bee('M230 515 C280 480 340 515 305 545 C270 575 190 560 230 515Z',6.5,.85,2)+
    bee('M690 420 C720 400 760 420 745 440 C730 460 670 450 690 420Z',4.5,.7,1);}
-const SPH={dawn:{s:['#ff9f8a','#ffd6b0','#ffeedd'],sun:[170,215,52,'#ffb347']},morning:{s:['#6cc4ff','#cdeeff','#f4fbff'],sun:[230,105,44,'#ffe680']},
- noon:{s:['#3fa9f5','#bfe6ff','#eaf7ff'],sun:[560,62,46,'#fff0a0']},afternoon:{s:['#6cc4ff','#bfe6ff','#dff3ff'],sun:[820,110,46,'#ffe680']},
- evening:{s:['#78b8ec','#fcd9a8','#ffe9cc'],sun:[860,190,50,'#ffbf4d'],tint:['#ffb070',.08]},sunset:{s:['#7a5aa8','#ff9f7a','#ffd2a8'],sun:[880,262,62,'#ff8a3d'],tint:['#ff8a5a',.16]},
- dusk:{s:['#2c2a6b','#7a5a9a','#d08a9a'],moon:[820,110],tint:['#2a2560',.28],stars:1},night:{s:['#0f1640','#2a3a78','#4a5b96'],moon:[820,100],tint:['#141a48',.42],stars:1},late:{s:['#0b1030','#222f66','#3c4c86'],moon:[840,90],tint:['#0e1338',.5],stars:1}};
-function scene3D(){const SP=SPH[phaseNow()],dark=!!SP.moon;const tree=(x,on,k)=>'<g data-on="'+on+'" data-x="'+x+'" data-k="'+k+'"><ellipse cx="0" cy="2" rx="26" ry="6" fill="#2f6b2a" opacity=".25"/><rect x="-5" y="-40" width="10" height="40" rx="3" fill="#8a5a3b"/><circle cx="0" cy="-58" r="30" fill="url(#hz_t3)"/><circle cx="-10" cy="-68" r="9" fill="#fff" opacity=".25"/></g>';
+/* ท้องฟ้าฉากต้อนรับตามเวลาจริง: สีฟ้า ความมืด แสงอุ่น ไล่ต่อเนื่องตามเวลาพระอาทิตย์ขึ้น-ตกของวันนี้ ดวงอาทิตย์เคลื่อนตามนาที ดวงจันทร์ใช้ข้างขึ้นข้างแรมจริง */
+const hx=c=>[1,3,5].map(i=>parseInt(c.slice(i,i+2),16)),mix=(a,b,t)=>'#'+hx(a).map((v,i)=>Math.round(v+(hx(b)[i]-v)*t).toString(16).padStart(2,'0')).join('');
+function skyNow(){const d=NOW(),m=d.getHours()*60+d.getMinutes()+d.getSeconds()/60,[r,s]=sunTimes(d);
+  const N={s:['#0b1030','#222f66','#3c4c86'],dk:.5,w:['#ff8a5a',0]},PRE={s:['#2c2a6b','#7a5a9a','#e09a9a'],dk:.3,w:['#ff8a5a',.06]},
+   DAWN={s:['#ff9f8a','#ffd6b0','#ffeedd'],dk:.06,w:['#ff9f6a',.12]},MORN={s:['#6cc4ff','#cdeeff','#f4fbff'],dk:0,w:['#ffd08a',.03]},
+   DAY={s:['#3fa9f5','#bfe6ff','#eaf7ff'],dk:0,w:['#ffd08a',0]},EVE={s:['#78b8ec','#fcd9a8','#ffe9cc'],dk:0,w:['#ffb070',.08]},
+   SET={s:['#7a5aa8','#ff9f7a','#ffd2a8'],dk:.05,w:['#ff8a5a',.16]},DUSK={s:['#2c2a6b','#7a5a9a','#d08a9a'],dk:.28,w:['#ff8a5a',.04]};
+  const K=[[r-80,N],[r-30,PRE],[r+5,DAWN],[r+60,MORN],[r+160,DAY],[s-160,DAY],[s-60,EVE],[s-5,SET],[s+30,DUSK],[s+75,N]];
+  let o=N;for(let k=0;k<K.length-1;k++)if(m>=K[k][0]&&m<K[k+1][0]){const[a,A]=K[k],[b,B]=K[k+1],t=(m-a)/(b-a);
+    o={s:A.s.map((c,i)=>mix(c,B.s[i],t)),dk:A.dk+(B.dk-A.dk)*t,w:[mix(A.w[0],B.w[0],t),A.w[1]+(B.w[1]-A.w[1])*t]};break;}
+  // ดวงอาทิตย์: ขึ้นซ้าย (ทิศตะวันออก) โค้งข้ามฟ้า ตกขวา · ต่ำ ๆ สีส้มและโตกว่า
+  if(m>r-12&&m<s+12){const t=(m-r)/(s-r),e=Math.sin(Math.PI*t);o.sun=[100+t*800,318-e*268,44+(1-Math.max(e,0))*16,mix('#ff8a3d','#fff0a0',Math.min(1,Math.max(e,0)*2.2))];}
+  // ดวงจันทร์: ข้างขึ้นข้างแรมจริงของคืนนี้ (อ้างอิงเดือนดับ 6 ม.ค. 2000) เคลื่อนข้ามฟ้าตอนกลางคืน
+  const p=(((d-Date.UTC(2000,0,6,18,14))/864e5/29.530588)%1+1)%1,lit=(1-Math.cos(2*Math.PI*p))/2;
+  if(o.dk>.12&&lit>.04){const nt=((m-s+1440)%1440)/(r+1440-s);o.moon=[100+nt*800,300-Math.sin(Math.PI*Math.min(1,Math.max(0,nt)))*215,p,Math.min(1,(o.dk-.12)/.2)];}
+  o.star=Math.max(0,Math.min(1,(o.dk-.12)/.3));return o;}
+/* ฤดูของฉากต้อนรับ = บรรยากาศของสัปดาห์ที่มีตอนถัดไปที่น้องกำลังจะเรียน (เหมือนแปลงสัปดาห์นั้นในสวน) */
+function seasonNow(){const q=location.search.match(/[?&]w=(\d+)/),w=q?+q[1]:start;return {w,f:TH[w]||{}};}  /* start = สัปดาห์แรกที่ยังมีตอนไม่ได้เรียน (สวนเปิดที่แปลงนี้) */  /* ทดสอบได้ด้วย ?w=4 */
+function seasonFX(f,dark){const R=(a,b)=>a+Math.random()*(b-a);let o='';
+  const fall=(n,make,dur,dx)=>{for(let i=0;i<n;i++){const d=R(dur[0],dur[1]);o+='<g class="hz_fall" style="--dx:'+R(dx[0],dx[1]).toFixed(0)+'px;--r:'+R(-360,360).toFixed(0)+'deg;animation-duration:'+d.toFixed(2)+'s;animation-delay:-'+R(0,d).toFixed(2)+'s">'+make(R(-20,1020))+'</g>';}};
+  if(f.fx==='petal')fall(22,x=>'<ellipse cx="'+x.toFixed(0)+'" cy="0" rx="7" ry="4.5" fill="#ffb3cf"/>',[7,12],[-160,40]);
+  if(f.fx==='leaf')fall(14,x=>'<text x="'+x.toFixed(0)+'" y="0" font-size="24">'+(Math.random()<.5?'🍂':'🍁')+'</text>',[6,10],[-220,-40]);
+  if(f.snow)fall(50,x=>'<circle cx="'+x.toFixed(0)+'" cy="0" r="'+R(2.5,6).toFixed(1)+'" fill="#fff" opacity=".9"/>',[6,11],[-60,60]);
+  if(f.rain)for(let i=0;i<70;i++){const d=R(.5,.85),x=R(0,1080);o+='<line class="hz_rain" x1="'+x.toFixed(0)+'" y1="0" x2="'+(x-6).toFixed(0)+'" y2="22" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".75" style="animation-duration:'+d.toFixed(2)+'s;animation-delay:-'+R(0,d).toFixed(2)+'s"/>';}
+  if(dark&&f.fx==='shoot')[[900,60,0],[760,40,2.4]].forEach(([x,y,dl])=>o+='<line class="hz_shoot" x1="'+x+'" y1="'+y+'" x2="'+(x+90)+'" y2="'+(y-45)+'" stroke="#fff" stroke-width="2.5" stroke-linecap="round" style="animation-delay:'+dl+'s"/>');
+  if(dark&&f.fx==='works')[[150,215,'#ff6f91',0],[640,165,'#ffd23f',.9],[870,95,'#6fc3ff',1.7]].forEach(([x,y,c,dl])=>{o+='<g class="hz_work" style="animation-delay:'+dl+'s">';for(let i=0;i<16;i++){const a=i/16*Math.PI*2;o+='<circle cx="'+(x+Math.cos(a)*55).toFixed(0)+'" cy="'+(y+Math.sin(a)*55).toFixed(0)+'" r="4" fill="'+c+'"/>';}o+='<circle cx="'+x+'" cy="'+y+'" r="7" fill="#fff"/></g>';});
+  return o;}
+function moonSVG(x,y,p,op){const r=34,k=r*Math.abs(Math.cos(2*Math.PI*p)),wax=p<.5,cres=wax?p<.25:p>.75,top=x+' '+(y-r),bot=x+' '+(y+r);
+  const d='M'+top+' A'+r+' '+r+' 0 0 '+(wax?1:0)+' '+bot+' A'+k.toFixed(1)+' '+r+' 0 0 '+(wax?(cres?0:1):(cres?1:0))+' '+top+'Z';
+  return '<g opacity="'+op.toFixed(2)+'"><circle cx="'+x+'" cy="'+y+'" r="110" fill="#fff6c8" opacity=".12"/><circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="#fff" opacity=".08"/><path d="'+d+'" fill="#fff4c4"/></g>';}
+function scene3D(){const SP=skyNow(),dark=SP.dk>=.2,{f}=seasonNow();
+  if(f.rain){if(!dark)SP.s=SP.s.map(c=>mix(c,'#8d9bb0',.65));SP.sun=null;}
+  const lite=c=>mix(c,'#ffffff',.18),deep=c=>mix(c,'#000000',.1),hillC=f.hill?[lite(f.hill),f.hill,deep(f.hill)]:null,lawnC=f.lawn||null,treeC=f.tree?[mix(f.tree,'#ffffff',.35),f.tree]:null;const tree=(x,on,k)=>'<g data-on="'+on+'" data-x="'+x+'" data-k="'+k+'"><ellipse cx="0" cy="2" rx="26" ry="6" fill="#2f6b2a" opacity=".25"/><rect x="-5" y="-40" width="10" height="40" rx="3" fill="#8a5a3b"/><circle cx="0" cy="-58" r="30" fill="url(#hz_t3)"/><circle cx="-10" cy="-68" r="9" fill="#fff" opacity=".25"/></g>';
   const plot=(x,y,k)=>{let s='<g transform="translate('+x+' '+y+') scale('+k+')"><ellipse cx="0" cy="8" rx="94" ry="24" fill="#000" opacity=".14" filter="url(#hz_b2)"/><ellipse cx="0" cy="0" rx="90" ry="24" fill="url(#hz_soil)"/><ellipse cx="0" cy="-4" rx="82" ry="18" fill="#9a6340" opacity=".45"/>';
     [-56,-20,18,54].forEach((dx,i)=>{s+='<g transform="translate('+dx+' '+(-6+(i%2)*6)+')"><path d="M0 0 Q-3 -16 0 -30" stroke="#3f8a2e" stroke-width="4" fill="none"/><ellipse cx="-10" cy="-26" rx="11" ry="5.5" fill="#6fd17c" stroke="#3f8a2e" stroke-width="1.5" transform="rotate(-25 -10 -26)"/><ellipse cx="10" cy="-30" rx="11" ry="5.5" fill="#6fd17c" stroke="#3f8a2e" stroke-width="1.5" transform="rotate(25 10 -30)"/>'+(i%2?'':'<circle cx="0" cy="-34" r="5" fill="#ff6f91"/><circle cx="0" cy="-34" r="2" fill="#ffd23f"/>')+'</g>';});return s+'</g>';};
   const fl=(x,y,k,c)=>{let s='<g transform="translate('+x+' '+y+') scale('+k+')"><path d="M0 0 Q-4 -30 0 -60" stroke="#3f8a2e" stroke-width="5" fill="none"/>';for(let i=0;i<6;i++){const a=i*Math.PI/3,px=(Math.cos(a)*12).toFixed(1),py=(-66+Math.sin(a)*12).toFixed(1);s+='<ellipse cx="'+px+'" cy="'+py+'" rx="10" ry="7" fill="'+c+'" transform="rotate('+(i*60)+' '+px+' '+py+')"/>';}return s+'<circle cx="0" cy="-66" r="8" fill="#ffd23f"/></g>';};
@@ -588,26 +631,31 @@ function scene3D(){const SP=SPH[phaseNow()],dark=!!SP.moon;const tree=(x,on,k)=>
   return '<svg class="hisc" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice"><defs>'+
    '<linearGradient id="hz_sky3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+SP.s[0]+'"/><stop offset=".75" stop-color="'+SP.s[1]+'"/><stop offset="1" stop-color="'+SP.s[2]+'"/></linearGradient>'+
    '<radialGradient id="hz_sun3"><stop offset="0" stop-color="#fff7c2"/><stop offset=".35" stop-color="#ffe066" stop-opacity=".9"/><stop offset="1" stop-color="#ffe066" stop-opacity="0"/></radialGradient>'+
-   '<linearGradient id="hz_h1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fcf86"/><stop offset=".5" stop-color="#7dbf74"/><stop offset="1" stop-color="#6fb366"/></linearGradient>'+
-   '<linearGradient id="hz_h2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fdc84"/><stop offset="1" stop-color="#7cc463"/></linearGradient>'+
-   '<radialGradient id="hz_lawn3" cx=".5" cy="0" r="1.1"><stop offset="0" stop-color="#a9e486"/><stop offset=".6" stop-color="#7cc95c"/><stop offset="1" stop-color="#4f9e3a"/></radialGradient>'+
+   '<linearGradient id="hz_h1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+(hillC?hillC[0]:'#8fcf86')+'"/><stop offset=".5" stop-color="'+(hillC?hillC[1]:'#7dbf74')+'"/><stop offset="1" stop-color="'+(hillC?hillC[2]:'#6fb366')+'"/></linearGradient>'+
+   '<linearGradient id="hz_h2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+(hillC?lite(hillC[0]):'#9fdc84')+'"/><stop offset="1" stop-color="'+(hillC?hillC[1]:'#7cc463')+'"/></linearGradient>'+
+   '<radialGradient id="hz_lawn3" cx=".5" cy="0" r="1.1"><stop offset="0" stop-color="'+(lawnC?lite(lawnC[0]):'#a9e486')+'"/><stop offset=".6" stop-color="'+(lawnC?lawnC[0]:'#7cc95c')+'"/><stop offset="1" stop-color="'+(lawnC?deep(lawnC[1]):'#4f9e3a')+'"/></radialGradient>'+
    '<linearGradient id="hz_path3" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#e0b97c"/><stop offset="1" stop-color="#f3dfb4"/></linearGradient>'+
    '<radialGradient id="hz_soil" cx=".45" cy=".35" r=".8"><stop offset="0" stop-color="#a8704a"/><stop offset="1" stop-color="#6b3f22"/></radialGradient>'+
-   '<radialGradient id="hz_t3" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#8fe08a"/><stop offset="1" stop-color="#3f9e4d"/></radialGradient>'+
+   '<radialGradient id="hz_t3" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="'+(treeC?treeC[0]:'#8fe08a')+'"/><stop offset="1" stop-color="'+(treeC?treeC[1]:'#3f9e4d')+'"/></radialGradient>'+
    '<filter id="hz_b0"><feGaussianBlur stdDeviation=".6"/></filter><filter id="hz_b1"><feGaussianBlur stdDeviation="1.5"/></filter><filter id="hz_b2"><feGaussianBlur stdDeviation="4"/></filter><filter id="hz_b3" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="7"/></filter></defs>'+
    '<rect width="1000" height="600" fill="url(#hz_sky3)"/><g class="cam">'+
-   ''+(dark?'<g fill="#fff">'+Array.from({length:40},(_,i)=>'<circle cx="'+((i*137)%1000)+'" cy="'+((i*71)%300)+'" r="'+(i%4?1.3:2.2)+'" opacity="'+(.5+(i%3)*.2)+'"><animate attributeName="opacity" values=".2;1;.2" dur="'+(2+i%4)+'s" repeatCount="indefinite" begin="-'+(i%5)+'s"/></circle>').join('')+'</g><circle cx="'+SP.moon[0]+'" cy="'+SP.moon[1]+'" r="110" fill="#fff6c8" opacity=".14"/><circle cx="'+SP.moon[0]+'" cy="'+SP.moon[1]+'" r="38" fill="#fff4c4"/><circle cx="'+(SP.moon[0]+16)+'" cy="'+(SP.moon[1]-10)+'" r="34" fill="'+SP.s[0]+'"/>'
-     :'<circle cx="'+SP.sun[0]+'" cy="'+SP.sun[1]+'" r="'+SP.sun[2]*3.2+'" fill="url(#hz_sun3)"/><circle cx="'+SP.sun[0]+'" cy="'+SP.sun[1]+'" r="'+SP.sun[2]+'" fill="'+SP.sun[3]+'"/>')+''+
-   '<g class="cloud3" filter="url(#hz_b1)" fill="#fff" opacity="'+(dark?.25:.9)+'"><ellipse cx="200" cy="100" rx="70" ry="24"/><ellipse cx="240" cy="86" rx="44" ry="26"/><ellipse cx="600" cy="70" rx="56" ry="18"/><ellipse cx="630" cy="60" rx="34" ry="18"/></g>'+
+   ''+(SP.star?'<g fill="#fff" opacity="'+SP.star.toFixed(2)+'">'+Array.from({length:40},(_,i)=>'<circle cx="'+((i*137)%1000)+'" cy="'+((i*71)%300)+'" r="'+(i%4?1.3:2.2)+'" opacity="'+(.5+(i%3)*.2)+'"><animate attributeName="opacity" values=".2;1;.2" dur="'+(2+i%4)+'s" repeatCount="indefinite" begin="-'+(i%5)+'s"/></circle>').join('')+'</g>':'')+
+     (SP.moon?moonSVG(Math.round(SP.moon[0]),Math.round(SP.moon[1]),SP.moon[2],SP.moon[3]):'')+
+     (SP.sun?'<circle cx="'+SP.sun[0].toFixed(0)+'" cy="'+SP.sun[1].toFixed(0)+'" r="'+(SP.sun[2]*3.2).toFixed(0)+'" fill="url(#hz_sun3)"/><circle cx="'+SP.sun[0].toFixed(0)+'" cy="'+SP.sun[1].toFixed(0)+'" r="'+SP.sun[2].toFixed(0)+'" fill="'+SP.sun[3]+'"/>':'')+''+
+   (f.rb&&!dark?'<g opacity="'+(f.rb*.55).toFixed(2)+'" fill="none" stroke-width="15">'+['#ff6b6b','#ffa94d','#ffe066','#69db7c','#4dabf7','#9775fa'].map((c,i)=>'<path d="M'+(80+i*15)+' 360 A'+(420-i*15)+' '+(270-i*15)+' 0 0 1 '+(920-i*15)+' 360" stroke="'+c+'"/>').join('')+'</g>':'')+
+   (f.kite&&!dark?'<g class="hz_kite"><path d="M760 90 L792 130 L760 178 L728 130Z" fill="#ff6f91" stroke="#fff" stroke-width="3"/><path d="M728 130 H792 M760 90 V178" stroke="#fff" stroke-width="2"/><path d="M760 178 C740 210 780 230 750 262 C730 284 760 300 740 330" stroke="#5a4a7a" stroke-width="2" fill="none"/><path d="M748 212 l-10 -6 l2 12Z M752 262 l-10 -6 l2 12Z" fill="#ffd23f"/></g>':'')+
+   '<g class="cloud3" filter="url(#hz_b1)" fill="'+(f.rain?(dark?'#5d6698':'#a9b3c3'):'#fff')+'" opacity="'+Math.max(.2,.9-SP.dk*1.3).toFixed(2)+'"><ellipse cx="200" cy="100" rx="70" ry="24"/><ellipse cx="240" cy="86" rx="44" ry="26"/><ellipse cx="600" cy="70" rx="56" ry="18"/><ellipse cx="630" cy="60" rx="34" ry="18"/></g>'+
    '<g class="far" filter="url(#hz_b0)"><path id="hf" d="M-40 330 Q140 240 320 296 T660 284 T1040 300 V600 H-40Z" fill="url(#hz_h1)" stroke="#5f9e58" stroke-width="2"/>'+
    '<g data-on="hf" data-x="700" data-k=".9" data-sink="6"><ellipse cx="0" cy="4" rx="46" ry="7" fill="#5f9e6a" opacity=".35"/><rect x="-34" y="-30" width="68" height="34" fill="#fff5e6"/><path d="M-42 -28 L0 -58 L42 -28Z" fill="#e5533d"/><rect x="-8" y="-14" width="16" height="18" fill="#8a5a3b"/><rect x="-26" y="-22" width="12" height="10" fill="#7cc6f2"/><rect x="14" y="-22" width="12" height="10" fill="#7cc6f2"/><path d="M0 -58 V-82" stroke="#666" stroke-width="2"/><path d="M0 -82 L16 -77 L0 -72Z" fill="#e5533d"/></g>'+tree(120,'hf',.6)+tree(900,'hf',.55)+'</g>'+
    '<path id="hm" d="M-40 390 Q220 318 460 362 T1040 352 V600 H-40Z" fill="url(#hz_h2)"/>'+tree(250,'hm',.9)+tree(830,'hm',.85)+
    '<rect x="-40" y="380" width="1080" height="240" fill="url(#hz_lawn3)"/>'+
    '<path id="hz_road" d="M380 620 C420 540 470 470 560 418 C610 392 660 378 696 368 L712 372 C680 384 640 402 600 428 C540 470 540 540 640 620 Z" fill="url(#hz_path3)"/><path id="hz_rim" d="M380 620 C420 540 470 470 560 418 C610 392 660 378 696 368" stroke="#c99b5c" stroke-width="3" fill="none" opacity=".6"/>'+
-   plot(300,430,.55)+plot(770,436,.55)+plot(150,520,1)+plot(860,528,1)+p+
-   (SP.tint?'<rect x="-40" y="-40" width="1080" height="680" fill="'+SP.tint[0]+'" opacity="'+SP.tint[1]+'"/>':'')+(dark?fireflies():flyers())+'<ellipse cx="500" cy="528" rx="84" ry="15" fill="#1e4a14" opacity=".28" filter="url(#hz_b2)"/>'+
+   (f.pud||f.rain?'<g fill="#9fd3f5" opacity=".55"><ellipse cx="250" cy="470" rx="46" ry="9"/><ellipse cx="700" cy="560" rx="60" ry="11"/><ellipse cx="900" cy="470" rx="34" ry="7"/></g>':'')+
+   plot(300,430,.55)+plot(770,436,.55)+plot(150,520,1)+plot(860,528,1)+(f.rain||f.snow?'':p)+
+   '<rect x="-40" y="-40" width="1080" height="680" fill="'+SP.w[0]+'" opacity="'+SP.w[1].toFixed(3)+'"/><rect x="-40" y="-40" width="1080" height="680" fill="#141a48" opacity="'+(SP.dk*.6).toFixed(3)+'"/>'+(dark||f.rain||f.snow?'':flyers())+'<ellipse cx="500" cy="528" rx="84" ry="15" fill="#1e4a14" opacity=".28" filter="url(#hz_b2)"/>'+
    '<svg x="380" y="248" width="240" height="280" viewBox="0 0 120 140" overflow="visible">'+KLA3+'</svg>'+
    '<g filter="url(#hz_b3)" opacity=".95">'+fl(40,640,1.6,'#ff8fb1')+fl(110,660,1.3,'#ffd23f')+fl(950,650,1.7,'#c9b6ff')+fl(880,670,1.2,'#ff8fb1')+'</g>'+
+   /* ตัวน้องกล้ากับดอกไม้หน้าสุดมืดลงครึ่งเดียว ยังมองเห็นชัด */'<rect x="-40" y="-40" width="1080" height="680" fill="#141a48" opacity="'+(SP.dk*.45).toFixed(3)+'"/>'+(dark&&!f.rain?fireflies():'')+seasonFX(f,dark)+
    '</g></svg>';}
 // พูดให้จบก่อน แล้วค่อยซูมตัดเข้าสวน (มีปุ่ม ข้าม)
 async function greet(o){const lines=greetLines(),stop=jingle(14);const bub=o.querySelector('.hibub');bub.hidden=false;lipOn=true;lip();let skip=false;
@@ -616,7 +664,7 @@ async function greet(o){const lines=greetLines(),stop=jingle(14);const bub=o.que
   lipOn=false;setMouth(0);if(!skip)await new Promise(r=>setTimeout(r,500));stop();
   o.classList.add('out');setTimeout(()=>o.remove(),1100);setTimeout(()=>say(msgFor(selW),true),1200);}
 {let hiDone=false;try{hiDone=sessionStorage.getItem('kla-hi')==='1'}catch(e){}
- if(!hiDone&&G){const o=document.createElement('div');o.id='hi';o.innerHTML='<div class="hicam">'+scene3D()+'</div><div class="hitop">สวนมหัศจรรย์ของน้องกล้า</div><div class="hibub" hidden></div><button class="higo">แตะเพื่อเข้าสวน 🌱</button><button class="hiskip" hidden>ข้าม ▶</button>';document.body.append(o);
+ if(!hiDone&&G){const o=document.createElement('div');o.id='hi';o.innerHTML='<div class="hicam">'+scene3D()+'</div><div class="hitop">สวนมหัศจรรย์ของน้องกล้า</div><div class="himood">'+moodOf(seasonNow().w).n+'</div><div class="hibub" hidden></div><button class="higo">แตะเพื่อเข้าสวน 🌱</button><button class="hiskip" hidden>ข้าม ▶</button>';document.body.append(o);
   o.querySelectorAll('[data-on]').forEach(g=>{const P=o.querySelector('#'+g.dataset.on),x=+g.dataset.x,L=P.getTotalLength();let by=1e9;for(let d=0;d<L;d+=2){const q=P.getPointAtLength(d);if(Math.abs(q.x-x)<2&&q.y<by)by=q.y;}const gy=by+(+g.dataset.sink||4);g.setAttribute('transform','translate('+x+' '+gy+') scale('+(+g.dataset.k||1)+')');if(x===700&&g.dataset.on==='hf')g.dataset.gy=gy;});{const sc=o.querySelector('[data-on="hf"][data-x="700"]'),Y=(+sc.dataset.gy).toFixed(1);o.querySelector('#hz_road').setAttribute('d','M380 620 C420 540 470 470 560 418 C610 392 660 378 688 364 C694 340 696 318 696 '+Y+' L704 '+Y+' C705 318 708 342 714 370 C680 384 640 402 600 428 C540 470 540 540 640 620 Z');o.querySelector('#hz_rim').setAttribute('d','M380 620 C420 540 470 470 560 418 C610 392 660 378 688 364 C694 340 696 318 696 '+Y);}MO=o.querySelector('.kla3 .m-open');MC=o.querySelector('.kla3 .m-close');KB=o.querySelector('.kla3');
   let started=false;o.onclick=()=>{if(started)return;started=true;try{sessionStorage.setItem('kla-hi','1')}catch(e){}o.querySelector('.higo').hidden=true;greet(o);};}{const p=document.getElementById('hiPre');p&&p.remove();}}
 setInterval(()=>{const w=curMood;curMood=-1;mood(w<0?selW:w);},5*60*1000);

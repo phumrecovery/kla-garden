@@ -41,8 +41,11 @@ const set=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 const P=get('kla-garden-v1',{}),H=get('kla-exam-v1',[]);let all=get('kla-exam-all',false),N=get('kla-exam-n',30),MODE=get('kla-exam-mode','practice'),MN=get('kla-mock-n',30),MS=get('kla-mock-sec',15),PS=get('kla-paper-sec',2),PON=get('kla-paper-on',false);if(![2,4].includes(PS))PS=2;if(!QUOTAS[MN])MN=30;
 const T=BANK.topics;
 const open=t=>all||!!(P['EP'+t.ep]&&P['EP'+t.ep].seed);
+/* บางข้อใช้ความรู้จากตอนหลัง (x.ep) ซ่อนไว้จนกว่าน้องจะดูตอนนั้น */
+const okIt=x=>all||!x.ep||!!(P['EP'+x.ep]&&P['EP'+x.ep].seed);
 const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 const ST={};H.slice(-10).forEach(r=>(r.items||[]).forEach(x=>{if(!x)return;const o=ST[x[1]]=ST[x[1]]||{n:0,ok:0};o.n++;o.ok+=x[2];}));
+const MSTR=window.mastery?mastery():{};  /* ระดับความยากตามผลของน้อง */
 const SEEN=get('kla-seen-v1',{}),cnt=x=>(SEEN[x.id]||[0])[0],last=x=>(SEEN[x.id]||[0,0])[1];
 /* แนวโจทย์: ข้อความโจทย์ที่ตัดตัวเลขออก + ชนิดภาพ ใช้กันไม่ให้ชุดเดียวกันมีโจทย์แนวเดิมซ้ำ ๆ */
 const stem=x=>x.t+'|'+String(x.say||x.q).replace(/[0-9๐-๙]+/g,'#')+'|'+((x.v&&x.v.type)||'');
@@ -52,14 +55,19 @@ document.getElementById('kla').innerHTML='<svg class="kla" viewBox="0 0 120 140"
    - หัวข้อที่ฝึกน้อยกว่ามาก่อน หัวข้อที่ตอบถูกน้อยกว่า 70% ได้โอกาสเพิ่ม
    - ในชุดเดียวกัน เลี่ยงโจทย์แนวเดียวกัน (stem) ถ้ายังมีแนวอื่นให้เลือก */
 function draw(ts,n){
-  const Q={},avg={};ts.forEach(t=>{const it=shuf(BANK.items.filter(x=>x.t===t.id)).sort((a,b)=>cnt(a)-cnt(b)||last(a)-last(b));Q[t.id]=it;avg[t.id]=it.reduce((s,x)=>s+cnt(x),0)/Math.max(1,it.length);});
-  const rot=[];shuf(ts.slice()).sort((a,b)=>avg[a.id]-avg[b.id]).forEach(t=>{rot.push(t.id);const s=ST[t.id];if(s&&s.n>=3&&s.ok/s.n<.7)rot.push(t.id);});
+  /* ระดับความยากตามผลของน้อง (engine/focus.js): หัวข้อที่ทำได้ดีข้ามข้อง่าย ทำได้ดีมากเอาข้อยากก่อน ทำพลาดบ่อยพักข้อยาก
+     หัวข้อที่ข้ามข้อง่ายแล้วแต่ไม่มีข้อยากกว่าเหลือ ใช้เติมเมื่อหัวข้ออื่นไม่พอ */
+  const Q={},avg={},cap={};ts.forEach(t=>{const m=MSTR[t.id],lp=levelPick(BANK.items.filter(x=>x.t===t.id&&okIt(x)),m);cap[t.id]=lp.capped;
+    const it=shuf(lp.pool).sort((a,b)=>levelRank(a,m)-levelRank(b,m)||cnt(a)-cnt(b)||last(a)-last(b));Q[t.id]=it;avg[t.id]=it.reduce((s,x)=>s+cnt(x),0)/Math.max(1,it.length);});
+  const order=shuf(ts.slice()).sort((a,b)=>avg[a.id]-avg[b.id]);
+  const rotOf=list=>{const r=[];list.forEach(t=>{r.push(t.id);const s=ST[t.id];if(s&&s.n>=3&&s.ok/s.n<.7)r.push(t.id);});return r;};
   const out=[],used=new Set();
-  for(let g=0;g<200&&out.length<n;g++){let add=false;for(const id of rot){if(out.length>=n)break;const q=Q[id];if(!q.length)continue;
-    const c0=cnt(q[0]);let i=q.findIndex(x=>cnt(x)===c0&&!used.has(stem(x)));if(i<0)i=0;const x=q.splice(i,1)[0];used.add(stem(x));out.push(x);add=true;}if(!add)break;}
+  const fill=rot=>{for(let g=0;g<200&&out.length<n;g++){let add=false;for(const id of rot){if(out.length>=n)break;const q=Q[id];if(!q.length)continue;
+    const c0=cnt(q[0]);let i=q.findIndex(x=>cnt(x)===c0&&!used.has(stem(x)));if(i<0)i=0;const x=q.splice(i,1)[0];used.add(stem(x));out.push(x);add=true;}if(!add)break;}};
+  fill(rotOf(order.filter(t=>!cap[t.id])));if(out.length<n)fill(rotOf(order));
   return shuf(out);}
 /* ความคืบหน้า: ทำไปแล้วกี่ข้อ จากข้อทั้งหมดในหัวข้อที่เปิดแล้ว */
-const cover=ts=>{const it=BANK.items.filter(x=>ts.some(t=>t.id===x.t));return [it.filter(x=>cnt(x)>0).length,it.length];};
+const cover=ts=>{const it=BANK.items.filter(x=>ts.some(t=>t.id===x.t)&&okIt(x));return [it.filter(x=>cnt(x)>0).length,it.length];};
 const openOf=subj=>T.filter(t=>open(t)&&(subj==='mix'||t.subj===subj));
 /* จำลองสอบ 30 ข้อ: คณิต 8 เชาวน์ 6 ไทย 6 อังกฤษ 5 วิทย์ 5 · 50 ข้อ: 13/10/10/9/8 (พัก 10 วิหลังข้อ 25)
    เรียงเป็นตอนตามวิชา วิชาที่ยังไม่เปิดยกโควตาให้วิชาอื่น */

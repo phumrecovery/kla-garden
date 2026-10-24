@@ -347,6 +347,7 @@ async function mockTimer(qi,q,box,btns,segs){const my=tok;const ms=(EP.sec||15)*
 /* ---------- เฉลยแบบภาพเคลื่อนไหว 3 มิติ (โหมดฝึก/คลิป): นับกล่องที่ซ้อนกัน · มองจากด้านบน/หน้า · พับภาพคลี่ ---------- */
 function exPlan(q){const t=q.q+' '+(q.say||''),v=q.v||{},a=q.opts[q.ans];
  let g=v.type==='blocks'?v.g:null;if(!g&&/มากที่สุด|น้อยที่สุด/.test(t)&&a&&a.blk&&a.blk.g)g=a.blk.g;
+ if(g&&/ติดกับ/.test(t)&&v.gray)return {k:'blk',g,view:'adj',gray:v.gray};
  if(g&&!/ติดกับ/.test(t)){if(/ด้านบน/.test(t))return {k:'blk',g,view:'top'};if(/ด้านหน้า/.test(t))return {k:'blk',g,view:'front'};if(/กี่กล่อง|กี่ใบ|กี่ก้อน|มากที่สุด|น้อยที่สุด/.test(t))return {k:'blk',g,view:'count'};}
  if(/คลี่|พับ/.test(t)){const net=(a&&a.solid)||(/ลูกบาศก์|ลูกเต๋า/.test(t)?'cube':/ทรงกระบอก/.test(t)?'cylinder':/กรวย/.test(t)?'cone':null);if(!net)return null;
   let nums=null,pair=null;const f=v.items&&v.items[0]&&v.items[0].fig;
@@ -358,20 +359,51 @@ function exPlan(q){const t=q.q+' '+(q.say||''),v=q.v||{},a=q.opts[q.ans];
 async function explain(p){const my=tok;let skip=false;const ov=h('div','ex3d'),box=h('div','exbox'),cap=h('div','excap','👀 มาดูกัน'),st3=h('div','x3d'),sc=h('div','sc3'),sk=h('button','pgo','ข้าม ▶');
  sk.onclick=()=>{skip=true;};st3.append(sc);box.append(cap,st3,sk);ov.append(box);document.body.append(ov);
  const W=async ms=>{let t=0;while(t<ms&&!skip){await wait(50);if(my!==tok)return false;if(!paused)t+=50;}return my===tok&&!skip;};
- try{if(p.k==='blk')await exBlocks(p,sc,cap,W);else if(p.net==='cube')await exCube(p,sc,cap,W);else if(p.net==='cylinder')await exCyl(sc,cap,W);else await exCone(sc,cap,W);if(!skip)await W(700);}catch(e){}
+ try{if(p.k==='blk'){await exBlocks(p,sc,cap,W);if(my===tok&&p.st){sk.style.display='none';await blkPlay(p,sc,cap,box,my);}}
+  else{if(p.net==='cube')await exCube(p,sc,cap,W);else if(p.net==='cylinder')await exCyl(sc,cap,W);else await exCone(sc,cap,W);if(!skip)await W(700);}}catch(e){}
  ov.remove();return my===tok;}
 async function exBlocks(p,sc,cap,W){const g=p.g,R=g.length,C=Math.max(...g.map(r=>r.length)),S=46,cubes=[];
  for(let z=0;z<9;z++)for(let r=0;r<R;r++)for(let c=0;c<C;c++)if(((g[r]&&g[r][c])||0)>z)cubes.push([r,c,z]);
  const mz=Math.max(...cubes.map(x=>x[2]))+1;sc.style.setProperty('--s',S+'px');
  const els=cubes.map(()=>{const e=h('div','cu3',['f','b','l','r','t','d'].map(k=>'<i class="'+k+'"><b></b></i>').join(''));sc.append(e);return e;});
  const place=k=>cubes.forEach(([r,c,z],i)=>{els[i].style.transform='translate3d('+((c-(C-1)/2)*S*k)+'px,'+((-z+(mz-1)/2)*S*k)+'px,'+((r-(R-1)/2)*S*k)+'px)';});
+ const gi=p.gray?cubes.findIndex(([r,c,z])=>r===p.gray[0]&&c===p.gray[1]&&z===(p.gray[2]||0)):-1;if(gi>=0)els[gi].classList.add('gy');
+ const nb=gi<0?[]:cubes.map((x,i)=>i).filter(i=>Math.abs(cubes[i][0]-cubes[gi][0])+Math.abs(cubes[i][1]-cubes[gi][1])+Math.abs(cubes[i][2]-cubes[gi][2])===1);
+ p.st={els,cubes,place,gi,nb};
  const ISO='rotateX(-25deg) rotateY(-35deg)';sc.style.transform=ISO;place(1);if(!await W(1000))return;
+ if(p.view==='adj'){cap.textContent='แยกกล่องออกนิดนึง ดูว่ากล่องไหนแตะกล่องสีเทา';els.forEach(e=>e.style.transition='transform .9s ease');place(1.4);SFX.whoosh();if(!await W(1300))return;
+  sc.style.transition='transform 2.4s ease-in-out';sc.style.transform='rotateX(-25deg) rotateY(25deg)';
+  for(let k=0;k<nb.length;k++){const e=els[nb[k]];e.classList.add('hl');e.querySelectorAll('b').forEach(b=>b.textContent=k+1);cap.textContent='ติดกับกล่องสีเทา '+(k+1)+' กล่อง';SFX.pop(k);if(!await W(800))return;}
+  cap.textContent='รวมติดกับกล่องสีเทา '+nb.length+' กล่อง';SFX.chime();if(!await W(1500))return;els.forEach(e=>e.style.transition='transform .8s ease');place(1);sc.style.transform=ISO;await W(900);return;}
  if(p.view!=='count'){cap.textContent=p.view==='top'?'⬇️ มองจากด้านบนลงมา':'👀 มองจากด้านหน้าตรง ๆ';sc.style.transition='transform 1.6s ease-in-out';sc.style.transform=p.view==='top'?'rotateX(-90deg) rotateY(0deg)':'rotateX(0deg) rotateY(0deg)';SFX.whoosh();
   if(!await W(3000))return;sc.style.transform=ISO;await W(1600);return;}
  cap.textContent='แยกกล่องออก จะเห็นกล่องที่ซ่อนอยู่';els.forEach(e=>e.style.transition='transform .9s ease');place(1.5);SFX.whoosh();if(!await W(1200))return;
  sc.style.transition='transform '+(cubes.length*.65+1.5).toFixed(1)+'s linear';sc.style.transform='rotateX(-25deg) rotateY(325deg)';
  for(let i=0;i<cubes.length;i++){els[i].classList.add('hl');els[i].querySelectorAll('b').forEach(b=>b.textContent=i+1);cap.textContent=(cubes[i][2]?'ชั้นที่ '+(cubes[i][2]+1):'ชั้นล่าง')+' · นับได้ '+(i+1)+' กล่อง';SFX.pop(i);if(!await W(650))return;}
  cap.textContent='รวมทั้งหมด '+cubes.length+' กล่อง';SFX.chime();if(!await W(1600))return;els.forEach(e=>e.style.transition='transform .8s ease');place(1);await W(900);}
+/* หลังเฉลยบล็อก: ให้น้องใช้นิ้วลากหมุนดูรอบ ๆ และแตะกล่องนับเองทีละกล่อง (มีปุ่มแยกกล่อง นับใหม่ มองด้านบน/หน้า) จนกด ไปต่อ */
+async function blkPlay(p,sc,cap,box,my){const {els,cubes,place,gi,nb}=p.st,N=cubes.length,goal=p.view==='adj'?nb.length:p.view==='count'?N:0;
+ const clear=()=>els.forEach(e=>{e.classList.remove('hl');e.querySelectorAll('b').forEach(b=>b.textContent='');});clear();
+ let rx=-25,ry=-35,spread=false,n=0;
+ /* ขยายภาพให้เต็มกรอบ จะได้แตะกล่องด้วยนิ้วได้ง่าย */
+ const fr={width:sc.parentNode.clientWidth,height:sc.parentNode.clientHeight},ext=Math.max(...cubes.map(([r,c,z])=>Math.max(r,c,z)))+1,K=Math.max(.8,Math.min(1.7,.62*Math.min(fr.width,fr.height)/(ext*46*1.3)));
+ const rot=t=>{sc.style.transition=t||'none';sc.style.transform='scale3d('+K+','+K+','+K+') rotateX('+rx+'deg) rotateY('+ry+'deg)';};
+ els.forEach(e=>e.style.transition='transform .6s ease');place(1);rot('transform .6s ease');
+ const msg=()=>{cap.textContent=!goal?'👆 ลองใช้นิ้วลากหมุนดูได้เลย':n?'นับได้ '+n+' กล่อง':p.view==='adj'?'👆 หมุนดู แล้วแตะนับกล่องที่ติดกับกล่องสีเทา':'👆 ลากหมุนดู แล้วแตะนับทีละกล่องนะ';};msg();
+ const bar=h('div','x3bar'),B=(t,f,c)=>{const b=h('button',(c||'btn2')+' x3b',t);b.onclick=f;bar.append(b);return b;};
+ const bS=B('↔ แยกกล่อง',()=>{spread=!spread;place(spread?1.6:1);bS.textContent=spread?'↔ รวมกล่อง':'↔ แยกกล่อง';SFX.whoosh();});
+ if(goal)B('↺ นับใหม่',()=>{n=0;clear();msg();SFX.pop(0);});
+ B('⬇️ ด้านบน',()=>{rx=-90;ry=0;rot('transform .8s ease');});B('👀 ด้านหน้า',()=>{rx=0;ry=0;rot('transform .8s ease');});
+ const go=B('ไปต่อ ▶',null,'go');box.append(bar);
+ const st3=sc.parentNode;st3.classList.add('drag');let d0=null;
+ st3.onpointerdown=e=>{d0={x:e.clientX,y:e.clientY,rx,ry,t:e.target,m:0};try{st3.setPointerCapture(e.pointerId)}catch(x){}};
+ st3.onpointermove=e=>{if(!d0)return;const dx=e.clientX-d0.x,dy=e.clientY-d0.y;d0.m=Math.max(d0.m,Math.abs(dx)+Math.abs(dy));if(d0.m<8)return;ry=d0.ry+dx*.6;rx=Math.max(-90,Math.min(30,d0.rx-dy*.6));rot();};
+ st3.onpointerup=st3.onpointercancel=()=>{const d=d0;d0=null;if(!d||d.m>=8||!goal)return;const cu=d.t&&d.t.closest&&d.t.closest('.cu3'),i=els.indexOf(cu);
+  if(i<0||i===gi||cu.classList.contains('hl')){SFX.pop(0);return;}
+  if(p.view==='adj'&&!nb.includes(i)){cu.animate([{filter:'none'},{filter:'brightness(.55)'},{filter:'none'}],{duration:450});cap.textContent='กล่องนี้ไม่ได้ติดกับกล่องสีเทานะ';SFX.no();return;}
+  n++;cu.classList.add('hl');cu.querySelectorAll('b').forEach(b=>b.textContent=n);SFX.pop(n);msg();
+  if(n===goal){cap.textContent='ครบแล้ว! ทั้งหมด '+goal+' กล่อง เก่งมาก 🎉';SFX.chime();const [x,y]=centerOf(st3);confetti(x,y,24);}};
+ await new Promise(res=>{go.onclick=res;const iv=setInterval(()=>{if(my!==tok){clearInterval(iv);res();}},200);go.addEventListener('click',()=>clearInterval(iv));});}
 async function exCube(p,sc,cap,W){const S=72,m=p.nums||{};sc.style.setProperty('--s',S+'px');
  const F=(c,r,cls)=>{const n=m[c+','+r];const e=h('div','nf'+(cls?' '+cls:''),'<b>'+(n==null?'':n)+'</b>');e.dataset.n=n==null?'':n;return e;};
  const base=F(1,1,'nbase'),top=F(1,0,'nt'),lf=F(0,1,'nl'),rt=F(2,1,'nr'),far=F(3,1,'nr'),bt=F(1,2,'nb');rt.append(far);base.append(top,lf,rt,bt);sc.append(base);

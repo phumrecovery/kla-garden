@@ -351,3 +351,8 @@ button{font-family:inherit;cursor:pointer}
 .endc .sprout{width:clamp(120px,min(28vw,32vh),250px)}
 @media (orientation:landscape) and (max-height:820px){.endc{flex-direction:row;gap:clamp(16px,4vw,56px)}.endc .sprout{width:clamp(130px,min(30vw,52vh),260px)}
  .endc .endtx{gap:clamp(6px,1.6vh,12px)}.endc h1{font-size:clamp(26px,min(5.5vw,8vh),56px)}.endc .cert{padding:6px 22px;font-size:clamp(22px,min(4.5vw,6.5vh),44px)}.endc .gslot{width:clamp(48px,10vh,80px);height:clamp(48px,10vh,80px)}}
+/* เฉลยบล็อก 3 มิติ: ให้น้องลากหมุนและแตะนับเอง */
+.x3d.drag{touch-action:none;cursor:grab}.x3d.drag:active{cursor:grabbing}
+.x3bar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.x3b{font-size:clamp(15px,2.1vw,20px)!important;padding:.3em .9em!important;box-shadow:none}
+.cu3.gy i{background:#a7adb5}.cu3.gy .t{background:#cdd2d8}.cu3.gy .r,.cu3.gy .l{background:#8d939b}

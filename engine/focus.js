@@ -8,10 +8,25 @@ window.FOCUS=['m_cmp','m_sym','m_sort','m_symx','m_order','m_add','m_sub','m_cha
    - ตอบถูก ≥90% จาก 8 ข้อ หรือข้อกลาง/ยากถูก ≥80% จากอย่างน้อย 4 ข้อ → เอาข้อยากก่อน
    - ตอบถูกไม่ถึง 50% จากอย่างน้อย 4 ข้อ → พักข้อยากไว้ก่อน
    หัวข้อที่ข้ามข้อง่ายแล้ว แต่ไม่มีข้อกลาง/ยากเหลือ (เช่น นับถึง 20) จะถูกสุ่มน้อยลงแทน */
+/* คิดนาน = น่าจะยังไม่เข้าใจ (ผู้ปกครองขอ 24 ต.ค. 69: ข้อที่พ่อนั่งอธิบายจนตอบถูก ไม่ควรนับว่าเข้าใจแล้ว)
+   โหมดฝึกจับเวลาคิดเบื้องหลัง (นับหลังอ่านโจทย์จบ ไม่นับตอนหยุด/ใบ้) เก็บเป็นวินาทีใน items [id, หัวข้อ, ถูก, วินาที]
+   เกณฑ์ "คิดนาน" = 2 เท่าของเวลาคิดปกติของน้อง (ค่ากลางของ 150 ข้อหลังสุด) อยู่ระหว่าง 20–60 วินาที
+   - ตอบถูกแต่คิดนาน นับเป็นครึ่งข้อ ในการปรับระดับและน้ำหนักหัวข้อ
+   - ข้อที่ครั้งล่าสุดตอบผิดหรือคิดนาน จะถูกสุ่มกลับมาถามซ้ำในชุดต่อ ๆ ไป (ราว 30% ของชุด) จนตอบถูกได้เร็ว */
+window.slowTH=function(){try{const H=JSON.parse(localStorage.getItem('kla-exam-v1')||'[]'),a=[];H.forEach(r=>{if(r.kind!=='mock')(r.items||[]).forEach(x=>{if(x&&typeof x[3]==='number')a.push(x[3]);});});
+  const b=a.slice(-150).sort((x,y)=>x-y);if(b.length<10)return 30;return Math.max(20,Math.min(60,2*b[b.length>>1]));}catch(e){return 30;}};
+window.okv=(x,TH)=>x&&x[2]?(x[3]>TH?.5:1):0;
+/* ข้อที่ต้องถามซ้ำ: ครั้งล่าสุดตอบผิด หรือถูกแต่คิดนาน · เรียงจากที่ค้างนานที่สุด */
+window.reviewIds=function(TH){const g=k=>{try{return JSON.parse(localStorage.getItem(k)||'[]')}catch(e){return []}};const L={};
+  g('kla-exam-v1').forEach(r=>(r.items||[]).forEach((x,i)=>{if(x)L[x[0]]={t:(r.t||0)+i,ok:x[2],sec:x[3]||0};}));
+  g('kla-review-v1').forEach(x=>{const t=x[3]||0;if(!L[x[0]]||L[x[0]].t<t)L[x[0]]={t,ok:x[2],sec:0};});
+  return Object.entries(L).filter(([,a])=>!a.ok||a.sec>TH).map(([id,a])=>({id,t:a.t,slow:!!a.ok})).sort((a,b)=>a.t-b.t);};
+window.reviewItems=function(ts,k,okIt){if(!window.BANK||k<=0)return [];const by={};BANK.items.forEach(x=>by[x.id]=x);
+  return reviewIds(slowTH()).map(r=>by[r.id]).filter(x=>x&&ts.some(t=>t.id===x.t)&&(!okIt||okIt(x))).slice(0,k);};
 window.mastery=function(){
   const g=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}};
   const H=g('kla-exam-v1')||[],RV=g('kla-review-v1')||[],LV={};(window.BANK?BANK.items:[]).forEach(x=>LV[x.id]=x.lv||1);
-  const ev=[];H.forEach(r=>(r.items||[]).forEach((x,i)=>{if(x)ev.push([(r.t||0)+i,x[1],x[2]?1:0,LV[x[0]]||1]);}));RV.forEach(x=>ev.push([x[3]||0,x[1],x[2]?1:0,LV[x[0]]||1]));
+  const TH=slowTH(),ev=[];H.forEach(r=>(r.items||[]).forEach((x,i)=>{if(x)ev.push([(r.t||0)+i,x[1],okv(x,TH),LV[x[0]]||1]);}));RV.forEach(x=>ev.push([x[3]||0,x[1],x[2]?1:0,LV[x[0]]||1]));
   ev.sort((a,b)=>a[0]-b[0]);const by={};ev.forEach(e=>(by[e[1]]=by[e[1]]||[]).push(e));
   const M={};for(const t in by){const a=by[t].slice(-8),n=a.length,acc=a.reduce((s,e)=>s+e[2],0)/n,h=a.filter(e=>e[3]>=2),n2=h.length,acc2=n2?h.reduce((s,e)=>s+e[2],0)/n2:0;
     const up=(n>=5&&acc>=.8)||(n2>=3&&acc2>=.6),hard=(n>=8&&acc>=.9)||(n2>=4&&acc2>=.8),low=n>=4&&acc<.5;
@@ -33,6 +48,8 @@ window.pickFocus=function(n){
   // หัวข้อที่ข้ามข้อง่ายแล้วแต่ไม่มีข้อยากกว่าเหลือ ได้น้ำหนักน้อยลง
   const w=ts.map(t=>{const s=st[t.id];const acc=s&&s.n>=2?s.ok/s.n:.6;return (1+4*(1-acc))*(LP[t.id].capped?.3:1);}),W=w.reduce((a,b)=>a+b,0);
   const out=[],used=new Set();
+  /* ข้อที่เคยตอบผิดหรือคิดนาน กลับมาถามซ้ำก่อน */
+  reviewItems(ts,Math.ceil(n*.3),x=>all||!x.ep||(P['EP'+x.ep]&&P['EP'+x.ep].seed)).forEach(x=>{used.add(x.id);out.push(x);});
   for(let k=0;k<n*8&&out.length<n;k++){let r=Math.random()*W,i=0;while(i<w.length-1&&r>w[i]){r-=w[i];i++;}
     const m=MS[ts[i].id],pool=LP[ts[i].id].pool.filter(x=>!used.has(x.id));if(!pool.length)continue;
     // ข้อที่ขึ้นน้อยครั้งที่สุดก่อน (ยังไม่เคยทำ = 0) แล้วเลี่ยงข้อที่เพิ่งทำ

@@ -300,7 +300,8 @@ function vis(v,still){const d=h('div','vis');d._fx=[];d._later=[];const at=still
  else if(T==='cards'){const r=h('div','row'+(v.sm?' sm':''));v.items.forEach((c,i)=>{const k=h('div','card pop'+(c.bad?' bad':''));k.innerHTML=(art(c)?'<div class="art">'+art(c)+'</div>':'')+(c.e?'<div class="e'+(c.sh?' shd':'')+(c.flip?' flip':'')+(c.vflip?' vflip':'')+([...c.e].length>2?' sm':'')+'">'+c.e+'</div>':'')+(c.big?'<div class="L'+(c.flip?' flip':'')+(c.vflip?' vflip':'')+'">'+c.big+'</div>':'')+(c.m?'<div class="M">'+c.m+'</div>':'')+(c.t?'<div class="T">'+c.t+'</div>':'');k.style.animationDelay=dl(i,v.speed||.6)+'s';fx(k,i,v.speed||.6);r.append(k);});d.append(r);}
  return d;}
 const optHTML=o=>typeof o==='string'?'<div class="'+([...o].length<=3?'L':'M')+'">'+o+'</div>':(art(o)?'<div class="art">'+art(o)+'</div>':'')+(o.e?'<div class="e'+(o.sh?' shd':'')+(o.flip?' flip':'')+(o.vflip?' vflip':'')+([...o.e].length>2?' sm':'')+([...o.e].length>4?' xs':'')+'">'+o.e+'</div>':'')+(o.big?'<div class="L'+(o.flip?' flip':'')+(o.vflip?' vflip':'')+'">'+o.big+'</div>':'')+(o.m?'<div class="M">'+o.m+'</div>':'')+(o.t?'<div class="T">'+o.t+'</div>':'');
-const label=o=>typeof o==='string'?o:(o.t||o.big||o.m||'');const labelSay=o=>{if(o&&o.say)return o.say;const l=label(o);return /^[A-Za-z]$/.test(l)?'['+l+']':l;};
+const label=o=>typeof o==='string'?o:(o.t||o.big||o.m||'');const VONE={'เ':'สระเอ','แ':'สระแอ','โ':'สระโอ','ไ':'สระไอ','ใ':'สระใอ','า':'สระอา','ะ':'สระอะ','ำ':'สระอำ'};
+const labelSay=o=>{if(o&&o.say)return o.say;const l=label(o);return /^[A-Za-z]$/.test(l)?'['+l+']':VONE[l]||l;};
 const rand=a=>a[Math.floor(Math.random()*a.length)];
 
 /* ---------- ลำดับการเล่น ---------- */
@@ -312,7 +313,9 @@ const SAYOK=/^[฀-๿A-Za-z0-9 ,.'!?\-+−=<>·\[\]]+$/;
 /* ไม่อ่านตัวเลือก เมื่อโจทย์วัดการ "ดู/อ่าน" รูปตัวอักษรเอง (อ่านให้ฟังจะกลายเป็นเฉลย): พยัญชนะ สระ สะกด วรรณยุกต์ ตัวพิมพ์เล็กใหญ่ เลขไทย ภาพนี้คือคำใด
    หรือมีตัวเลือกเป็นตัวอักษรเดี่ยว/เลขไทย · บังคับเองได้ด้วย q.read=true/false */
 const NOREAD=/เขียนถูก|เขียนผิด|เขียนคำ|เขียนตัว|เขียนเป็น|เขียนได้|ตัวพิมพ์|ตัวใหญ่ของ|ตัวเล็กของ|เลขไทย|สะกด|ไม้เอก|ไม้โท|ไม้ตรี|ไม้จัตวา|ไม้ม้วน|ไม้มลาย|สระ|พยัญชนะ|วรรณยุกต์|ตัวอักษร|คือตัวใด|ด้วยตัวใด|ตัวใดคือ|อ่านว่าอะไร|อ่านว่าอย่างไร|ภาษาอังกฤษคือคำใด|คำใดคือ|ภาพนี้คือคำใด|letter|[Cc]apital/;
-const noRead=q=>q.read===false||(q.read!==true&&(NOREAD.test(q.q+' '+(q.say||''))||q.opts.some(o=>/^([ก-ฮ]|[ะ-ฺเ-ๅ็-๎◌\-]+|[A-Za-z]|[A-Z][a-z]|[a-z][A-Z])$|[๐-๙]/.test(label(o)))));
+/* อ่านตัวเลือกเสมอ (ผู้ปกครองขอ 24 ต.ค.): ข้อที่ซ่อนคำใต้ภาพแล้ว (cat ขึ้นต้นด้วยตัวใด) และข้อ ภาพใด… ที่ตัวเลือกเป็นภาพ (อ่านชื่อภาพ) */
+const forceRead=q=>hideWord(q)!==q||(/^ภาพใด/.test(q.q)&&q.opts.every(o=>o&&o.say));
+const noRead=q=>q.read===false||(q.read!==true&&!forceRead(q)&&(NOREAD.test(q.q+' '+(q.say||''))||q.opts.some(o=>/^([ก-ฮ]|[ะ-ฺเ-ๅ็-๎◌\-]+|[A-Za-z]|[A-Z][a-z]|[a-z][A-Z])$|[๐-๙]/.test(label(o)))));
 const optSay=q=>{if(noRead(q))return [];const ls=q.opts.map(labelSay);return ls.every(l=>l&&SAYOK.test(l)&&/[ก-ฮA-Za-z0-9]/.test(l))?ls.flatMap((l,i)=>['ข้อ '+'กขคง'[i],l]):[];};
 /* ชุด 50 ข้อขึ้นไป: พักครึ่งทาง 10 วินาทีก่อนข้อ 26 */
 /* พักครึ่งทาง (ชุด 50 ข้อ): ต้นกล้าเต้นตามเพลงสั้น ๆ 10 วินาที เพลงสังเคราะห์เอง ไม่ใช้ไฟล์ */
@@ -333,11 +336,13 @@ async function mockIntro(){phase='quiz';const my=++tok;setWho('teach');SFX.chime
 async function lesson(from){if(MOCK)return mockIntro();phase='lesson';const my=++tok;if(synth)synth.cancel();
  for(let i=from;i<EP.scenes.length;i++){cur=i;const s=EP.scenes[i];setWho('kla');if(i>from)SFX.whoosh();await show(vis(s.v||{type:'kla'}),true);if(my!==tok)return;prog(i/total);await say(s.say);if(my!==tok)return;await gap(800,my);if(my!==tok)return;}
  phase='quiz';SFX.chime();await show(h('div','vis','<div class="char pop">'+KLA+'</div><div class="bubble pop">ถึงเวลาตอบคำถามแล้ว 🌟</div>'),true);await say('ถึงเวลาตอบคำถามแล้ว ฟังให้ดีนะ');if(my!==tok)return;quiz(0);}
+/* ข้อ "cat ขึ้นต้นด้วยตัวใด" "ดาว ขึ้นต้นด้วยพยัญชนะตัวใด" "เตียง ใช้สระใด" ที่มีภาพ: ไม่แสดงคำบนจอ (เด็กจะดูตัวอักษรแทนการฟัง) แสดงเป็น "ภาพนี้…" แต่ยังอ่านคำให้ฟัง */
+function hideWord(q){const m=/^(\S+) (ขึ้นต้นด้วย(?:พยัญชนะ)?ตัวใด|ใช้สระใด|ประสมด้วยสระใด)$/.exec(q.q);if(!m||!q.v||!q.v.e)return q;const v=Object.assign({},q.v);delete v.sub;delete v.text;return {q:'ภาพนี้'+m[2],v};}
 async function quiz(qi){if(qi>=EP.questions.length)return finish();if(EP.questions.length>=50&&qi===25&&!EP._rest){EP._rest=1;if(!await rest())return;}const q=EP.questions[qi];prog((EP.scenes.length+qi)/total);setWho(MOCK?'teach':'kla');if(!EP._t0)EP._t0=Date.now();const QS0=(MOCK?['ข้อ '+(qi+1),q.say||q.q].concat(optSay(q),['ครูอ่านอีกครั้งนะคะ',q.say||q.q]):[q.bonus?'ข้อพิเศษ ทบทวนเลข':q.star?'ข้อท้าทาย':'',q.say||q.q]).concat(optSay(q));
- const box=h('div','vis');if(q.star)box.append(h('div','star pop','⭐ ข้อท้าทาย ผิดได้ไม่เป็นไร'));if(q.bonus)box.append(h('div','star pop bonus','🔢 ข้อพิเศษ ทบทวนเลข'));if(q.v)box.append(vis(q.v,true));const qt=h('div','qtext',strip(q.q)+' ');if(!MOCK){const rp=h('button','rep','🔊');rp.title='ฟังคำถามอีกครั้ง';rp.onclick=()=>{if(QS&&!QS.lock){tok++;if(synth)synth.cancel();say(QS0);}};qt.append(rp);}if(EP.mode)box.prepend(h('div','qno pop','ข้อ '+(qi+1)+' / '+EP.questions.length));box.append(qt);
+ const box=h('div','vis');if(q.star)box.append(h('div','star pop','⭐ ข้อท้าทาย ผิดได้ไม่เป็นไร'));if(q.bonus)box.append(h('div','star pop bonus','🔢 ข้อพิเศษ ทบทวนเลข'));const hw=hideWord(q);if(hw.v)box.append(vis(hw.v,true));const qt=h('div','qtext',strip(hw.q)+' ');if(!MOCK){const rp=h('button','rep','🔊');rp.title='ฟังคำถามอีกครั้ง';rp.onclick=()=>{if(QS&&!QS.lock){tok++;if(synth)synth.cancel();say(QS0);}};qt.append(rp);}if(EP.mode)box.prepend(h('div','qno pop','ข้อ '+(qi+1)+' / '+EP.questions.length));box.append(qt);
  const opts=h('div','opts');const btns=q.opts.map((o,i)=>{const b=h('button','opt pop','<span class="k">'+'กขคง'[i]+'.</span>'+optHTML(o));b.style.animationDelay=(i*.1)+'s';b.onclick=()=>answer(i,b);opts.append(b);return b;});box.append(opts);
  if(qi>0)SFX.whoosh();await show(box,true);if(q.star)SFX.sparkle();
- QS={qi,q,btns,tries:0,lock:false};hideSub=true;if(q.id&&(EP.mode||q.bonus))markSeen(q.id);if(MOCK)return mockTimer(qi,q,box,btns,QS0);say(QS0);}
+ const S0=QS={qi,q,btns,tries:0,lock:false,th:0,rd:0};hideSub=true;{const tk=setInterval(()=>{if(QS!==S0){clearInterval(tk);return;}if(S0.rd&&!paused&&!S0.lock)S0.th+=250;},250);}if(q.id&&(EP.mode||q.bonus))markSeen(q.id);if(MOCK)return mockTimer(qi,q,box,btns,QS0);Promise.resolve(say(QS0)).then(()=>{S0.rd=1;});}
 /* จำลองสอบเหมือนวันจริง: ครูอ่านโจทย์ (และตัวเลือก) 2 รอบ แล้วให้เวลาคิด EP.sec วินาที หมดเวลาแล้วครูบอก แล้วอ่านข้อต่อไป */
 async function mockTimer(qi,q,box,btns,segs){const my=tok;const ms=(EP.sec||15)*1000;const tm=h('div','tmr'),f=h('i');tm.append(f);const qn=box.querySelector('.qno');if(qn)qn.after(tm);else box.prepend(tm);
  await say(segs);if(my!==tok)return;let t=0;tm.classList.add('on');
@@ -439,10 +444,10 @@ async function paperWait(){const sec=EP.paper||0;if(!EP.mode||!sec)return true;c
  el.remove();return my===tok;}
 async function answer(i,b){const s=QS;if(!s||s.lock)return;s.lock=true;hideSub=false;tok++;if(synth)synth.cancel();const q=s.q;
  if(MOCK){LOG[s.qi]={id:q.id,t:q.t,ok:i===q.ans};b.classList.add('picked');SFX.pop(3);s.btns.forEach(x=>x.disabled=true);await wait(650);if(!await paperWait())return;return quiz(s.qi+1);}
- if(i===q.ans){LOG[s.qi]={id:q.id,t:q.t,ok:s.tries===0};b.classList.add('ok');SFX.ok();react('cheer');const [x,y]=centerOf(b);confetti(x,y,s.tries===0?26:14);if(s.tries===0&&!q.star&&!q.bonus)score.first++;if(q.bonus&&window.logFocus)logFocus(q.id,q.t,s.tries===0);if(s.tries===0&&q.star){SFX.sparkle();starBurst(x,y,8);}s.btns.forEach(x=>x.disabled=true);const xp=exPlan(q);if(xp)await Promise.all([say([rand(PRAISE),q.why]),explain(xp)]);else await say([rand(PRAISE),q.why]);}
+ if(i===q.ans){LOG[s.qi]={id:q.id,t:q.t,ok:s.tries===0,sec:Math.round((s.th||0)/1000)};b.classList.add('ok');SFX.ok();react('cheer');const [x,y]=centerOf(b);confetti(x,y,s.tries===0?26:14);if(s.tries===0&&!q.star&&!q.bonus)score.first++;if(q.bonus&&window.logFocus)logFocus(q.id,q.t,s.tries===0);if(s.tries===0&&q.star){SFX.sparkle();starBurst(x,y,8);}s.btns.forEach(x=>x.disabled=true);const xp=exPlan(q);if(xp)await Promise.all([say([rand(PRAISE),q.why]),explain(xp)]);else await say([rand(PRAISE),q.why]);}
  else{b.classList.add('no');b.disabled=true;SFX.no();react('oops');s.tries++;
   if(s.tries===1){setWho('jook');await say(['เจ้าจุกใบ้ให้นะ',q.hint||'ลองดูดี ๆ อีกครั้งนะ']);setWho('kla');s.lock=false;return;}
-  LOG[s.qi]={id:q.id,t:q.t,ok:false};if(q.bonus&&window.logFocus)logFocus(q.id,q.t,false);s.btns.forEach(x=>x.disabled=true);s.btns[q.ans].classList.add('ok');{const xs=['ไม่เป็นไรนะ คำตอบคือ',labelSay(q.opts[q.ans])||'ข้อ '+'กขคง'[q.ans],q.why],xp=exPlan(q);if(xp)await Promise.all([say(xs),explain(xp)]);else await say(xs);}}
+  LOG[s.qi]={id:q.id,t:q.t,ok:false,sec:Math.round((s.th||0)/1000)};if(q.bonus&&window.logFocus)logFocus(q.id,q.t,false);s.btns.forEach(x=>x.disabled=true);s.btns[q.ans].classList.add('ok');{const xs=['ไม่เป็นไรนะ คำตอบคือ',labelSay(q.opts[q.ans])||'ข้อ '+'กขคง'[q.ans],q.why],xp=exPlan(q);if(xp)await Promise.all([say(xs),explain(xp)]);else await say(xs);}}
  await wait(700);if(!await paperWait())return;quiz(s.qi+1);}
 function save(gold){try{const k='kla-garden-v1';const d=JSON.parse(localStorage.getItem(k)||'{}');const o=d['EP'+EP.ep]||{};d['EP'+EP.ep]={seed:1,gold:!!(o.gold||gold),t:Date.now()};localStorage.setItem(k,JSON.stringify(d));}catch(e){}}
 async function finish(){if(EP.mode)return examEnd();phase='end';react('cheer');QS=null;prog(1);const need=EP.questions.filter(q=>!q.star&&!q.bonus).length;const gold=score.first>=need;save(gold);
@@ -468,7 +473,7 @@ function flyStar(slot){return new Promise(res=>{const done=()=>{slot.innerHTML=G
  requestAnimationFrame(step);});}
 /* จบชุดสนามสอบ: เด็กเห็นแค่ดาวที่ได้ ผลรายข้อเก็บไว้ให้ผู้ปกครองดู */
 async function examEnd(){phase='end';react('cheer');QS=null;prog(1);const n=EP.questions.length,ok=LOG.filter(x=>x&&x.ok).length;
- try{const k='kla-exam-v1';const d=JSON.parse(localStorage.getItem(k)||'[]');d.push({t:Date.now(),kind:MOCK?'mock':EP.warm?'warm':'practice',sec:EP._t0?Math.round((Date.now()-EP._t0)/1000):0,subj:EP.subj||'mix',n,ok,to:LOG.filter(x=>x&&x.to).length,items:LOG.map(x=>x?[x.id,x.t,x.ok?1:0]:null)});localStorage.setItem(k,JSON.stringify(d.slice(-80)));}catch(e){}
+ try{const k='kla-exam-v1';const d=JSON.parse(localStorage.getItem(k)||'[]');d.push({t:Date.now(),kind:MOCK?'mock':EP.warm?'warm':'practice',sec:EP._t0?Math.round((Date.now()-EP._t0)/1000):0,subj:EP.subj||'mix',n,ok,to:LOG.filter(x=>x&&x.to).length,items:LOG.map(x=>x?[x.id,x.t,x.ok?1:0,x.sec||0]:null)});localStorage.setItem(k,JSON.stringify(d.slice(-80)));}catch(e){}
  const got=Math.max(ok,1),cheer=ok===0;
  const c=h('div','cover');c.innerHTML='<h1>ทำครบ '+n+' ข้อแล้ว</h1>'+
   '<div class="starbox"><div class="rays"></div><svg class="bigstar" viewBox="0 0 100 100"><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3a6"/><stop offset=".45" stop-color="#ffd23f"/><stop offset="1" stop-color="#f4a100"/></linearGradient>'+

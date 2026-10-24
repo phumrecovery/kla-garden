@@ -44,7 +44,8 @@ const open=t=>all||!!(P['EP'+t.ep]&&P['EP'+t.ep].seed);
 /* บางข้อใช้ความรู้จากตอนหลัง (x.ep) ซ่อนไว้จนกว่าน้องจะดูตอนนั้น */
 const okIt=x=>all||!x.ep||!!(P['EP'+x.ep]&&P['EP'+x.ep].seed);
 const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
-const ST={};H.slice(-10).forEach(r=>(r.items||[]).forEach(x=>{if(!x)return;const o=ST[x[1]]=ST[x[1]]||{n:0,ok:0};o.n++;o.ok+=x[2];}));
+const TH=window.slowTH?slowTH():30;  /* วินาทีที่ถือว่าคิดนาน */
+const ST={};H.slice(-10).forEach(r=>(r.items||[]).forEach(x=>{if(!x)return;const o=ST[x[1]]=ST[x[1]]||{n:0,ok:0};o.n++;o.ok+=window.okv?okv(x,TH):x[2];}));
 const MSTR=window.mastery?mastery():{};  /* ระดับความยากตามผลของน้อง */
 const SEEN=get('kla-seen-v1',{}),cnt=x=>(SEEN[x.id]||[0])[0],last=x=>(SEEN[x.id]||[0,0])[1];
 /* แนวโจทย์: ข้อความโจทย์ที่ตัดตัวเลขออก + ชนิดภาพ ใช้กันไม่ให้ชุดเดียวกันมีโจทย์แนวเดิมซ้ำ ๆ */
@@ -62,6 +63,8 @@ function draw(ts,n){
   const order=shuf(ts.slice()).sort((a,b)=>avg[a.id]-avg[b.id]);
   const rotOf=list=>{const r=[];list.forEach(t=>{r.push(t.id);const s=ST[t.id];if(s&&s.n>=3&&s.ok/s.n<.7)r.push(t.id);});return r;};
   const out=[],used=new Set();
+  /* ข้อที่ครั้งล่าสุดตอบผิด หรือตอบถูกแต่คิดนาน (น่าจะยังไม่เข้าใจ) กลับมาถามซ้ำก่อน ราว 30% ของชุด */
+  (window.reviewItems?reviewItems(ts,Math.ceil(n*.3),okIt):[]).forEach(x=>{const q=Q[x.t],i=q?q.indexOf(x):-1;if(i>=0)q.splice(i,1);used.add(stem(x));out.push(x);});
   const fill=rot=>{for(let g=0;g<200&&out.length<n;g++){let add=false;for(const id of rot){if(out.length>=n)break;const q=Q[id];if(!q.length)continue;
     const c0=cnt(q[0]);let i=q.findIndex(x=>cnt(x)===c0&&!used.has(stem(x)));if(i<0)i=0;const x=q.splice(i,1)[0];used.add(stem(x));out.push(x);add=true;}if(!add)break;}};
   fill(rotOf(order.filter(t=>!cap[t.id])));if(out.length<n)fill(rotOf(order));

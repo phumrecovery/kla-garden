@@ -1,7 +1,7 @@
 /* service worker: เก็บไฟล์ที่เคยเปิดไว้ในเครื่อง ดูออฟไลน์ได้
    - หน้าเว็บ/สคริปต์: ดึงจากเน็ตก่อน (ได้เนื้อหาล่าสุดทันที) ถ้าไม่มีเน็ตใช้ของที่เก็บไว้
    - เสียง/รูป/ฟอนต์: ใช้ของที่เก็บไว้ก่อน (ประหยัดเน็ต) */
-const V='kla-v9';  /* เปลี่ยนเลขเมื่อแก้ไฟล์เสียงชื่อเดิม (เช่น สร้างเสียงใหม่ทับไฟล์ที่เสีย) ให้แท็บเล็ตโหลดใหม่ */
+const V='kla-v10';  /* เปลี่ยนเลขเมื่อแก้ไฟล์เสียงชื่อเดิม (เช่น สร้างเสียงใหม่ทับไฟล์ที่เสีย) ให้แท็บเล็ตโหลดใหม่ */
 const CORE=['./','00_เมนูหลัก.html','engine/engine.js','engine/engine.css','เสียง/amap.js','icon-192.png'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(V).then(c=>Promise.all(CORE.map(u=>c.add(new Request(u,{cache:'reload'})).catch(()=>{})))));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});

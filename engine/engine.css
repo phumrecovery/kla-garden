@@ -357,7 +357,8 @@ button{font-family:inherit;cursor:pointer}
 .x3b{font-size:clamp(15px,2.1vw,20px)!important;padding:.3em .9em!important;box-shadow:none}
 .cu3.gy i{background:#a7adb5}.cu3.gy .t{background:#cdd2d8}.cu3.gy .r,.cu3.gy .l{background:#8d939b}
 /* เฉลยภาพชุด 2 (explain2.js) */
-.x2d{width:100%;height:clamp(240px,42vh,380px);display:flex;align-items:center;justify-content:center}
+.exbox.x2box{width:min(880px,96vw);padding:10px 14px 12px}.x2box .excap{font-size:clamp(20px,3.2vw,32px);color:#4c1d95}
+.x2d{width:100%;height:clamp(260px,54vh,500px);display:flex;align-items:center;justify-content:center}
 .x2svg{width:100%;height:100%;font-family:inherit;overflow:visible}.x2svg .tc{cursor:pointer}
 .xoff{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:65;background:#fff;color:var(--ink);border:3px solid var(--c);border-radius:999px;font-size:clamp(18px,2.6vw,24px);padding:.3em 1.1em;box-shadow:0 4px 0 rgba(0,0,0,.12)}
 .x2turn{display:flex;flex-direction:column;align-items:center;gap:6px;width:100%;height:100%}

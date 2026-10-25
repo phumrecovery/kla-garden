@@ -1,3 +1,5 @@
+/* โหลดเฉลยภาพชุด 2 (engine/explain2.js) จากโฟลเดอร์เดียวกับไฟล์นี้ */
+(function(){try{const s=document.currentScript;if(s&&s.src){const e=document.createElement('script');e.src=new URL('explain2.js',s.src).href;document.head.append(e);}}catch(e){}})();
 /* สวนมหัศจรรย์ของน้องกล้า · engine v2 (ใช้ร่วมกันทุกตอน)
    ตอนแต่ละตอนกำหนด window.EP = {...} ก่อนโหลดไฟล์นี้
    ตารางไฟล์เสียงมาจาก เสียง/amap.js (window.AMAP) */
@@ -360,13 +362,26 @@ function exPlan(q){const t=q.q+' '+(q.say||''),v=q.v||{},a=q.opts[q.ans];
   const m=t.match(/ตรงข้ามกับหน้า (\d)/);if(m)pair=[m[1],label(a)];
   if(net==='cube'&&!nums&&/กี่รูป|กี่หน้า/.test(t))nums={'1,0':1,'0,1':2,'1,1':3,'2,1':4,'3,1':5,'1,2':6};
   return {k:'net',net,nums,pair};}
- return null;}
+ return window.EX2?EX2.plan(q):null;}
 async function explain(p){const my=tok;let skip=false;const ov=h('div','ex3d'),box=h('div','exbox'),cap=h('div','excap','👀 มาดูกัน'),st3=h('div','x3d'),sc=h('div','sc3'),sk=h('button','pgo','ข้าม ▶');
  sk.onclick=()=>{skip=true;};st3.append(sc);box.append(cap,st3,sk);ov.append(box);document.body.append(ov);
  const W=async ms=>{let t=0;while(t<ms&&!skip){await wait(50);if(my!==tok)return false;if(!paused)t+=50;}return my===tok&&!skip;};
- try{if(p.k==='blk'){await exBlocks(p,sc,cap,W);if(my===tok&&p.st){sk.style.display='none';await blkPlay(p,sc,cap,box,my);}}
+ try{if(p.k==='x2'){const st=h('div','x2d');st3.replaceWith(st);await x2Play(p,st,cap,box,sk,W,my,()=>{skip=false;},()=>skip);}
+  else if(p.k==='blk'){await exBlocks(p,sc,cap,W);if(my===tok&&p.st){sk.style.display='none';await blkPlay(p,sc,cap,box,my);}}
   else{if(p.net==='cube')await exCube(p,sc,cap,W);else if(p.net==='cylinder')await exCyl(sc,cap,W);else await exCone(sc,cap,W);if(!skip)await W(700);}}catch(e){}
  ov.remove();return my===tok;}
+/* เฉลยภาพชุด 2 (explain2.js): เล่นภาพทีละขั้น · กดข้ามแล้วข้ามไปภาพสุดท้าย · จบแล้วมีปุ่ม ดูอีกครั้ง / ไปต่อ (และแตะนับเองได้ในบางภาพ) */
+async function x2Play(p,st,cap,box,sk,W,my,resetSkip,isSkip){const ctx=fast=>({stage:st,cap,W:fast?async()=>my===tok:W,fast,SFX,confetti,centerOf});
+ for(;;){st.innerHTML='';st.style.perspective='';resetSkip();sk.style.display='';await EX2.run(p,ctx(false));if(my!==tok)return;
+  if(isSkip()){st.innerHTML='';resetSkip();await EX2.run(p,ctx(true));}
+  sk.style.display='none';const bar=h('div','x3bar'),ag=h('button','btn2 x3b','↺ ดูอีกครั้ง'),go=h('button','go x3b','ไปต่อ ▶');bar.append(ag,go);box.append(bar);
+  const r=await new Promise(res=>{const iv=setInterval(()=>{if(my!==tok){clearInterval(iv);res('g');}},200);ag.onclick=()=>{clearInterval(iv);res('a');};go.onclick=()=>{clearInterval(iv);res('g');};});
+  bar.remove();if(r!=='a'||my!==tok)return;}}
+/* สนามฝึก: ตอบถูกเร็ว ไม่บังคับดูภาพ แต่มีปุ่มให้กดดูได้ระหว่างน้องกล้าพูดเฉลย */
+const slowNow=s=>(s.th||0)/1000>(window.slowTH?slowTH():30);
+async function offerX(xp,sp){const my=tok,b=h('button','xoff pop','👀 ดูภาพอธิบาย');document.body.append(b);
+ const tapped=new Promise(r=>{b.onclick=()=>r(true);});const r=await Promise.race([Promise.resolve(sp).then(()=>wait(1800)).then(()=>false),tapped]);b.remove();
+ if(r&&my===tok)await Promise.all([sp,explain(xp)]);else await sp;}
 async function exBlocks(p,sc,cap,W){const g=p.g,R=g.length,C=Math.max(...g.map(r=>r.length)),S=46,cubes=[];
  for(let z=0;z<9;z++)for(let r=0;r<R;r++)for(let c=0;c<C;c++)if(((g[r]&&g[r][c])||0)>z)cubes.push([r,c,z]);
  const mz=Math.max(...cubes.map(x=>x[2]))+1;sc.style.setProperty('--s',S+'px');
@@ -444,7 +459,7 @@ async function paperWait(){const sec=EP.paper||0;if(!EP.mode||!sec)return true;c
  el.remove();return my===tok;}
 async function answer(i,b){const s=QS;if(!s||s.lock)return;s.lock=true;hideSub=false;tok++;if(synth)synth.cancel();const q=s.q;
  if(MOCK){LOG[s.qi]={id:q.id,t:q.t,ok:i===q.ans};b.classList.add('picked');SFX.pop(3);s.btns.forEach(x=>x.disabled=true);await wait(650);if(!await paperWait())return;return quiz(s.qi+1);}
- if(i===q.ans){LOG[s.qi]={id:q.id,t:q.t,ok:s.tries===0,sec:Math.round((s.th||0)/1000)};b.classList.add('ok');SFX.ok();react('cheer');const [x,y]=centerOf(b);confetti(x,y,s.tries===0?26:14);if(s.tries===0&&!q.star&&!q.bonus)score.first++;if(q.bonus&&window.logFocus)logFocus(q.id,q.t,s.tries===0);if(s.tries===0&&q.star){SFX.sparkle();starBurst(x,y,8);}s.btns.forEach(x=>x.disabled=true);const xp=exPlan(q);if(xp)await Promise.all([say([rand(PRAISE),q.why]),explain(xp)]);else await say([rand(PRAISE),q.why]);}
+ if(i===q.ans){LOG[s.qi]={id:q.id,t:q.t,ok:s.tries===0,sec:Math.round((s.th||0)/1000)};b.classList.add('ok');SFX.ok();react('cheer');const [x,y]=centerOf(b);confetti(x,y,s.tries===0?26:14);if(s.tries===0&&!q.star&&!q.bonus)score.first++;if(q.bonus&&window.logFocus)logFocus(q.id,q.t,s.tries===0);if(s.tries===0&&q.star){SFX.sparkle();starBurst(x,y,8);}s.btns.forEach(x=>x.disabled=true);const xp=exPlan(q),sp=[rand(PRAISE),q.why];if(xp&&(xp.k!=='x2'||!EP.mode||s.tries>0||slowNow(s)))await Promise.all([say(sp),explain(xp)]);else if(xp)await offerX(xp,say(sp));else await say(sp);}
  else{b.classList.add('no');b.disabled=true;SFX.no();react('oops');s.tries++;
   if(s.tries===1){setWho('jook');await say(['เจ้าจุกใบ้ให้นะ',q.hint||'ลองดูดี ๆ อีกครั้งนะ']);setWho('kla');s.lock=false;return;}
   LOG[s.qi]={id:q.id,t:q.t,ok:false,sec:Math.round((s.th||0)/1000)};if(q.bonus&&window.logFocus)logFocus(q.id,q.t,false);s.btns.forEach(x=>x.disabled=true);s.btns[q.ans].classList.add('ok');{const xs=['ไม่เป็นไรนะ คำตอบคือ',labelSay(q.opts[q.ans])||'ข้อ '+'กขคง'[q.ans],q.why],xp=exPlan(q);if(xp)await Promise.all([say(xs),explain(xp)]);else await say(xs);}}

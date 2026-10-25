@@ -78,6 +78,14 @@ recent.forEach(r=>(r.items||[]).forEach(tally));RV.slice(-60).forEach(tally);
     const tr=document.createElement('div');tr.className='track';tr.innerHTML='<div class="fill'+(bad?' bad':'')+'" style="width:'+p+'%"></div>';hover(tr,'ระดับ'+name+' · ถูก '+a.ok+'/'+a.n+' ข้อ');
     const v=document.createElement('div');v.className='val';v.textContent=a.n?p+'% ('+a.n+' ข้อ)':'ยังไม่มี';g.append(l,tr,v);});
   c.append(g);m.append(c);}
+// ส่งออกสถิติ: เก็บข้อมูลในเครื่องที่ขึ้นต้นด้วย kla- เป็นไฟล์ JSON ให้ผู้ปกครองส่งต่อ/เก็บไว้ (เช่น วางในโฟลเดอร์งาน ให้ช่วยวิเคราะห์)
+{const c=document.createElement('div');c.className='card';c.innerHTML='<h2>ส่งออกสถิติ</h2><p class="sub">บันทึกผลการทำทั้งหมดในเครื่องนี้เป็นไฟล์ (ไม่มีชื่อหรือข้อมูลส่วนตัว) เอาไปเก็บหรือส่งต่อได้</p>';
+  const b=document.createElement('button');b.textContent='📤 ส่งออกสถิติ';b.style.cssText='font:inherit;font-size:18px;padding:.4em 1.2em;border-radius:999px;border:3px solid #7c3aed;background:#fff;cursor:pointer';
+  b.onclick=async()=>{const d={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(/^kla-/.test(k))d[k]=localStorage.getItem(k);}const n=new Date(),fn='สถิติน้อง_'+n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+'.json';
+   const blob=new Blob([JSON.stringify({ver:1,t:n.toISOString(),data:d},null,1)],{type:'application/json'}),f=new File([blob],fn,{type:'application/json'});
+   try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:fn});return;}}catch(e){if(e&&e.name==='AbortError')return;}
+   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);};
+  c.append(b);m.append(c);}
 // ข้อที่รอถามซ้ำ (ตอบผิด หรือถูกแต่คิดนาน)
 if(window.reviewIds){const TH=slowTH(),R=reviewIds(TH),sl=R.filter(x=>x.slow).length,c=document.createElement('div');c.className='card';
   c.innerHTML='<h2>ข้อที่รอถามซ้ำ '+R.length+' ข้อ</h2><p class="sub">ตอบผิด '+(R.length-sl)+' ข้อ · ตอบถูกแต่คิดนานเกิน '+TH+' วินาที '+sl+' ข้อ (น่าจะยังไม่เข้าใจ เช่น ข้อที่ผู้ปกครองช่วยอธิบาย) · ระบบจะสุ่มข้อเหล่านี้กลับมาราว 30% ของแต่ละชุด จนน้องตอบถูกได้เร็ว · เวลาคิดนับหลังอ่านโจทย์จบ ไม่นับตอนกดหยุด</p>';m.append(c);}

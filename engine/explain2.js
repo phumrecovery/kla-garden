@@ -408,7 +408,7 @@ const PE={หู:'👂',มือ:'✋',ตา:'👁️'};
 R.groups=async(p,G)=>{
  if(p.se){const n=p.gs[0].c,k=p.gs[0].k,sw=Math.min(90,540/n),xs=j=>300-(n*sw)/2+j*sw+sw/2,ky=Math.min(32,150/k);let run=0;
   for(let j=0;j<n;j++)G.pop(G.tx(xs(j),58,p.gs[0].e,{fs:40}));
-  if(!await G.step(p.per?'ให้คนละ '+k:'1 ชิ้น แลกได้ '+k,[p.per?'ให้คนละ '+k:'หนึ่งชิ้น แลกได้ '+k],600))return;
+  if(!await G.step(p.per?'ให้คนละ '+k:'1 ชิ้น แลกได้ '+k,[p.intro||(p.per?'ให้คนละ '+k:'หนึ่งชิ้น แลกได้ '+k)],600))return;
   for(let j=0;j<n;j++){G.E('line',{x1:xs(j),y1:84,x2:xs(j),y2:104,stroke:'#94a3b8','stroke-width':2});for(let i=0;i<k;i++){const y=124+i*ky,t=G.tx(xs(j),y,p.se,{fs:Math.min(26,ky)});G.pop(t,200);G.tc(t,xs(j),y);}
    run+=k;G.tag(xs(j),124+k*ky+6,run,'#ec4899',14);G.sfx('pop',j%12);G.cap(String(run));if(!await G.say([String(run)]))return;}
   const eq=Array(n).fill(k).join(' + ')+' = '+p.tot,r=G.tx(300,314,eq,{fs:26,w:700,fill:'#7c3aed'});G.pop(r);if(!await G.fin(eq,['รวม '+p.tot],[r]))return;G.tapOn(p.tot);return;}
@@ -720,10 +720,214 @@ R.spell=async(p,G)=>{const n=p.parts.length,gap=120,x0=300-(n-1)*gap/2,ps=[],pl=
  pl.forEach(t=>G.fade(t,0,250));ps.forEach((g,i)=>G.move(g,300-(x0+i*gap),80,800));G.sfx('whoosh');if(!await G.W(900))return;ps.forEach(g=>G.fade(g,0,300));
  const w=G.tx(300,190,p.w,{fs:84,w:700,fill:'#7c3aed'});G.pop(w,500);await G.fin(p.parts.join(' ')+' อ่านว่า '+p.w,['อ่านว่า',p.w],[w]);};
 
+/* ======================================================================
+   ภาพเฉลยของหัวข้อชุดเพิ่ม 6 (26 ต.ค. 69) · ข้อมูลภาพมากับข้อในคลัง (q.x2) ตรวจกับเฉลยแล้วตอนสร้างคลัง
+   ====================================================================== */
+const INK='#3b3b4f';
+const trOf=t=>{const r=t[5];if(!r)return '';if(r==='h')return 'translate('+2*t[0]+' 0) scale(-1 1)';if(r==='v')return 'translate(0 '+2*t[1]+') scale(1 -1)';if(r[0]==='r')return 'rotate('+r.slice(1)+' '+t[0]+' '+t[1]+')';return '';};
+/* วาดรูปแบบเดียวกับ figSVG ของ engine ลงในภาพเฉลย (ย่อ/ขยายได้) */
+function drawFig(G,f,x,y,w,h,par){const vb=f.vb||[100,100];const s=G.E('svg',{x,y,width:w,height:h,viewBox:'0 0 '+vb[0]+' '+vb[1],overflow:'visible'},par);
+ (f.polys||[]).forEach(q=>G.E('polygon',{points:q.p.map(p=>p.join(',')).join(' '),fill:q.f||'none',stroke:q.s||INK,'stroke-width':q.w||2.5,'stroke-linejoin':'round'},s));
+ (f.circles||[]).forEach(c=>G.E('circle',{cx:c[0],cy:c[1],r:c[2],fill:c[3]||'none',stroke:INK,'stroke-width':2.5},s));
+ (f.paths||[]).forEach(c=>G.E('path',{d:c[0],fill:c[1]||'none','stroke-width':c[2]||2.5,stroke:c[3]||INK,'stroke-linejoin':'round','stroke-linecap':'round'},s));
+ (f.lines||[]).forEach(l=>{const a={x1:l[0],y1:l[1],x2:l[2],y2:l[3],stroke:INK,'stroke-width':l[4]||3,'stroke-linecap':'round'};if(l[5])a['stroke-dasharray']='6 5';G.E('line',a,s);});
+ (f.txt||[]).forEach(t=>{const e=G.tx(t[0],t[1],t[2],{fs:t[3]||22,fill:t[4]||INK,p:s});const tr=trOf(t);if(tr)e.setAttribute('transform',tr);});
+ return s;}
+function shPath(k,cx,cy,r){if(k==='c')return 'M'+(cx-r)+' '+cy+' a'+r+' '+r+' 0 1 0 '+2*r+' 0 a'+r+' '+r+' 0 1 0 '+(-2*r)+' 0 Z';
+ if(k==='s'){const d=Math.round(r*.85);return 'M'+(cx-d)+' '+(cy-d)+' H'+(cx+d)+' V'+(cy+d)+' H'+(cx-d)+' Z';}
+ if(k==='t')return 'M'+cx+' '+(cy-r)+' L'+(cx+r)+' '+(cy+Math.round(r*.75))+' L'+(cx-r)+' '+(cy+Math.round(r*.75))+' Z';
+ if(k==='h'){const f=(a,b)=>(cx+r*a).toFixed(0)+' '+(cy+r*b).toFixed(0);return 'M'+f(0,.85)+' C'+f(-1.35,-.15)+' '+f(-.65,-1.1)+' '+f(0,-.4)+' C'+f(.65,-1.1)+' '+f(1.35,-.15)+' '+f(0,.85)+' Z';}
+ const pts=[];if(k==='st'){for(let i=0;i<10;i++){const rr=i%2?r*.45:r;pts.push([cx+rr*Math.sin(i*Math.PI/5),cy-rr*Math.cos(i*Math.PI/5)]);}}else{const n=+k.slice(1);for(let i=0;i<n;i++)pts.push([cx+r*Math.sin(2*Math.PI*i/n),cy-r*Math.cos(2*Math.PI*i/n)]);}
+ return 'M'+pts.map(p=>p[0].toFixed(0)+' '+p[1].toFixed(0)).join(' L')+' Z';}
+const arrowTo=(G,x1,y1,x2,y2,col,par)=>{const g=G.E('g',{},par),a=Math.atan2(y2-y1,x2-x1),h=13;G.E('line',{x1,y1,x2,y2,stroke:col,'stroke-width':5,'stroke-linecap':'round'},g);
+ G.E('path',{d:'M'+x2+' '+y2+' L'+(x2-h*Math.cos(a-.5))+' '+(y2-h*Math.sin(a-.5))+' L'+(x2-h*Math.cos(a+.5))+' '+(y2-h*Math.sin(a+.5))+' Z',fill:col},g);return g;};
+/* ---------- ปริศนาภาพพยัญชนะ: ภาพ → ชื่อ → พยัญชนะตัวแรก → รวมเป็นคำ ---------- */
+R.rebus=async(p,G)=>{const n=p.ps.length,gap=Math.min(150,520/n),x=i=>300-(n-1)*gap/2+i*gap,pics=[],tiles=[];
+ p.ps.forEach(([e])=>pics.push(G.pop(G.tx(0,0,e,{fs:58}))));pics.forEach((t,i)=>{t.setAttribute('x',x(i));t.setAttribute('y',58);});
+ if(!await G.step('นึกชื่อภาพทีละภาพ',['นึกชื่อภาพทีละภาพ แล้วเอาพยัญชนะตัวแรกมาเรียงกัน'],500))return;
+ for(let i=0;i<n;i++){const [e,nm,c]=p.ps[i];G.pulse(pics[i]);G.pop(G.tx(x(i),112,nm,{fs:22,w:700,fill:'#475569'}));
+  const t=G.E('g',{});roundRect(G,x(i)-30,140,60,62,C[i%C.length],null,14,t);G.tx(x(i),172,c,{fs:40,w:700,fill:'#fff',p:t});G.pop(t);tiles.push(t);G.sfx('pop',i);G.cap(nm+' → '+c);
+  if(!await G.say([nm+' คือ '+c]))return;}
+ const tw=66,x0=300-(n-1)*tw/2;tiles.forEach((t,i)=>G.move(t,x0+i*tw-x(i),100,700));G.sfx('whoosh');if(!await G.W(800))return;
+ if(p.pic)G.pop(G.tx(x0+n*tw+30,272,'= '+p.pic,{fs:52}));
+ await G.fin(p.ps.map(x=>x[2]).join(' + ')+' อ่านว่า '+p.w,['อ่านว่า',p.w],tiles);};
+/* ---------- ถอดรหัส: ชี้คอลัมน์ในตารางทีละตัว ---------- */
+R.code=async(p,G)=>{const n=p.tab.length,cw=Math.min(66,560/n),x=i=>300-(n*cw)/2+i*cw+cw/2,col={},num={},let_={};
+ p.tab.forEach(([c,d],i)=>{col[c]=i;num[c]=d;let_[d]=c;roundRect(G,x(i)-cw/2,16,cw,46,'#fef3c7',INK,0);roundRect(G,x(i)-cw/2,62,cw,46,'#fff',INK,0);G.tx(x(i),39,c,{fs:28,w:700});G.tx(x(i),85,String(d),{fs:26,w:700,fill:'#2563eb'});});
+ const hl=G.E('rect',{x:-cw/2,y:11,width:cw,height:102,rx:8,fill:'none',stroke:'#ec4899','stroke-width':5,opacity:0});
+ if(p.dir==='f'&&p.e)G.pop(G.tx(70,215,p.e,{fs:62}));
+ if(!await G.step(p.dir==='f'?'สะกดชื่อภาพทีละตัว':'ดูตัวเลขทีละตัว',[p.dir==='f'?'สะกดชื่อภาพทีละตัว แล้วดูตัวเลขที่อยู่ใต้พยัญชนะ':'ดูตัวเลขทีละตัว แล้วดูพยัญชนะที่อยู่ข้างบน'],400))return;
+ const L=[...p.w],sx=i=>300-(L.length-1)*80/2+i*80,out=[];
+ for(let i=0;i<L.length;i++){const c=L[i],d=num[c],j=col[c];hl.setAttribute('opacity',1);hl.style.transition=G.F?'none':'transform .45s';hl.style.transform='translate('+x(j)+'px,0px)';
+  const g=G.E('g',{});roundRect(G,sx(i)-32,150,64,56,'#fef3c7',INK,12,g);G.tx(sx(i),178,c,{fs:30,w:700,p:g});roundRect(G,sx(i)-32,214,64,56,'#dbeafe',INK,12,g);G.tx(sx(i),242,String(d),{fs:30,w:700,fill:'#2563eb',p:g});G.pop(g);out.push(g);
+  G.sfx('pop',i);G.cap(p.dir==='f'?c+' = '+d:d+' = '+c);if(!await G.say([p.dir==='f'?c+' คือ '+d:d+' คือ '+c]))return;if(!await G.W(250))return;}
+ hl.setAttribute('opacity',0);const code=L.map(c=>num[c]).join(' ');
+ await G.fin(p.w+' = '+code,p.dir==='f'?[p.w+' เขียนเป็น '+code]:['อ่านว่า',p.w],out);};
+/* ---------- รูปซ้อนทับ: ยกออกมาทีละชั้น ---------- */
+R.layer=async(p,G)=>{const ox=14,oy=60,els=[];
+ p.sh.forEach(([k,x,y,r,c])=>els.push(G.E('path',{d:shPath(k,ox+x,oy+y,r),fill:c,stroke:INK,'stroke-width':3,'stroke-linejoin':'round'})));
+ const nest=!!p.nest,order=nest?[0,1,2]:[2,1,0],LB=nest?['นอกสุด','ตรงกลาง','ข้างในสุด']:['ชั้นบนสุด','ชั้นกลาง','ชั้นล่างสุด'],rowY=i=>68+i*96;
+ const SAY=nest?[n=>n+' อยู่นอกสุด ล้อมรูปอื่นไว้',n=>n+' อยู่ตรงกลาง',n=>n+' อยู่ข้างในสุด']:[n=>n+' อยู่ชั้นบนสุด เห็นเส้นครบ ไม่มีรูปไหนบัง',n=>n+' อยู่ชั้นกลาง',n=>n+' อยู่ชั้นล่างสุด ถูกรูปอื่นทับ'];
+ if(!await G.step(nest?'ดูว่ารูปไหนล้อมรูปไหน':'ยกรูปออกมาทีละชั้น',[nest?'ดูว่ารูปไหนล้อมรูปไหนไว้':'ลองยกรูปออกมาทีละชั้น จากข้างบนลงมา'],500))return;
+ const rows=[];
+ for(let s=0;s<3;s++){const i=order[s],[k,x,y,r,c]=p.sh[i],nm=p.nm[i];G.glow(els[i],'#ec4899');
+  const g=G.E('g',{});G.E('path',{d:shPath(k,0,0,Math.min(r,36)),fill:c,stroke:INK,'stroke-width':3,'stroke-linejoin':'round'},g);g.style.transform='translate('+(ox+x)+'px,'+(oy+y)+'px)';
+  if(!nest)G.fade(els[i],.25,500);G.move(g,360,rowY(s),700);G.sfx('whoosh');G.pop(G.tx(500,rowY(s),LB[s],{fs:20,w:700,fill:'#7c3aed'}));rows.push(g);G.cap(LB[s]+': '+nm);
+  if(!await G.say([SAY[s](nm)]))return;els[i].style.filter='';}
+ const want={top:0,mid:1,bottom:2,out:0,in:2}[p.ask];await G.fin(LB[want]+': '+p.nm[order[want]],['คำตอบคือ'+p.nm[order[want]]],[rows[want]]);};
+/* ---------- ตารางอุปมา: ดูแถวบน แล้วทำแถวล่างแบบเดียวกัน ---------- */
+R.matrix=async(p,G)=>{const f=p.qv&&p.qv.fig,af=p.opts&&p.opts[p.ans]&&p.opts[p.ans].fig;if(!f||!af)return;const S=1.42,ox=12,oy=12,CL=[[55,55],[155,55],[55,155],[155,155]],cc=i=>[ox+CL[i][0]*S,oy+CL[i][1]*S];
+ drawFig(G,f,ox,oy,210*S,210*S);
+ const hlr=(a,b)=>G.E('rect',{x:ox+6*S,y:oy+(a?106:6)*S,width:198*S,height:98*S,rx:14,fill:'none',stroke:'#ec4899','stroke-width':6});
+ const h1=hlr(0);G.pop(h1);const a1=arrowTo(G,cc(0)[0]+34,cc(0)[1]-52,cc(1)[0]-34,cc(1)[1]-52,'#ec4899');G.pop(a1);
+ G.pop(G.tx(450,70,'แถวบน',{fs:20,w:700,fill:'#475569'}));G.pop(G.tx(450,110,p.lab,{fs:24,w:700,fill:'#ec4899'}));
+ if(!await G.step(p.lab,['ดูแถวบนก่อน',p.say],600))return;
+ G.fade(h1,0,300);const h2=hlr(1);G.pop(h2);G.pop(arrowTo(G,cc(2)[0]+34,cc(2)[1]-52,cc(3)[0]-34,cc(3)[1]-52,'#7c3aed'));G.pop(G.tx(450,200,'แถวล่าง ทำแบบเดียวกัน',{fs:18,w:700,fill:'#475569'}));
+ if(!await G.step('แถวล่างทำแบบเดียวกัน',['แถวล่างก็ต้องเปลี่ยนแบบเดียวกัน',p.res],600))return;
+ const [x3,y3]=cc(3);G.E('rect',{x:x3-46*S,y:y3-46*S,width:92*S,height:92*S,fill:'#fff'});const g=G.E('g',{});drawFig(G,af,-46*S,-46*S,92*S,92*S,g);g.style.transform='translate(470px,265px)';G.move(g,x3,y3,800);G.sfx('whoosh');
+ if(!await G.W(900))return;await G.fin(p.lab,['คำตอบคือรูปนี้'],[g]);};
+/* ---------- บล็อก: หยิบก้อนสีชมพูออก / วางเพิ่ม แล้วนับ ---------- */
+function isoCubes(G,g,mark,ox,oy,s){const R_=g.length,C_=Math.max(...g.map(r=>r.length)),dx=s*.5,dy=s*.4,H=(r,c)=>(g[r]&&g[r][c])||0,cubes=[];
+ for(let r=0;r<R_;r++)for(let c=0;c<C_;c++)for(let z=0;z<H(r,c);z++)cubes.push([r,c,z]);
+ cubes.sort((a,b)=>a[0]-b[0]||a[2]-b[2]||a[1]-b[1]);const isM=(r,c,z)=>(mark||[]).some(m=>m[0]===r&&m[1]===c&&m[2]===z),out=[];
+ for(const [r,c,z] of cubes){const d=R_-1-r,x=ox+c*s+d*dx,y=oy-z*s-d*dy,col=isM(r,c,z)?'#f472b6':'#f6a04d',grp=G.E('g',{});
+  const P=pts=>G.E('polygon',{points:pts.map(p=>p.join(',')).join(' '),stroke:INK,'stroke-width':2,'stroke-linejoin':'round'},grp);
+  P([[x,y],[x+s,y],[x+s,y-s],[x,y-s]]).setAttribute('fill',col);P([[x,y-s],[x+s,y-s],[x+s+dx,y-s-dy],[x+dx,y-s-dy]]).setAttribute('fill',col==='#f472b6'?'#f9a8d4':'#f9c08a');P([[x+s,y],[x+s+dx,y-dy],[x+s+dx,y-s-dy],[x+s,y-s]]).setAttribute('fill',col==='#f472b6'?'#db2777':'#c2410c');
+  out.push({r,c,z,g:grp,m:isM(r,c,z),cx:x+s/2+dx/2,cy:y-s-dy/2});}
+ return out;}
+R.blkrm=async(p,G)=>{const s=46,R_=p.g.length,C_=Math.max(...p.g.map(r=>r.length)),W=C_*s+R_*s*.5,ox=(p.add?230:300)-W/2,cs=isoCubes(G,p.g,p.mark,ox,290,s);
+ if(!p.add){if(!await G.step('หยิบสีชมพูออก '+p.take+' ก้อน',['หยิบก้อนสีชมพูออก '+p.take+' ก้อน'],300))return;
+  cs.filter(c=>c.m).forEach((c,i)=>{G.move(c.g,0,-160,700);G.fade(c.g,0,700);});G.sfx('whoosh');if(!await G.W(900))return;}
+ if(!await G.say([p.add?'นับบล็อกในภาพก่อน':'แล้วนับก้อนที่เหลือ ทีละชั้น']))return;
+ const left=cs.filter(c=>!c.m).sort((a,b)=>a.z-b.z||b.r-a.r||a.c-b.c);let n=0;
+ for(const c of left){n++;G.tag(c.cx,c.cy,n,'#7c3aed',12);G.sfx('pop',n%12);G.cap(String(n));if(!await G.say([String(n)]))return;}
+ if(p.add){if(!await G.step('เพิ่มอีก '+p.take+' ก้อน',['เพิ่มมาอีก '+p.take,'นับต่อจาก '+n+' นะ'],200))return;
+  for(let i=0;i<p.take;i++){n++;const x=470+(i%2)*56,y=150+Math.floor(i/2)*60,g=G.E('g',{});G.E('rect',{x:x-22,y:y-22,width:44,height:44,rx:4,fill:'#86efac',stroke:INK,'stroke-width':2},g);G.pop(g);G.tag(x,y,n,'#16a34a',12);G.sfx('pop',n%12);G.cap(String(n));if(!await G.say([String(n)]))return;}}
+ await G.fin(p.add?'รวม '+n+' ก้อน':'เหลือ '+n+' ก้อน',[p.add?'รวม '+n+' ก้อน':'เหลือ '+n+' ก้อน']);};
+/* ---------- พับตัดกระดาษ: คลี่ครึ่งซ้ายออกมาให้เห็นรูที่เกิดเหมือนเงาในกระจก ---------- */
+const PW=160,PH=120;
+function holeD(h,ox,oy,side){const t=h[0],y=oy+(t==='sq'||t==='tri'?h[2]:h[1]),X=x=>ox+(side==='R'?PW/2+x:PW/2-x);
+ if(t==='semi'){const r=h[2];return 'M'+X(0)+' '+(y-r)+' A'+r+' '+r+' 0 0 '+(side==='R'?1:0)+' '+X(0)+' '+(y+r)+' Z';}
+ if(t==='sq'){const s=h[3],cx=X(h[1]);return 'M'+(cx-s/2)+' '+(y-s/2)+' h'+s+' v'+s+' h'+(-s)+' Z';}
+ if(t==='tri'){const s=h[3],cx=X(h[1]),d=side==='R'?1:-1;return 'M'+(cx-d*s/2)+' '+(y-s/2)+' L'+(cx+d*s/2)+' '+y+' L'+(cx-d*s/2)+' '+(y+s/2)+' Z';}
+ const s=h[2],e=X(PW/2),w=side==='R'?-s:s;return 'M'+e+' '+(y-s/2)+' h'+w+' v'+s+' h'+(-w);}
+R.fold=async(p,G)=>{const S=2,ox=300-PW/2*S,oy=30,P=(d,c,par)=>G.E('path',{d,fill:c,stroke:INK,'stroke-width':2.5/S,'stroke-linejoin':'round'},par);
+ const root=G.E('g',{});root.setAttribute('transform','translate('+ox+' '+oy+') scale('+S+')');
+ const right=G.E('g',{},root);P('M'+PW/2+' 0 h'+PW/2+' v'+PH+' h'+(-PW/2)+' Z','#fff7d6',right);p.holes.forEach(h=>P(holeD(h,0,0,'R'),'#cbd5e1',right));
+ const left=G.E('g',{},root);P('M0 0 h'+PW/2+' v'+PH+' h'+(-PW/2)+' Z','#fef3c7',left);p.holes.forEach(h=>P(holeD(h,0,0,'L'),'#cbd5e1',left));
+ left.style.transformBox='view-box';left.style.transformOrigin=PW/2+'px 0px';left.style.transform='scaleX(0)';
+ const fl=G.E('line',{x1:PW/2,y1:-6,x2:PW/2,y2:PH+6,stroke:'#e11d48','stroke-width':1.5,'stroke-dasharray':'4 3'},root);
+ if(!await G.step('รอยพับอยู่ตรงเส้นแดง',['กระดาษพับครึ่ง รอยพับอยู่ตรงเส้นสีแดง','ตัดทีเดียว ได้รูทั้งสองชั้น'],600))return;
+ left.style.transition=G.F?'none':'transform 1.6s ease-in-out';left.style.transform='scaleX(1)';G.sfx('whoosh');
+ if(!await G.step('คลี่ออก',['คลี่ออกมา รูจะเกิดอีกฝั่งด้วย เหมือนเงาในกระจก'],1700))return;
+ const ts=[...new Set(p.holes.map(h=>h[0]))],SAY={semi:'ครึ่งวงกลมที่ตัดตรงรอยพับ กลายเป็นวงกลมเต็มวง',sq:'สี่เหลี่ยมมีสองรู ซ้ายกับขวา',tri:'สามเหลี่ยมมีสองรู และหันกลับข้างกัน',notch:'รอยบากเกิดทั้งขอบซ้ายและขอบขวา'};
+ for(const t of ts){if(!await G.say([SAY[t]]))return;}
+ await G.fin('คลี่แล้วได้ภาพนี้',['คลี่แล้วได้ภาพนี้'],[root]);};
+/* ---------- ชุดคำสั่งลูกศร: ให้ลิงเดินตามทีละชุด นับผลไม้ ---------- */
+R.path=async(p,G)=>{const z=56,gx=24,gy=42,cx=(a,b)=>[gx+a*z+z/2,gy+b*z+z/2],MV={'→':[1,0],'←':[-1,0],'↑':[0,-1],'↓':[0,1]};
+ for(let b=0;b<p.h;b++)for(let a=0;a<p.w;a++)G.E('rect',{x:gx+a*z,y:gy+b*z,width:z,height:z,rx:6,fill:(a+b)%2?'#eef7e4':'#f7fbef',stroke:'#c9d8b8','stroke-width':2});
+ const ce={};Object.entries(p.cells).forEach(([k,e])=>{const [a,b]=k.split(',').map(Number),[x,y]=cx(a,b);ce[k]=G.tx(x,y+2,e,{fs:34});});
+ const mk=G.E('g',{});G.tx(0,0,'🐒',{fs:36,p:mk});const home=cx(p.st[0],p.st[1]);mk.style.transform='translate('+home[0]+'px,'+home[1]+'px)';
+ const progs=(p.opts||[]).map(o=>(o.m||'').replace(/ /g,'')).filter(Boolean);const ORD=['ชุดแรก','ชุดที่สอง','ชุดที่สาม'],cnts=[];
+ if(!await G.step('ลองเดินตามทีละชุด',['ลองให้ลิงเดินตามลูกศรทีละชุด แล้วนับผลไม้'],300))return;
+ for(let i=0;i<progs.length;i++){const pr=[...progs[i]];let [a,b]=p.st,cnt=0;const marks=[];mk.style.transition='none';mk.style.transform='translate('+home[0]+'px,'+home[1]+'px)';
+  const lab=G.tx(470,70+i*60,'ข้อ '+'กขค'[i]+'  '+pr.join(' '),{fs:17,w:700,fill:C[i]});G.cap('ข้อ '+'กขค'[i]+': '+pr.join(' '));
+  for(const m of pr){const [x0,y0]=cx(a,b);a+=MV[m][0];b+=MV[m][1];const [x1,y1]=cx(a,b);G.hop(mk,x0,y0,x1,y1,18,300);marks.push(G.E('circle',{cx:x1,cy:y1+20,r:5,fill:C[i]}));
+   const e=p.cells[a+','+b];if(e&&p.fr.includes(e)){cnt++;marks.push(G.tag(x1+18,y1-18,cnt,C[i],11));G.sfx('pop',cnt+3);}if(!await G.W(340))return;}
+  cnts.push(cnt);G.pop(G.tx(560,70+i*60,cnt+' ผล',{fs:18,w:700,fill:C[i]}));if(!await G.say([cnt?ORD[i]+' ได้ผลไม้ '+cnt+' ผล':ORD[i]+' ไม่ได้ผลไม้เลย']))return;marks.forEach(m=>G.fade(m,0,300));}
+ const best=cnts.indexOf(Math.max(...cnts));await G.fin('ข้อ '+'กขค'[best]+' ได้ผลไม้มากที่สุด',['ชุดนี้ได้ผลไม้มากที่สุด']);};
+/* ---------- ลม: เส้นลมพัด ธงปลิวตาม ---------- */
+R.wind=async(p,G)=>{const d=p.dir==='r'?1:-1,px=300;
+ if(p.compass){G.E('circle',{cx:100,cy:62,r:30,fill:'#fff',stroke:INK,'stroke-width':2.5});G.E('path',{d:'M100 36 L106 62 L100 58 L94 62 Z',fill:'#ef4444'});G.tx(100,18,'เหนือ',{fs:14,w:700});G.tx(100,108,'ใต้',{fs:14,w:700});G.tx(176,62,'ตะวันออก',{fs:14,w:700,fill:'#e11d48'});G.tx(30,62,'ตะวันตก',{fs:14,w:700,fill:'#2563eb'});}
+ let obj;if(p.smoke){G.E('path',{d:'M280 300 h40 l-6 -36 h-28 Z',fill:'#a16207',stroke:INK,'stroke-width':2});obj=G.E('path',{d:'M300 262 Q300 200 300 140',fill:'none',stroke:'#94a3b8','stroke-width':7,'stroke-linecap':'round'});}
+ else{G.E('line',{x1:px,y1:90,x2:px,y2:310,stroke:INK,'stroke-width':6,'stroke-linecap':'round'});obj=G.E('path',{d:'M300 96 Q311 126 307 166 L299 166 Q303 126 300 96 Z',fill:'#f87171',stroke:INK,'stroke-width':2.5});}
+ const streaks=[];for(let i=0;i<3;i++){const y=(p.compass?160:130)+i*45,g=G.E('path',{d:'M'+(d>0?60:540)+' '+y+' q'+(30*d)+' -14 '+(60*d)+' 0 t'+(60*d)+' 0',fill:'none',stroke:'#60a5fa','stroke-width':4,'stroke-linecap':'round'});streaks.push(g);
+  if(!G.F)try{g.animate([{transform:'translateX(0px)',opacity:0},{transform:'translateX('+(140*d)+'px)',opacity:1,offset:.5},{transform:'translateX('+(280*d)+'px)',opacity:0}],{duration:1600,iterations:3,delay:i*250});}catch(x){}}
+ G.sfx('whoosh');if(!await G.step(p.lines[0],[p.lines[0]],1200))return;
+ obj.setAttribute('d',p.smoke?'M300 262 Q'+(300+30*d)+' 200 '+(300+130*d)+' 150':d>0?'M300 96 Q340 82 380 102 Q368 120 386 140 Q340 128 300 150 Z':'M300 96 Q260 82 220 102 Q232 120 214 140 Q260 128 300 150 Z');G.pulse(obj);
+ for(const s of p.lines.slice(1,-1))if(!await G.say([s]))return;
+ await G.fin(p.lines[p.lines.length-1],[p.lines[p.lines.length-1]],[obj]);};
+/* ---------- ชักเยอ: ลูกศรแรงยาวตามจำนวนคน ---------- */
+R.tug=async(p,G)=>{const g=G.E('g',{});G.E('line',{x1:40,y1:210,x2:560,y2:210,stroke:'#a16207','stroke-width':7,'stroke-linecap':'round'},g);G.tx(300,232,'🎀',{fs:26,p:g});
+ for(let i=0;i<p.l;i++)G.tx(60+i*34,190,'🧒',{fs:34,p:g});for(let i=0;i<p.r;i++)G.tx(540-i*34,190,'🧒',{fs:34,p:g});G.E('line',{x1:300,y1:250,x2:300,y2:290,stroke:'#94a3b8','stroke-width':3,'stroke-dasharray':'5 4'});
+ const la=arrowTo(G,280,90,280-p.l*32,90,'#2563eb'),ra=arrowTo(G,320,90,320+p.r*32,90,'#e11d48');G.pop(la);if(!await G.step('ซ้าย '+p.l+' คน',['ฝั่งซ้าย '+p.l+' คน'],400))return;
+ G.pop(ra);if(!await G.step('ขวา '+p.r+' คน',['ฝั่งขวา '+p.r+' คน'],400))return;
+ if(p.l===p.r){if(!G.F)try{g.animate([{transform:'translateX(0px)'},{transform:'translateX(-8px)'},{transform:'translateX(8px)'},{transform:'translateX(0px)'}],{duration:500,iterations:3});}catch(x){}await G.fin(p.res,['แรงเท่ากัน เชือกจึงไม่เคลื่อนที่']);return;}
+ G.move(g,p.r>p.l?50:-50,0,1400);if(!await G.say(['ฝั่งที่มีคนมากกว่า ดึงแรงกว่า']))return;await G.fin(p.res,['เชือกจึงเคลื่อนที่'+p.res]);};
+/* ---------- เคาะแก้ว: น้ำมากเสียงต่ำ น้ำน้อยเสียงสูง ---------- */
+R.pitch=async(p,G)=>{const xs=[130,300,470],gl=[];p.lv.forEach((h,i)=>{const x=xs[i]-30,g=G.E('g',{});G.E('path',{d:'M'+(x+4)+' '+(268-h)+' h52 l-4 '+(h-4)+' h-44 Z',fill:'#7cc6f2'},g);G.E('path',{d:'M'+x+' 140 h60 l-6 128 h-48 Z',fill:'none',stroke:INK,'stroke-width':3},g);G.tx(xs[i],292,'แก้วที่ '+(i+1),{fs:16,w:700,fill:'#7c3aed',p:g});gl.push(g);});
+ if(!await G.step('ลองเคาะทีละใบ',['ลองเคาะทีละใบ ฟังเสียงนะ'],300))return;const rk=p.lv.map(h=>[...p.lv].sort((a,b)=>a-b).indexOf(h));
+ for(let i=0;i<3;i++){G.pulse(gl[i]);G.sfx('pop',[11,6,0][rk[i]]);const n=[5,3,1][rk[i]];for(let k=0;k<n;k++){const w=G.E('path',{d:'M'+(xs[i]+40+k*9)+' 160 q8 20 0 40',fill:'none',stroke:'#ec4899','stroke-width':3});G.fade(w,0,1500);}
+  G.cap('แก้วที่ '+(i+1)+(['น้ำน้อย เสียงสูง','น้ำปานกลาง','น้ำมาก เสียงต่ำ'][rk[i]]));if(!await G.say(['แก้วที่ '+(i+1)+' '+['น้ำน้อย เสียงสูงแหลม','น้ำปานกลาง เสียงกลาง ๆ','น้ำมาก เสียงต่ำทุ้ม'][rk[i]]]))return;}
+ await G.fin('แก้วที่ '+(p.gi+1)+(p.ask==='low'?' เสียงต่ำที่สุด':' เสียงสูงที่สุด'),['น้ำยิ่งมาก เสียงยิ่งต่ำ น้ำยิ่งน้อย เสียงยิ่งสูง'],[gl[p.gi]]);};
+/* ---------- ต้นไม้เอนหาแสง ---------- */
+R.plant=async(p,G)=>{const L=p.side==='l';G.E('rect',{x:0,y:0,width:600,height:330,fill:'#334155'});const wx=L?40:480;G.E('rect',{x:wx,y:50,width:80,height:80,fill:'#fde68a',stroke:INK,'stroke-width':3});
+ const beam=G.E('path',{d:L?'M120 60 L300 170 L300 250 L120 130 Z':'M480 60 L300 170 L300 250 L480 130 Z',fill:'#fef08a',opacity:0});G.fade(beam,.35,800);
+ G.E('path',{d:'M270 310 h60 l-8 -40 h-44 Z',fill:'#b45309',stroke:INK,'stroke-width':2});const st=G.E('path',{d:'M300 270 Q300 220 300 170',fill:'none',stroke:'#16a34a','stroke-width':7,'stroke-linecap':'round'}),lf=G.tx(300,160,'🌱',{fs:40});
+ if(!await G.step('แสงเข้ามาทาง'+(L?'ซ้าย':'ขวา'),['ต้นไม้ต้องการแสง'],900))return;
+ const d=L?-1:1;for(let k=1;k<=6;k++){const ex=300+d*k*14,ey=170+k*2;st.setAttribute('d','M300 270 Q300 215 '+ex+' '+ey);lf.setAttribute('x',ex);lf.setAttribute('y',ey-10);if(!await G.W(220))return;}
+ if(!await G.say(['ลำต้นจึงค่อย ๆ เอนเข้าหาแสง']))return;await G.fin('ต้นไม้เอนไปทาง'+(L?'ซ้าย':'ขวา'),['ต้นไม้เอนไปทาง'+(L?'ซ้าย':'ขวา')+' เข้าหาแสง'],[lf]);};
+/* ---------- ดอกไม้ดูดน้ำสี ---------- */
+R.dye=async(p,G)=>{G.E('path',{d:'M250 310 h100 l-10 -110 h-80 Z',fill:'#fecaca',stroke:INK,'stroke-width':3});G.E('path',{d:'M262 300 h76 l-8 -80 h-60 Z',fill:'#ef4444',opacity:.75});
+ const stem=G.E('line',{x1:300,y1:300,x2:300,y2:110,stroke:'#16a34a','stroke-width':8,'stroke-linecap':'round'}),red=G.E('line',{x1:300,y1:300,x2:300,y2:110,stroke:'#ef4444','stroke-width':4,'stroke-dasharray':'190','stroke-dashoffset':'190'});
+ const pet=[];for(let i=0;i<8;i++){const a=i/8*2*Math.PI;pet.push(G.E('ellipse',{cx:300+28*Math.sin(a),cy:90-28*Math.cos(a),rx:14,ry:22,fill:'#fff',stroke:INK,'stroke-width':2,transform:'rotate('+(i*45)+' '+(300+28*Math.sin(a))+' '+(90-28*Math.cos(a))+')'}));}G.E('circle',{cx:300,cy:90,r:14,fill:'#facc15',stroke:INK,'stroke-width':2});
+ if(!await G.step('ก้านดูดน้ำขึ้นไป',['ก้านดอกดูดน้ำขึ้นไปทางลำต้น'],400))return;red.style.transition=G.F?'none':'stroke-dashoffset 2s linear';red.style.strokeDashoffset='0';if(!await G.W(2000))return;
+ pet.forEach(e=>{e.style.transition=G.F?'none':'fill 1.5s';e.style.fill='#fca5a5';});if(!await G.say(['สีแดงในน้ำ ขึ้นไปถึงกลีบดอก']))return;await G.fin('กลีบดอกมีสีแดงขึ้นมา',['กลีบดอกจึงมีสีแดงขึ้นมา'],pet.slice(0,1));};
+/* ---------- แผนที่: บอกทิศรอบบ้าน แล้วชี้คำตอบ ---------- */
+R.map=async(p,G)=>{const ox=150,oy=15,SP={up:[150,42],down:[150,258],right:[258,150],left:[42,150]};
+ G.E('rect',{x:ox,y:oy,width:300,height:300,fill:'#dcfce7'});G.E('rect',{x:ox+128,y:oy,width:44,height:300,fill:'#cbd5e1'});G.E('rect',{x:ox,y:oy+128,width:300,height:44,fill:'#cbd5e1'});
+ G.E('circle',{cx:ox+150,cy:oy+150,r:24,fill:'#fff',stroke:INK,'stroke-width':2.5});G.tx(ox+150,oy+152,'🏠',{fs:30});const pls=[];
+ p.pl.forEach(([e,nm,pos])=>{const [x,y]=SP[pos],g=G.E('g',{});G.E('circle',{cx:ox+x,cy:oy+y,r:28,fill:'#fff',stroke:INK,'stroke-width':2.5},g);G.tx(ox+x,oy+y+2,e,{fs:32,p:g});G.tx(ox+x,oy+y+(pos==='down'?-42:42),nm,{fs:14,w:700,p:g});pls.push(g);});
+ const rot=p.rot===90,na=G.E('g',{});G.E('path',{d:rot?'M560 60 L520 70 L527 60 L520 50 Z':'M530 20 L540 60 L530 53 L520 60 Z',fill:'#ef4444',stroke:INK,'stroke-width':2},na);G.tx(rot?505:530,rot?60:76,'N',{fs:18,w:700,fill:'#ef4444',p:na});
+ if(!await G.step('ดูลูกศร N',[p.lines[0]],500))return;G.pulse(na);
+ const DL=rot?{right:'เหนือ',left:'ใต้',up:'ตะวันตก',down:'ตะวันออก'}:{up:'เหนือ',down:'ใต้',right:'ตะวันออก',left:'ตะวันตก'},OFF={up:[0,-62],down:[0,62],right:[70,0],left:[-70,0]};
+ for(const pos of ['up','right','down','left']){const [dx,dy]=OFF[pos];G.pop(arrowTo(G,ox+150+dx*.35,oy+150+dy*.35,ox+150+dx*.75,oy+150+dy*.75,'#7c3aed'));const LP={up:[36,-50],down:[36,52],right:[52,-24],left:[-52,-24]}[pos];G.pop(G.tx(ox+150+LP[0],oy+150+LP[1],DL[pos],{fs:14,w:700,fill:'#7c3aed',a:{stroke:'#fff','stroke-width':4,'paint-order':'stroke'}}));G.sfx('pop',2);if(!await G.W(350))return;}
+ for(const s of p.lines.slice(1,-1))if(!await G.say([s]))return;
+ await G.fin(p.lines[p.lines.length-1],[p.lines[p.lines.length-1]],[pls[p.hi]]);};
+/* ---------- นับช่องจากบ้าน ---------- */
+R.steps=async(p,G)=>{const z=56,gx=160,gy=22,cx=(a,b)=>[gx+a*z+z/2,gy+b*z+z/2];for(let b=0;b<5;b++)for(let a=0;a<5;a++)G.E('rect',{x:gx+a*z,y:gy+b*z,width:z,height:z,rx:6,fill:(a+b)%2?'#eef7e4':'#f7fbef',stroke:'#c9d8b8','stroke-width':2});
+ const [hx,hy]=cx(p.home[0],p.home[1]);G.tx(hx,hy+2,'🏠',{fs:34});const pg=p.pl.map(([e,nm,a,b])=>{const [x,y]=cx(a,b);return G.tx(x,y+2,e,{fs:34});});
+ if(!await G.step('นับช่องจากบ้าน',['นับช่องจากบ้าน ไปแต่ละที่'],300))return;let best=0;
+ for(let i=0;i<p.pl.length;i++){const [e,nm,a,b,d]=p.pl[i];let x=p.home[0],y=p.home[1],k=0;const ms=[];
+  while(x!==a||y!==b){if(x!==a)x+=a>x?1:-1;else y+=b>y?1:-1;k++;const [px,py]=cx(x,y);ms.push(G.tag(px+(x===a&&y===b?18:0),py+(x===a&&y===b?-18:0),k,C[i],11));G.sfx('pop',k);if(!await G.W(260))return;}
+  G.cap(nm+' '+d+' ช่อง');if(!await G.say([nm+' '+d+' ช่อง']))return;if(d<p.pl[best][4])best=i;ms.forEach(m=>G.fade(m,.35,300));}
+ await G.fin(p.pl[best][1]+'ใกล้บ้านที่สุด',[p.pl[best][1]+'ใกล้บ้านที่สุด'],[pg[best]]);};
+/* ---------- ใกล้ดูใหญ่ ไกลดูเล็ก ---------- */
+R.near=async(p,G)=>{const f=p.qv&&p.qv.fig;if(!f)return;const S=1.45,ox=300-150*S,oy=4;drawFig(G,f,ox,oy,300*S,220*S);
+ const T=[[80,160,'ใกล้'],[205,112,'กลาง'],[168,92,'ไกล']];
+ if(!await G.step('ใกล้ดูใหญ่ ไกลดูเล็ก',['ของที่อยู่ใกล้ จะดูใหญ่','ของที่อยู่ไกล จะดูเล็ก'],300))return;
+ for(const [x,y,t] of T){G.pop(G.tx(ox+x*S+(t==='ใกล้'?70:40),oy+y*S-10,t,{fs:18,w:700,fill:'#e11d48'}));G.sfx('pop',2);if(!await G.W(450))return;}
+ const i=p.ask==='near'?0:2;await G.fin('ต้นไม้หมายเลข '+p.lab[i]+(p.ask==='near'?' ใกล้ที่สุด':' ไกลที่สุด'),['ต้นไม้หมายเลข '+p.lab[i]+(p.ask==='near'?' ดูใหญ่ที่สุด จึงอยู่ใกล้ที่สุด':' ดูเล็กที่สุด จึงอยู่ไกลที่สุด')]);};
+/* ---------- ของเป็นกอง หายไปทั้งกอง ---------- */
+R.pile=async(p,G)=>{const bw=Math.min(130,540/p.g),bx=j=>300-(p.g*bw)/2+j*bw+bw/2,boxes=[];
+ for(let j=0;j<p.g;j++){const g=G.E('g',{});roundRect(G,bx(j)-bw/2+8,90,bw-16,120,'#fef3c7','#d97706',16,g);for(let i=0;i<p.each;i++)G.tx(bx(j)-((Math.min(p.each,3)-1)*24)/2+(i%3)*24,120+Math.floor(i/3)*36,p.e,{fs:26,p:g});G.tx(bx(j),232,p.box+' '+(j+1),{fs:15,w:700,fill:'#92400e',p:g});G.pop(g);boxes.push(g);}
+ if(!await G.step(p.g+' '+p.box+' '+p.box+'ละ '+p.each,['มี '+p.g+' '+p.box,p.box+'ละ '+p.each+' '+p.u],500))return;
+ for(let j=p.g-p.lost;j<p.g;j++){G.move(boxes[j],0,-150,800);G.fade(boxes[j],0,800);}G.sfx('whoosh');if(!await G.step('หายไป '+p.lost+' '+p.box,['หายไป '+p.lost+' '+p.box],900))return;
+ let run=0;for(let j=0;j<p.g-p.lost;j++){run+=p.each;G.tag(bx(j),70,run,'#ec4899',15);G.sfx('pop',j);G.cap(String(run));if(!await G.say([String(run)]))return;}
+ await G.fin('เหลือ '+run+' '+p.u,['เหลือ '+run+' '+p.u]);};
+/* ---------- สามจำนวนรวมกัน: ลองบวกทีละข้อ ---------- */
+R.sum3=async(p,G)=>{const rows=(p.opts||[]).map(o=>nums(lab(o)));if(rows.length<3)return;let ok=-1;
+ if(!await G.step('ลองบวกทีละข้อ',['ลองบวกทีละข้อ'],300))return;
+ for(let i=0;i<rows.length;i++){const r=rows[i],s=r.reduce((a,b)=>a+b,0),y=80+i*80,eq=r.join(' + ')+' = '+s,good=s===p.n;if(good)ok=i;
+  G.tx(70,y,'ข้อ '+'กขค'[i],{fs:22,w:700,fill:'#475569'});const t=G.tx(300,y,eq,{fs:34,w:700,fill:good?'#16a34a':'#3b3b4f'});G.pop(t);G.cap(eq);if(!await G.say([eq]))return;
+  G.pop(G.tx(520,y,good?'✔':'✘',{fs:36,w:700,fill:good?'#16a34a':'#e11d48'}));G.sfx(good?'chime':'pop',2);if(!await G.W(300))return;}
+ await G.fin('ข้อ '+'กขค'[ok]+' รวมกันได้ '+p.n,['ข้อนี้รวมกันได้ '+p.n+' พอดี']);};
+/* ---------- คนหันหน้าเข้าหาเรา: ซ้ายของเขาคือขวาของเรา ---------- */
+R.facing=async(p,G)=>{const n=p.names.length,x=i=>300-(n-1)*120/2+i*120,ks=[];
+ p.names.forEach((nm,i)=>{const g=G.E('g',{});G.tx(x(i),130,'🧒',{fs:64,p:g});G.tx(x(i),190,nm,{fs:18,w:700,p:g});G.pop(g);ks.push(g);});
+ G.tx(110,300,'⬅ ซ้ายของเรา',{fs:16,w:700,fill:'#2563eb'});G.tx(490,300,'ขวาของเรา ➡',{fs:16,w:700,fill:'#d97706'});
+ const nm=p.names[p.ref],our=p.side==='ซ้าย'?'ขวา':'ซ้าย';G.glow(ks[p.ref],'#ec4899');
+ if(!await G.step(nm+'หันหน้าเข้าหาเรา',[nm+'หันหน้าเข้าหาเรา','ซ้ายขวาของเขา จะกลับกับของเรา'],600))return;
+ const hx=x(p.ref)+(p.side==='ซ้าย'?1:-1)*38;G.pop(G.tx(hx,96,'✋',{fs:28}));G.pop(G.tx(hx,64,'มือ'+p.side+'ของ'+nm,{fs:15,w:700,fill:'#e11d48'}));
+ if(!await G.step('มือ'+p.side+'ของเขา = ทาง'+our+'ของเรา',['มือ'+p.side+'ของ'+nm+' อยู่ทาง'+our+'ของเรา'],500))return;
+ G.pop(arrowTo(G,x(p.ref),232,x(p.who),232,'#e11d48'));await G.fin('ทางมือ'+p.side+'ของ'+nm+' คือ '+p.names[p.who],['คือ'+p.names[p.who]],[ks[p.who]]);};
 /* คำกริยาในโจทย์ลบ → ท่าเอาของออก (นกบินไป ขนมถูกกิน ให้เพื่อน ...) */
 const verbOf=t=>/บินไป|บินหนี/.test(t)?'fly':/กิน/.test(t)?'eat':/ให้|แจก|ขาย/.test(t)?'give':/แตก/.test(t)?'pop':/หล่น|ตก/.test(t)?'drop':/หาย/.test(t)?'lost':/เดินไป|วิ่งไป|ว่ายไป/.test(t)?'go':'x';
 window.EX2={
- plan(q){try{if(!q||!q.opts||q.ans==null)return null;for(const f of P){const r=f(q);if(r){if(r.kind==='arith')r.vb=/=/.test(q.q)?'x':verbOf(TXT(q));return Object.assign({},r,{k:'x2'});}}}catch(e){}return null;},
+ plan(q){try{if(!q||!q.opts||q.ans==null)return null;
+  /* ข้อชุดใหม่มีข้อมูลภาพเฉลยมาด้วย (q.x2) · chk = ป้ายของคำตอบ ถ้าไม่ตรงกับเฉลยจะไม่แสดงภาพ */
+  if(q.x2&&R[q.x2.kind]){const r=Object.assign({},q.x2);if(r.chk!=null&&norm(lab(q.opts[q.ans]))!==norm(r.chk))return null;r.opts=q.opts;r.ans=q.ans;r.qv=q.v;return Object.assign(r,{k:'x2'});}
+  for(const f of P){const r=f(q);if(r){if(r.kind==='arith')r.vb=/=/.test(q.q)?'x':verbOf(TXT(q));return Object.assign({},r,{k:'x2'});}}}catch(e){}return null;},
  /* ctx: stage cap W fast SFX confetti say blip · rec=[] เก็บคำพูดทุกท่อน (ไม่วาดจริง ไม่รอ) */
  async run(p,ctx){try{if(p.kind==='turn')return await R.turn(p,ctx);const G=mk(ctx);await R[p.kind](p,G);}catch(e){console.warn('EX2',p.kind,e);}}};
 })();

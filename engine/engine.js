@@ -176,7 +176,7 @@ function figSVG(f){const vb=f.vb||[100,100];let b='';
  (f.circles||[]).forEach(c=>{b+='<circle cx="'+c[0]+'" cy="'+c[1]+'" r="'+c[2]+'" fill="'+(c[3]||'none')+'" stroke="#3b3b4f" stroke-width="2.5"/>';});
  (f.paths||[]).forEach(c=>{b+='<path d="'+c[0]+'" fill="'+(c[1]||'none')+'" stroke="'+(c[3]||'#3b3b4f')+'" stroke-width="'+(c[2]||2.5)+'" stroke-linejoin="round" stroke-linecap="round"/>';});
  (f.lines||[]).forEach(l=>{b+='<line x1="'+l[0]+'" y1="'+l[1]+'" x2="'+l[2]+'" y2="'+l[3]+'" stroke="#3b3b4f" stroke-width="'+(l[4]||3)+'" stroke-linecap="round"'+(l[5]?' stroke-dasharray="6 5"':'')+'/>';});
- (f.txt||[]).forEach(t=>{b+='<text x="'+t[0]+'" y="'+t[1]+'" text-anchor="middle" dominant-baseline="central" font-size="'+(t[3]||22)+'" fill="'+(t[4]||'#3b3b4f')+'">'+t[2]+'</text>';});
+ (f.txt||[]).forEach(t=>{const r=t[5],tr=r==='h'?'translate('+2*t[0]+' 0) scale(-1 1)':r==='v'?'translate(0 '+2*t[1]+') scale(1 -1)':r&&r[0]==='r'?'rotate('+r.slice(1)+' '+t[0]+' '+t[1]+')':'';b+='<text x="'+t[0]+'" y="'+t[1]+'" text-anchor="middle" dominant-baseline="central" font-size="'+(t[3]||22)+'" fill="'+(t[4]||'#3b3b4f')+'"'+(tr?' transform="'+tr+'"':'')+'>'+t[2]+'</text>';});
  return '<svg class="fig" viewBox="0 0 '+vb[0]+' '+vb[1]+'">'+b+'</svg>';}
 /* ตำแหน่ง: on under (โต๊ะ) · in behind front beside between (กล่อง) */
 function posSVG(o){const w=o.pos,it=o.item||'🐱',E=(x,y,k)=>'<text x="'+x+'" y="'+y+'" text-anchor="middle" font-size="'+(k||46)+'">'+it+'</text>';
@@ -359,7 +359,7 @@ async function mockTimer(qi,q,box,btns,segs){const my=tok;const ms=(EP.sec||15)*
  const s=QS;if(!s||s.lock)return;s.lock=true;LOG[qi]={id:q.id,t:q.t,ok:false,to:1};btns.forEach(x=>x.disabled=true);tm.classList.add('end');SFX.chime();hideSub=false;
  await say('หมดเวลาแล้วค่ะ');if(my!==tok)return;await gap(500,my);if(my!==tok)return;quiz(qi+1);}
 /* ---------- เฉลยแบบภาพเคลื่อนไหว 3 มิติ (โหมดฝึก/คลิป): นับกล่องที่ซ้อนกัน · มองจากด้านบน/หน้า · พับภาพคลี่ ---------- */
-function exPlan(q){const t=q.q+' '+(q.say||''),v=q.v||{},a=q.opts[q.ans];
+function exPlan(q){if(q.x2&&window.EX2){const p=EX2.plan(q);if(p)return p;}const t=q.q+' '+(q.say||''),v=q.v||{},a=q.opts[q.ans];
  let g=v.type==='blocks'?v.g:null;if(!g&&/มากที่สุด|น้อยที่สุด/.test(t)&&a&&a.blk&&a.blk.g)g=a.blk.g;
  if(g&&/ติดกับ/.test(t)&&v.gray)return {k:'blk',g,view:'adj',gray:v.gray};
  if(g&&!/ติดกับ/.test(t)){if(/ด้านบน/.test(t))return {k:'blk',g,view:'top'};if(/ด้านหน้า/.test(t))return {k:'blk',g,view:'front'};if(/กี่กล่อง|กี่ใบ|กี่ก้อน|มากที่สุด|น้อยที่สุด/.test(t))return {k:'blk',g,view:'count'};}

@@ -382,7 +382,7 @@ async function explain(p,why){const my=tok;let skip=false;const ov=h('div','ex3d
 async function x2Play(p,st,cap,box,sk,W,my,resetSkip,isSkip,why){const ctx=fast=>({stage:st,cap,W:fast?async()=>my===tok:W,fast,SFX,confetti,centerOf,say:s=>narr(s,isSkip),blip});
  for(let n=0;;n++){st.innerHTML='';st.style.perspective='';resetSkip();sk.style.display='';await EX2.run(p,ctx(false));if(my!==tok)return;
   if(isSkip()){st.innerHTML='';resetSkip();await EX2.run(p,ctx(true));}
-  sk.style.display='none';let done=false;const wp=!n&&why?narr([why],()=>done):null;const bar=h('div','x3bar'),ag=h('button','btn2 x3b','↺ ดูอีกครั้ง'),go=h('button','go x3b','ไปต่อ ▶');bar.append(ag,go);box.append(bar);
+  sk.style.display='none';let done=false;const wp=!n&&why?narr([why],()=>done):null;if(!wp)sub.textContent=cap.textContent;const bar=h('div','x3bar'),ag=h('button','btn2 x3b','↺ ดูอีกครั้ง'),go=h('button','go x3b','ไปต่อ ▶');bar.append(ag,go);box.append(bar);
   const r=await new Promise(res=>{const iv=setInterval(()=>{if(my!==tok){clearInterval(iv);res('g');}},200);ag.onclick=()=>{clearInterval(iv);res('a');};go.onclick=()=>{clearInterval(iv);res('g');};});
   done=true;if(wp)await wp;bar.remove();if(r!=='a'||my!==tok)return;}}
 /* สนามฝึก: ตอบถูกเร็ว ไม่บังคับดูภาพ แต่มีปุ่มให้กดดูได้ระหว่างน้องกล้าพูดเฉลย */

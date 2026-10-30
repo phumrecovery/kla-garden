@@ -322,9 +322,10 @@ button{font-family:inherit;cursor:pointer}
 .nl{left:calc(var(--s) * -1 + 2px);top:-2px;transform-origin:100% 50%}.nl.fold{transform:rotateY(-90deg)}
 .nr{left:calc(var(--s) - 2px);top:-2px;transform-origin:0 50%}.nr.fold{transform:rotateY(90deg)}
 .nf.hl{background:#f9a8d4}
-.cs{position:absolute;background:#c8f0c0;border-top:2px solid #3b3b4f;border-bottom:2px solid #3b3b4f;box-sizing:border-box}
-.cc{position:absolute;border-radius:50%;background:#a8e0a0;border:2px solid #3b3b4f;box-sizing:border-box}.cc.cone{background:#d4bdf7}
-.ct{position:absolute;background:#e6d4fb;transform-origin:50% 0;clip-path:polygon(50% 0,100% 100%,0 100%)}
+/* รูปคลี่ทรงกระบอก/กรวย: ชื่อ sv-* (เดิม .cs/.cc/.ct ชนกับตารางตั้งหลักบวก .colg .cc/.ct ทำให้ตัวเลขกลายเป็นกล่องเขียวลอย) */
+.sv-cs{position:absolute;background:#c8f0c0;border-top:2px solid #3b3b4f;border-bottom:2px solid #3b3b4f;box-sizing:border-box}
+.sv-cc{position:absolute;border-radius:50%;background:#a8e0a0;border:2px solid #3b3b4f;box-sizing:border-box}.sv-cc.cone{background:#d4bdf7}
+.sv-ct{position:absolute;background:#e6d4fb;transform-origin:50% 0;clip-path:polygon(50% 0,100% 100%,0 100%)}
 
 /* พักครึ่งทาง: ต้นกล้าเต้น โน้ตลอย */
 .party{position:relative;display:flex;align-items:flex-end;justify-content:center;gap:12px;min-width:min(520px,86vw);padding-top:40px}

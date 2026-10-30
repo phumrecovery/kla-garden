@@ -443,8 +443,8 @@ async function exCube(p,sc,cap,W){const S=72,m=p.nums||{};sc.style.setProperty('
  if(p.pair){const hs=[...sc.querySelectorAll('.nf')].filter(e=>p.pair.includes(String(e.dataset.n)));hs.forEach(e=>e.classList.add('hl'));cap.textContent='หน้า '+p.pair[0]+' อยู่ตรงข้ามกับหน้า '+p.pair[1];}
  await W(4700);}
 async function exCyl(sc,cap,W){const N=20,H=130,R=46,w=2*Math.PI*R/N;cap.textContent='ภาพคลี่ของทรงกระบอก';
- const st=[];for(let i=0;i<N;i++){const e=h('div','cs');Object.assign(e.style,{width:(w+.6)+'px',height:H+'px',left:(-w/2)+'px',top:(-H/2)+'px'});sc.append(e);st.push(e);}
- const cc=[h('div','cc'),h('div','cc')];cc.forEach(c=>{Object.assign(c.style,{width:2*R+'px',height:2*R+'px',left:-R+'px',top:-R+'px'});sc.append(c);});
+ const st=[];for(let i=0;i<N;i++){const e=h('div','sv-cs');Object.assign(e.style,{width:(w+.6)+'px',height:H+'px',left:(-w/2)+'px',top:(-H/2)+'px'});sc.append(e);st.push(e);}
+ const cc=[h('div','sv-cc'),h('div','sv-cc')];cc.forEach(c=>{Object.assign(c.style,{width:2*R+'px',height:2*R+'px',left:-R+'px',top:-R+'px'});sc.append(c);});
  st.forEach((e,i)=>e.style.transform='translateX('+((i-(N-1)/2)*w)+'px) rotateY(0deg) translateZ(0px)');cc[0].style.transform='translateY('+(-H/2-R-4)+'px) rotateX(0deg)';cc[1].style.transform='translateY('+(H/2+R+4)+'px) rotateX(0deg)';
  if(!await W(1300))return;cap.textContent='ม้วนสี่เหลี่ยมเป็นท่อ แล้วปิดวงกลมบนล่าง';SFX.whoosh();
  [...st,...cc].forEach(e=>e.style.transition='transform 1.6s ease-in-out');st.forEach((e,i)=>e.style.transform='translateX(0px) rotateY('+(i*360/N)+'deg) translateZ('+R+'px)');
@@ -452,8 +452,8 @@ async function exCyl(sc,cap,W){const N=20,H=130,R=46,w=2*Math.PI*R/N;cap.textCon
  sc.style.transition='transform 1.6s ease';sc.style.transform='rotateX(-22deg) rotateY(0deg)';if(!await W(1800))return;
  cap.textContent='พับแล้วได้ทรงกระบอก';SFX.chime();sc.style.transition='transform 4s linear';sc.style.transform='rotateX(-22deg) rotateY(360deg)';await W(4000);}
 async function exCone(sc,cap,W){const N=18,L=140,R=50,th=360*R/L,b=Math.asin(R/L)*180/Math.PI,H=L*Math.cos(b*Math.PI/180),w=2*L*Math.tan(th/N/2*Math.PI/180);cap.textContent='ภาพคลี่ของกรวย';
- const st=[];for(let i=0;i<N;i++){const e=h('div','ct');Object.assign(e.style,{width:(w+.6)+'px',height:L+'px',left:(-w/2)+'px',top:(-H/2)+'px'});sc.append(e);st.push(e);}
- const cc=h('div','cc cone');Object.assign(cc.style,{width:2*R+'px',height:2*R+'px',left:-R+'px',top:-R+'px'});sc.append(cc);
+ const st=[];for(let i=0;i<N;i++){const e=h('div','sv-ct');Object.assign(e.style,{width:(w+.6)+'px',height:L+'px',left:(-w/2)+'px',top:(-H/2)+'px'});sc.append(e);st.push(e);}
+ const cc=h('div','sv-cc cone');Object.assign(cc.style,{width:2*R+'px',height:2*R+'px',left:-R+'px',top:-R+'px'});sc.append(cc);
  st.forEach((e,i)=>e.style.transform='rotateY(0deg) rotateX(0deg) rotateZ('+(-th/2+(i+.5)*th/N)+'deg)');cc.style.transform='translateY('+(-H/2+L+R+8)+'px) rotateX(0deg)';
  if(!await W(1300))return;cap.textContent='ม้วนรูปพัดให้ปลายแหลมอยู่ข้างบน แล้วปิดก้นด้วยวงกลม';SFX.whoosh();
  [...st,cc].forEach(e=>e.style.transition='transform 1.6s ease-in-out');st.forEach((e,i)=>e.style.transform='rotateY('+(i*360/N)+'deg) rotateX('+b+'deg) rotateZ(0deg)');cc.style.transform='translateY('+(H/2)+'px) rotateX(90deg)';

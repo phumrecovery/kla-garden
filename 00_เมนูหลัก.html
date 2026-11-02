@@ -74,6 +74,15 @@ a.chip{background:#ffc23d;color:#4a3000;text-decoration:none;box-shadow:0 3px 0 
 .spark{animation:spark 1.6s ease-out infinite}@keyframes spark{from{transform:translate(0,0);opacity:1}to{transform:translate(6px,-60px);opacity:0}}
 .dance{animation:dance .55s ease-in-out infinite alternate}@keyframes dance{to{transform:translateY(-6px) rotate(4deg)}}
 .pet{transition:opacity 1.2s}
+/* สัตว์มาเยี่ยมประจำวัน: เดินเข้ามาจากขอบขวา แล้วเดินไปมา (หันตามทางเดิน) · กลางคืนนอนหลับ */
+.zin{animation:zin 3s ease-out 1.2s both}@keyframes zin{from{transform:translateX(140px);opacity:0}25%{opacity:1}to{transform:translateX(0);opacity:1}}
+.zroam{animation:zroam 18s ease-in-out 4.2s infinite}@keyframes zroam{0%{transform:translateX(0)}40%{transform:translateX(-56px)}50%{transform:translateX(-56px)}90%{transform:translateX(0)}100%{transform:translateX(0)}}
+.zface{animation:zface 18s step-end 4.2s infinite}@keyframes zface{0%{transform:scaleX(1)}45%{transform:scaleX(-1)}95%{transform:scaleX(1)}}
+.zbob{animation:zbob .55s ease-in-out infinite alternate}@keyframes zbob{to{transform:translateY(-3px)}}
+#zoo .zz,#hzoo .zz{opacity:0;transition:opacity 1s}#zoo.night .zz,#hzoo.night .zz{opacity:1;animation:zzz 2.4s ease-in-out infinite}#zoo.night .zroam,#zoo.night .zface,#zoo.night .zbob,#hzoo.night .zroam,#hzoo.night .zface,#hzoo.night .zbob{animation-play-state:paused}
+#hi [data-hact]{cursor:pointer}
+@keyframes zzz{50%{transform:translate(4px,-6px)}}
+@media (prefers-reduced-motion:reduce){.zin,.zroam,.zface,.zbob{animation:none!important}}
 @media (prefers-reduced-motion:reduce){.roamR,.hopR,.roamT,.leg,.throat,.stail,.ftail,.dhead,.flame,.spark,.dance{animation:none!important}}
 .warm{display:flex;align-items:center;gap:12px;margin-bottom:12px;background:linear-gradient(90deg,#dff4ff,#fff7d6);border-radius:20px;padding:10px 16px;text-decoration:none;color:var(--ink);box-shadow:0 4px 0 rgba(0,0,0,.07)}
 .warm .e{font-size:36px}.warm b{font-size:clamp(18px,2.5vw,24px);font-weight:normal}.warm small{display:block;font-size:14px;opacity:.7}
@@ -205,6 +214,37 @@ const fire='<g class="fxw" data-act="fire"><circle cy="-14" r="70" fill="url(#fg
   '<g class="flame"><path d="M-13 -2 Q-16 -22 -2 -38 Q0 -24 7 -29 Q16 -15 13 -2Z" fill="#ff7a2e"/><path d="M-7 -2 Q-9 -15 0 -24 Q2 -15 7 -18 Q9 -9 7 -2Z" fill="#ffd23f"/></g>'+
   [[-6,0],[4,-.5],[-2,-1],[7,-1.2]].map(([x,d])=>'<circle class="spark" cx="'+x+'" cy="-30" r="1.8" fill="#ffd23f" style="animation-delay:'+d+'s"/>').join('')+'</g>';
 const pet=(n,x,y,k,inner,extra)=>'<g id="pet-'+n+'" class="pet" style="opacity:0;pointer-events:none" transform="translate('+x+' '+y+') scale('+k+')">'+inner+'</g>';
+// ---- สัตว์มาเยี่ยมประจำวัน (ผู้ปกครองขอ 2 พ.ย. 69): วันละตัว วนครบ 10 ชนิดทุก 10 วัน ไม่ซ้ำกับเมื่อวาน
+// ยืนมุมขวาระหว่างแถวหลังกับขอบจอ (x 870–990, y 230–305) ไม่ทับกรอบกดแปลง · แตะแล้วขยับ มีเสียง และน้องกล้าเล่าเรื่องสัตว์ (สลับเรื่องทุกครั้งที่แตะ)
+// mv: stomp กระทืบ · hop กระโดด · stretch ยืดคอ · run วิ่งกลับไปมา · roll กลิ้ง · wag ส่าย · long ยืดตัวยาว
+const ZOO=[
+ {e:'🐘',n:'ช้าง',k:62,mv:'stomp',fx:['💦'],snd:[[196,262,392],.12,'sawtooth',.07],say:['ช้างใช้งวงหยิบของ และดูดน้ำมาพ่นได้','ช้างเป็นสัตว์ประจำชาติไทยนะ','ช้างเป็นสัตว์บกที่ตัวใหญ่ที่สุดเลย']},
+ {e:'🦒',n:'ยีราฟ',k:70,mv:'stretch',fx:['🍃'],snd:[[523,659],.1,'triangle'],say:['ยีราฟคอยาวที่สุด กินใบไม้บนต้นไม้สูง ๆ ได้','ยีราฟมีลิ้นยาวสีม่วงเข้ม']},
+ {e:'🦓',n:'ม้าลาย',k:58,mv:'run',fx:['💨'],snd:[[660,880,660,880],.06,'triangle'],say:['ม้าลายมีลายขาวดำ ไม่มีตัวไหนลายเหมือนกันเลย','ม้าลายวิ่งเร็วมาก ชอบอยู่กันเป็นฝูง']},
+ {e:'🐼',n:'แพนด้า',k:56,mv:'roll',fx:['🎋'],snd:[[392,330,392],.1,'triangle'],say:['แพนด้าชอบกินไผ่ทั้งวันเลย','แพนด้ามีขนสีขาวสลับดำ ตัวกลม ๆ น่ากอด']},
+ {e:'🐒',n:'ลิง',k:54,mv:'hop',fx:['🍌'],snd:[[880,1175,880,1175],.06,'square',.05],say:['ลิงปีนต้นไม้เก่ง ชอบกินกล้วย','ลิงใช้มือหยิบของได้เหมือนเราเลย']},
+ {e:'🐕',n:'หมา',k:54,mv:'wag',fx:['🦴','💕'],snd:[[440,330,1,440,330],.08,'square',.06],say:['โฮ่ง โฮ่ง หมาดมกลิ่นเก่งมาก','หมาช่วยเฝ้าบ้านให้เรา เป็นเพื่อนที่ซื่อสัตย์']},
+ {e:'🐈',n:'แมว',k:50,mv:'long',fx:['🐟','💕'],snd:[[620,880,520],.12,'sine'],say:['เหมียว แมวมีหนวดช่วยกะว่าลอดช่องได้ไหม','แมวมองเห็นในที่มืดได้ดีกว่าเรา']},
+ {e:'🦆',n:'เป็ด',k:50,mv:'wag',fx:['💧'],snd:[[300,240,1,300,240],.07,'square',.06],say:['ก๊าบ ก๊าบ เป็ดมีพังผืดที่เท้า ว่ายน้ำเก่ง','เป็ดออกลูกเป็นไข่นะ']},
+ {e:'🐖',n:'หมู',k:54,mv:'hop',fx:['💕','🫧'],snd:[[220,180,1,220,180],.08,'square',.05],say:['อู๊ด อู๊ด หมูจมูกแบน ดมกลิ่นเก่ง','หมูชอบนอนเล่นในโคลนให้ตัวเย็นสบาย']},
+ {e:'🦔',n:'เม่น',k:44,mv:'roll',fx:['✨'],snd:[[1047,1319,1568],.07,'sine'],say:['เม่นมีขนแข็งเป็นหนาม ถ้าตกใจจะม้วนตัวกลม','เม่นออกหากินตอนกลางคืน']}];
+const ZORD=[3,7,0,5,9,1,6,2,8,4];   /* ลำดับคงที่ คละสัตว์ใหญ่/เล็ก บก/น้ำ วันติดกันไม่ซ้ำ */
+const zDay=()=>{const d=new Date();return ZOO[ZORD[Math.floor((d.getTime()-d.getTimezoneOffset()*6e4)/864e5)%10]];};
+let zTap=0;
+const ZMV={stomp:[{transform:'translateY(0)'},{transform:'translateY(-10px) rotate(-6deg)',offset:.3},{transform:'translateY(0) scale(1.06,.94)',offset:.55},{transform:'translateY(-6px) rotate(5deg)',offset:.75},{transform:'translateY(0)'}],
+  hop:[{transform:'translateY(0)'},{transform:'translateY(-46px) rotate(-12deg)',offset:.45},{transform:'translateY(0) scale(1.1,.9)',offset:.85},{transform:'translateY(0)'}],
+  stretch:[{transform:'scale(1)'},{transform:'scale(.95,1.35)',offset:.4},{transform:'scale(.95,1.35)',offset:.6},{transform:'scale(1)'}],
+  run:[{transform:'translateX(0)'},{transform:'translateX(-60px)',offset:.35},{transform:'translateX(-60px) scaleX(-1)',offset:.4},{transform:'translateX(0) scaleX(-1)',offset:.8},{transform:'translateX(0)'}],
+  roll:[{transform:'translateX(0) rotate(0)'},{transform:'translateX(-40px) rotate(-360deg)',offset:.5},{transform:'translateX(0) rotate(0)'}],
+  wag:[{transform:'rotate(0)'},{transform:'rotate(-14deg)'},{transform:'rotate(14deg)'},{transform:'rotate(-10deg)'},{transform:'rotate(10deg)'},{transform:'rotate(0)'}],
+  long:[{transform:'scale(1)'},{transform:'scale(1.35,.85)',offset:.4},{transform:'scale(1.35,.85)',offset:.6},{transform:'scale(1)'}]};
+/* แตะสัตว์: ตื่นอยู่ = ท่าประจำตัว + เสียง คืนค่าเป็นคำเล่าเรื่องสัตว์ · กลางคืน = ขยับตัวในฝัน */
+function zooPlay(em,z,asleep){em.style.transformBox='fill-box';em.style.transformOrigin=!asleep&&z.mv==='roll'?'center':'50% 100%';
+  if(asleep){wig(em,[{transform:'rotate(0)'},{transform:'rotate(-4deg)'},{transform:'rotate(4deg)'},{transform:'rotate(0)'}],900);tone([330,294],.18,'sine',.06);return 'ชู่ว์ '+z.n+'กำลังหลับปุ๋ย พรุ่งนี้เช้าค่อยมาเล่นกันนะ';}
+  wig(em,ZMV[z.mv],z.mv==='run'?1400:z.mv==='roll'?1100:800);tone(...z.snd);return z.say[zTap++%z.say.length];}
+function zooSVG(){const z=zDay();return '<g id="zoo" transform="translate(940 302)"><g class="zin"><g class="zroam"><g class="zface"><g class="fxw" data-act="zoo"><rect x="-38" y="'+(-z.k-8)+'" width="76" height="'+(z.k+14)+'" fill="#000" fill-opacity="0"/>'+
+  '<ellipse cy="1" rx="'+(z.k*.42).toFixed(0)+'" ry="5" fill="#000" opacity=".14"/><g class="zbob"><text class="ze" y="'+(-z.k*.08).toFixed(0)+'" text-anchor="middle" font-size="'+z.k+'">'+z.e+'</text></g></g></g></g>'+
+  '<text class="zz" x="20" y="'+(-z.k*.9).toFixed(0)+'" font-size="22">💤</text></g></g>';}
 function petsSVG(){return pet('rabbit',470,324,1,'<g class="roamR"><g class="hopR">'+A.rabbit()+'</g></g>')+
   pet('frog',514,300,.9,A.frog())+pet('turtle',270,244,.9,'<g class="roamT">'+A.turtle()+'</g>')+
   pet('squirrel',720,196,.85,A.squirrel())+pet('deer',570,210,.9,A.deer())+pet('fox',962,430,.9,A.fox());}
@@ -330,9 +370,15 @@ function build(){
   s+=bfly('#ffd23f','M700 300 C820 230 940 330 860 390 S620 420 560 330 S620 360 700 300',14,-5);
   s+=bfly('#8fd3ff','M60 300 C140 230 260 300 330 250 S460 330 360 380 S120 380 60 300',17,-9);
   s+=bee('M380 290 q40 -30 80 0 t80 0 t80 0 q-120 50 -240 0',9,0);
-  s+=bee('M820 200 q-30 30 -60 0 t-60 0 q60 -40 120 0',7,-3);s+='</g>';
+  s+=bee('M820 200 q-30 30 -60 0 t-60 0 q60 -40 120 0',7,-3);
+  // เพิ่ม 2 พ.ย. 69: บินในท้องฟ้าเหนือแถวแปลง (ไม่ทับกรอบกดแปลง) เลี่ยงดวงอาทิตย์/ดวงจันทร์ทางขวา
+  s+=bfly('#c39bf0','M180 150 C260 90 360 170 440 120 S600 80 660 150 S520 200 400 170 S200 200 180 150',16,-3);
+  s+=bfly('#7ccf8a','M640 170 C560 110 480 160 420 110 S300 70 260 130 S420 190 520 160 S700 210 640 170',21,-11);
+  s+=bfly('#ffb347','M300 180 C340 120 420 120 460 170 S560 200 600 140 S500 90 420 100 S280 220 300 180',13,-7);
+  s+=bee('M250 120 q30 -25 60 0 t60 0 t60 0 q-90 40 -180 0',8,-2);
+  s+=bee('M560 140 q-25 25 -50 0 t-50 0 t-50 0 q75 -40 150 0',6.5,-4);s+='</g>';
   for(let w=1;w<=6;w++)s+=plotSVG(w);
-  s+=petsSVG();
+  s+=petsSVG()+zooSVG();
   s+='<g id="flowers"></g><g id="walker"><g class="hop"><g class="fxw" data-act="kla"><svg width="120" height="140" viewBox="0 0 120 140" overflow="visible">'+KLA+'</svg></g></g></g>';
   s+='<rect id="tint" x="-1500" width="4000" height="460" style="mix-blend-mode:multiply;pointer-events:none;opacity:0;fill:#000"/><g id="glow" style="pointer-events:none">'+partySVG();
   seed=5;s+='<g id="stars" style="opacity:0">';for(let i=0;i<34;i++){const x=rnd()*1000,y=10+rnd()*150;if(Math.hypot(x-820,y-108)<62)continue;s+='<g transform="translate('+x.toFixed(0)+' '+y.toFixed(0)+')"><g class="st"><path class="tw" style="animation-delay:-'+(rnd()*2).toFixed(1)+'s" d="M0 -5 L1.4 -1.4 L5 0 L1.4 1.4 L0 5 L-1.4 1.4 L-5 0 L-1.4 -1.4Z" fill="#fff6c8" transform="scale('+(0.6+rnd()*0.9).toFixed(2)+')"/></g></g>';}s+='</g>';
@@ -407,6 +453,7 @@ function mood(w,instant){if(w===curMood)return;curMood=w;const t=moodOf(w);
   $('tint').style.fill=t.tint[0];$('tint').style.opacity=t.tint[1];
   $('rb').style.opacity=t.rb;[['crit',t.crit],['birds',t.birds],['kite',t.kite],['pud',t.pud],['stars',t.stars],['ffs',t.ff],['lit',t.lit]].forEach(([id,v])=>$(id).style.opacity=v?1:0);
   document.querySelectorAll('.sc').forEach(e=>e.style.opacity=t.snow?1:0);
+  if($('zoo'))$('zoo').classList.toggle('night',!!t.stars);
   PETS.forEach(n=>{const e=$('pet-'+n),on=t.pets.includes(n);e.style.opacity=on?1:0;e.style.pointerEvents=on?'auto':'none';});
   [['sun',t.sun],['moon',t.moon],['kite',t.kite],['crit',t.crit],['pud',t.pud],['birds',t.birds],['rb',t.rb]].forEach(([id,v])=>$(id).style.pointerEvents=v?'auto':'none');
   const m=$('mood');m.textContent=t.n;m.classList.remove('pop');void m.offsetWidth;m.classList.add('pop');
@@ -560,6 +607,7 @@ else if(k==='rabbit'){wig(el,[{transform:'translateY(0)'},{transform:'translateY
  else if(k==='deer'){wig(el,[{transform:'translate(0,0)'},{transform:'translate(-22px,-30px) rotate(-8deg)',offset:.45},{transform:'translate(0,0)'}],800);tone([523,784],.09,'triangle');spray(x,y,['🍂','🍁'],{n:4,r:40,up:10,size:'18px'});talk('กวางกระโดดได้สูงและวิ่งได้เร็วมาก');}
  else if(k==='fox'){wig(el,[{transform:'translate(0,0) rotate(0)'},{transform:'translate(-18px,-46px) rotate(-30deg)',offset:.4},{transform:'translate(-34px,4px) rotate(50deg) scale(1,.8)',offset:.75},{transform:'translate(0,0) rotate(0)'}],1200);tone([660,990,440],.1,'triangle');setTimeout(()=>spray(x-30,y+10,['❄️'],{n:6,r:30,up:20,size:'16px'}),850);talk('จิ้งจอกขาวกระโดดมุดหิมะหาอาหาร ขนขาวช่วยพรางตัว');}
  else if(k==='fire'){wig(el.querySelector('.flame'),[{transform:'scale(1)'},{transform:'scale(1.6)'},{transform:'scale(1)'}],700);tone([120,90,150,110],.05,'sawtooth',.04);spray(x,y-20,['✨','🔥','⭐'],{n:8,r:50,up:50});talk('ปาร์ตี้รอบกองไฟ! เพื่อน ๆ สัตว์มาเชียร์หนูก่อนวันสอบ');}
+ else if(k==='zoo'){const z=zDay(),em=el.querySelector('.ze'),zz=$('zoo').classList.contains('night'),t=zooPlay(em,z,zz);if(!zz)spray(x,y-z.k*.3,z.fx,{n:5,r:40,up:30});talk(t);}
  else if(k==='bird'){wig(el,[{transform:'translate(0,0)'},{transform:'translate(20px,-40px)',offset:.5},{transform:'translate(0,0)'}],900);tone([1568,1760,1568,1976],.05,'sine',.06);}}
 function skyTap(e){const q=scene.getBoundingClientRect(),x=e.clientX-q.left,y=e.clientY-q.top;
   if(isNight()){spray(x,y,['⭐','✨'],{n:6,r:30,up:0});tone([1175,1568],.08,'triangle',.08);return;}
@@ -717,14 +765,32 @@ const KLA3='<g class="kla3"><defs><radialGradient id="hz_k3b" cx=".36" cy=".3" r
 // กลางคืน: หิ่งห้อยกะพริบลอยวน
 function fireflies(){let s='';[[200,470,9],[320,420,11],[620,400,10],[780,470,8],[880,420,12],[460,350,13],[140,380,10],[700,330,9]].forEach(([x,y,d],i)=>{s+='<g><circle r="9" fill="#fff59d" opacity=".25"/><circle r="3.2" fill="#fffde0"><animate attributeName="opacity" values=".2;1;.2" dur="'+(1.4+i%3*.5)+'s" repeatCount="indefinite"/></circle><animateMotion dur="'+d+'s" begin="-'+i+'s" repeatCount="indefinite" path="M'+x+' '+y+' c30 -20 50 10 30 30 c-20 20 -50 0 -30 -30z"/></g>';});return s;}
 // ผีเสื้อและผึ้งบินวนตามเส้นทาง (animateMotion) กระพือปีกด้วย CSS
-function flyers(){const bf=(path,dur,c1,c2,k,dl)=>'<g><g transform="scale('+k+')"><g class="bfw"><path d="M0 0 C-14 -20 -30 -10 -22 2 C-30 10 -16 22 0 4Z" fill="'+c1+'" stroke="#5a3a7a" stroke-width="1.2"/><path d="M0 0 C14 -20 30 -10 22 2 C30 10 16 22 0 4Z" fill="'+c2+'" stroke="#5a3a7a" stroke-width="1.2"/><circle cx="-14" cy="-6" r="3" fill="#fff" opacity=".7"/><circle cx="14" cy="-6" r="3" fill="#fff" opacity=".7"/></g><rect x="-2" y="-9" width="4" height="18" rx="2" fill="#3b2a4a"/><path d="M-1 -9 Q-5 -16 -7 -17 M1 -9 Q5 -16 7 -17" stroke="#3b2a4a" stroke-width="1.2" fill="none"/></g><animateMotion dur="'+dur+'s" begin="-'+dl+'s" repeatCount="indefinite" path="'+path+'"/></g>';
-  const bee=(path,dur,k,dl)=>'<g><g transform="scale('+k+')"><g class="beb"><ellipse cx="-3" cy="-11" rx="7" ry="9" fill="#e8f6ff" opacity=".85" stroke="#9cc3dd" class="bew"/><ellipse cx="5" cy="-11" rx="7" ry="9" fill="#e8f6ff" opacity=".85" stroke="#9cc3dd" class="bew"/><ellipse cx="0" cy="0" rx="13" ry="9" fill="#ffd23f" stroke="#7a5a00" stroke-width="1.2"/><path d="M-4 -8.5 V8.5 M3 -8 V8" stroke="#2d2340" stroke-width="3.2"/><circle cx="12" cy="-1" r="5.5" fill="#2d2340"/><circle cx="13.5" cy="-2.5" r="1.4" fill="#fff"/><path d="M-13 0 L-18 1" stroke="#2d2340" stroke-width="2"/></g></g><animateMotion dur="'+dur+'s" begin="-'+dl+'s" repeatCount="indefinite" path="'+path+'"/></g>';
+function flyers(){const bf=(path,dur,c1,c2,k,dl)=>'<g data-hact="bf"><g class="hw"><g transform="scale('+k+')"><circle r="30" fill="#000" fill-opacity="0"/><g class="bfw"><path d="M0 0 C-14 -20 -30 -10 -22 2 C-30 10 -16 22 0 4Z" fill="'+c1+'" stroke="#5a3a7a" stroke-width="1.2"/><path d="M0 0 C14 -20 30 -10 22 2 C30 10 16 22 0 4Z" fill="'+c2+'" stroke="#5a3a7a" stroke-width="1.2"/><circle cx="-14" cy="-6" r="3" fill="#fff" opacity=".7"/><circle cx="14" cy="-6" r="3" fill="#fff" opacity=".7"/></g><rect x="-2" y="-9" width="4" height="18" rx="2" fill="#3b2a4a"/><path d="M-1 -9 Q-5 -16 -7 -17 M1 -9 Q5 -16 7 -17" stroke="#3b2a4a" stroke-width="1.2" fill="none"/></g></g><animateMotion dur="'+dur+'s" begin="-'+dl+'s" repeatCount="indefinite" path="'+path+'"/></g>';
+  const bee=(path,dur,k,dl)=>'<g data-hact="bee"><g class="hw"><g transform="scale('+k+')"><circle r="26" fill="#000" fill-opacity="0"/><g class="beb"><ellipse cx="-3" cy="-11" rx="7" ry="9" fill="#e8f6ff" opacity=".85" stroke="#9cc3dd" class="bew"/><ellipse cx="5" cy="-11" rx="7" ry="9" fill="#e8f6ff" opacity=".85" stroke="#9cc3dd" class="bew"/><ellipse cx="0" cy="0" rx="13" ry="9" fill="#ffd23f" stroke="#7a5a00" stroke-width="1.2"/><path d="M-4 -8.5 V8.5 M3 -8 V8" stroke="#2d2340" stroke-width="3.2"/><circle cx="12" cy="-1" r="5.5" fill="#2d2340"/><circle cx="13.5" cy="-2.5" r="1.4" fill="#fff"/><path d="M-13 0 L-18 1" stroke="#2d2340" stroke-width="2"/></g></g></g><animateMotion dur="'+dur+'s" begin="-'+dl+'s" repeatCount="indefinite" path="'+path+'"/></g>';
   return bf('M150 470 C220 400 330 430 300 480 C270 530 120 540 150 470Z',9,'#ffb3d1','#ff8fb8',1,0)+
    bf('M610 330 C690 290 770 350 730 400 C690 450 570 380 610 330Z',11,'#ffe066','#ffcf3f',.9,3)+
    bf('M400 230 C460 180 580 190 610 250 C640 310 520 330 460 300 C410 280 380 270 400 230Z',13,'#b9a2ff','#9d85f5',.8,6)+
    bee('M820 470 C860 430 930 460 905 500 C880 540 790 520 820 470Z',5,.9,0)+
    bee('M230 515 C280 480 340 515 305 545 C270 575 190 560 230 515Z',6.5,.85,2)+
-   bee('M690 420 C720 400 760 420 745 440 C730 460 670 450 690 420Z',4.5,.7,1);}
+   bee('M690 420 C720 400 760 420 745 440 C730 460 670 450 690 420Z',4.5,.7,1)+
+   /* เพิ่ม 2 พ.ย. 69 */
+   bf('M820 300 C880 250 960 290 930 350 C900 410 790 360 820 300Z',10,'#8fe3c0','#5ccfa0',.85,4)+
+   bf('M80 330 C130 270 230 300 210 360 C190 420 60 400 80 330Z',12,'#ffc48a','#ff9f5a',.85,7)+
+   bee('M470 200 C520 170 580 190 560 230 C540 270 450 250 470 200Z',5.5,.75,3);}
+/* สัตว์มาเยี่ยมประจำวันในฉากต้อนรับ: ตัวเดียวกับในสวน ยืนหญ้าซ้ายหน้า หันหาน้องกล้า (กลับด้านอีโมจิ) */
+function hiZoo(dark){const z=zDay(),k=Math.round(z.k*1.5);return '<g id="hzoo"'+(dark?' class="night"':'')+' transform="translate(282 556)"><g transform="scale(-1 1)"><g class="zin"><g class="zroam"><g class="zface"><g data-hact="zoo"><rect x="-50" y="'+(-k-8)+'" width="100" height="'+(k+14)+'" fill="#000" fill-opacity="0"/>'+
+  '<ellipse cy="1" rx="'+Math.round(k*.42)+'" ry="7" fill="#000" opacity=".16"/><g class="zbob"><text class="ze" y="'+Math.round(-k*.08)+'" text-anchor="middle" font-size="'+k+'">'+z.e+'</text></g></g></g></g></g></g>'+
+  '<text class="zz" x="10" y="'+Math.round(-k*.9)+'" font-size="30">💤</text></g>';}
+/* แตะของในฉากต้อนรับ: ไม่เริ่มคำทักทาย · ระหว่างทักทายก็ยังแตะเล่นได้ แต่ไม่ทับคำพูดในกรอบ */
+function hiFx(o,x,y,chars){chars.forEach((c,i)=>{const f=document.createElement('div');f.textContent=c;f.style.cssText='position:absolute;left:'+x+'px;top:'+y+'px;font-size:clamp(22px,3.4vw,34px);pointer-events:none;z-index:3';o.append(f);
+  const a=i/chars.length*Math.PI*2+Math.random()*.6,d=50+Math.random()*30;f.animate([{transform:'translate(-50%,-50%) scale(.3)',opacity:1},{transform:'translate(calc(-50% + '+(Math.cos(a)*d).toFixed(0)+'px),calc(-50% + '+(Math.sin(a)*d-40).toFixed(0)+'px)) scale(1)',opacity:0}],{duration:1200,easing:'ease-out'}).onfinish=()=>f.remove();});}
+let hiSayT=null;
+function hiAct(o,el,started){const r=el.getBoundingClientRect(),q=o.getBoundingClientRect(),x=r.left+r.width/2-q.left,y=r.top+r.height/2-q.top,k=el.dataset.hact,hw=el.querySelector('.hw');let t='';
+  if(hw){hw.style.transformBox='fill-box';hw.style.transformOrigin='center';}
+  if(k==='bf'){wig(hw,[{transform:'rotate(0) scale(1)'},{transform:'rotate(360deg) scale(1.8)'},{transform:'rotate(720deg) scale(1)'}],900);tone([784,988,1175],.07);hiFx(o,x,y,['💗','💖','✨','✨']);t=['ผีเสื้อสวยจัง ปีกมีลวดลายสีสวย','ผีเสื้อดูดน้ำหวานจากดอกไม้ ช่วยให้ดอกไม้ออกผล'][zTap++%2];}
+  else if(k==='bee'){wig(hw,[{transform:'translate(0,0)'},{transform:'translate(-10px,0)'},{transform:'translate(10px,-5px)'},{transform:'translate(-10px,3px)'},{transform:'translate(0,0)'}],400);tone([220,233,220,233,220],.06,'sawtooth',.05);hiFx(o,x,y,['🍯','🌼','✨']);t=['หึ่ง หึ่ง ผึ้งเก็บน้ำหวานไปทำน้ำผึ้ง','ผึ้งมีหกขา เป็นแมลงที่ขยันมาก'][zTap++%2];}
+  else if(k==='zoo'){const z=zDay(),zz=o.querySelector('#hzoo').classList.contains('night');t=zooPlay(el.querySelector('.ze'),z,zz);if(!zz)hiFx(o,x,y-r.height*.2,z.fx.concat(z.fx));}
+  if(started||!t)return;const b=o.querySelector('.hibub');b.textContent=t;b.hidden=false;clearTimeout(hiSayT);hiSayT=setTimeout(()=>{if(!o.dataset.go)b.hidden=true;},3500);}
 /* ท้องฟ้าฉากต้อนรับตามเวลาจริง: สีฟ้า ความมืด แสงอุ่น ไล่ต่อเนื่องตามเวลาพระอาทิตย์ขึ้น-ตกของวันนี้ ดวงอาทิตย์เคลื่อนตามนาที ดวงจันทร์ใช้ข้างขึ้นข้างแรมจริง */
 const hx=c=>[1,3,5].map(i=>parseInt(c.slice(i,i+2),16)),mix=(a,b,t)=>'#'+hx(a).map((v,i)=>Math.round(v+(hx(b)[i]-v)*t).toString(16).padStart(2,'0')).join('');
 function skyNow(){const d=NOW(),m=d.getHours()*60+d.getMinutes()+d.getSeconds()/60,[r,s]=sunTimes(d);
@@ -792,7 +858,7 @@ function scene3D(){const SP=skyNow(),dark=SP.dk>=.2,{f}=seasonNow();
    '<path id="hz_road" d="M380 620 C420 540 470 470 560 418 C610 392 660 378 696 368 L712 372 C680 384 640 402 600 428 C540 470 540 540 640 620 Z" fill="url(#hz_path3)"/><path id="hz_rim" d="M380 620 C420 540 470 470 560 418 C610 392 660 378 696 368" stroke="#c99b5c" stroke-width="3" fill="none" opacity=".6"/>'+
    (f.pud||f.rain?'<g fill="#9fd3f5" opacity=".55"><ellipse cx="250" cy="470" rx="46" ry="9"/><ellipse cx="700" cy="560" rx="60" ry="11"/><ellipse cx="900" cy="470" rx="34" ry="7"/></g>':'')+
    plots()+(f.rain||f.snow?'':p)+
-   '<rect x="-40" y="-40" width="1080" height="680" fill="'+SP.w[0]+'" opacity="'+SP.w[1].toFixed(3)+'"/>'+(dark||f.rain||f.snow?'':flyers())+'<ellipse cx="500" cy="528" rx="84" ry="15" fill="#1e4a14" opacity=".28" filter="url(#hz_b2)"/>'+
+   hiZoo(dark)+'<rect x="-40" y="-40" width="1080" height="680" fill="'+SP.w[0]+'" opacity="'+SP.w[1].toFixed(3)+'" pointer-events="none"/>'+(dark||f.rain||f.snow?'':flyers())+'<ellipse cx="500" cy="528" rx="84" ry="15" fill="#1e4a14" opacity=".28" filter="url(#hz_b2)"/>'+
    '<svg x="380" y="248" width="240" height="280" viewBox="0 0 120 140" overflow="visible">'+KLA3+'</svg>'+
    '<g filter="url(#hz_b3)" opacity=".95">'+fl(40,640,1.6,'#ff8fb1')+fl(110,660,1.3,'#ffd23f')+fl(950,650,1.7,'#c9b6ff')+fl(880,670,1.2,'#ff8fb1')+'</g>'+
    /* กลางคืนมืดเฉพาะท้องฟ้า พื้นสวนยังสว่างเห็นต้นไม้ชัด */(dark&&!f.rain?fireflies():'')+seasonFX(f,dark)+
@@ -806,7 +872,7 @@ async function greet(o){const lines=greetLines(),stop=jingle(14);const bub=o.que
 {let hiDone=false;try{hiDone=sessionStorage.getItem('kla-hi')==='1'}catch(e){}
  if(!hiDone&&G){const o=document.createElement('div');o.id='hi';o.innerHTML='<div class="hicam">'+scene3D()+'</div><div class="hitop">สวนมหัศจรรย์ของน้องกล้า</div><div class="himood">'+moodOf(seasonNow().w).n+'</div><div class="hibub" hidden></div><button class="higo">แตะเพื่อเข้าสวน 🌱</button><button class="hiskip" hidden>ข้าม ▶</button>';document.body.append(o);
   o.querySelectorAll('[data-on]').forEach(g=>{const P=o.querySelector('#'+g.dataset.on),x=+g.dataset.x,L=P.getTotalLength();let by=1e9;for(let d=0;d<L;d+=2){const q=P.getPointAtLength(d);if(Math.abs(q.x-x)<2&&q.y<by)by=q.y;}const gy=by+(+g.dataset.sink||4);g.setAttribute('transform','translate('+x+' '+gy+') scale('+(+g.dataset.k||1)+')');if(x===700&&g.dataset.on==='hf')g.dataset.gy=gy;});{const sc=o.querySelector('[data-on="hf"][data-x="700"]'),Y=(+sc.dataset.gy).toFixed(1);o.querySelector('#hz_road').setAttribute('d','M380 620 C420 540 470 470 560 418 C610 392 660 378 688 364 C694 340 696 318 696 '+Y+' L704 '+Y+' C705 318 708 342 714 370 C680 384 640 402 600 428 C540 470 540 540 640 620 Z');o.querySelector('#hz_rim').setAttribute('d','M380 620 C420 540 470 470 560 418 C610 392 660 378 688 364 C694 340 696 318 696 '+Y);}MO=o.querySelector('.kla3 .m-open');MC=o.querySelector('.kla3 .m-close');KB=o.querySelector('.kla3');
-  let started=false;o.onclick=()=>{if(started)return;started=true;try{sessionStorage.setItem('kla-hi','1')}catch(e){}o.querySelector('.higo').hidden=true;greet(o);};}{const p=document.getElementById('hiPre');p&&p.remove();}}
+  let started=false;o.onclick=e=>{const hz=e.target.closest('[data-hact]');if(hz){hiAct(o,hz,started);return;}if(started)return;started=true;o.dataset.go=1;clearTimeout(hiSayT);try{sessionStorage.setItem('kla-hi','1')}catch(e){}o.querySelector('.higo').hidden=true;greet(o);};}{const p=document.getElementById('hiPre');p&&p.remove();}}
 setInterval(()=>{const w=curMood;curMood=-1;mood(w<0?selW:w);},5*60*1000);
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>

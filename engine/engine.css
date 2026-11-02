@@ -366,3 +366,9 @@ button{font-family:inherit;cursor:pointer}
 .x2flip{width:min(200px,40vw);height:min(240px,30vh);position:relative;transform-style:preserve-3d;transition:transform 1.4s ease-in-out}
 .x2flip>div{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}.x2flip .fb{transform:rotateY(180deg)}
 .x2lr{display:flex;justify-content:space-between;width:min(420px,80vw);font-size:clamp(15px,2.2vw,19px);font-weight:700;color:#475569}
+
+/* ชุดคำถามต่อเนื่อง (2 พ.ย. 69) */
+.gchip{font-size:clamp(15px,2.2vw,20px);background:#fff7d6;border:2px solid #f2c14e;border-radius:999px;padding:2px 16px}
+.story{position:relative;background:#fff;border-radius:20px;padding:12px 22px;max-width:680px;width:100%;box-shadow:0 3px 0 rgba(0,0,0,.08);font-size:clamp(18px,2.8vw,26px);line-height:1.5;text-align:left}
+.story p{margin:0}.story .rep{position:absolute;right:8px;bottom:8px}
+.figbox.wide svg{width:min(92vw,540px);max-height:40vh}

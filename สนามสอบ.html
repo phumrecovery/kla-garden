@@ -68,7 +68,12 @@ function draw(ts,n){
   const fill=rot=>{for(let g=0;g<200&&out.length<n;g++){let add=false;for(const id of rot){if(out.length>=n)break;const q=Q[id];if(!q.length)continue;
     const c0=cnt(q[0]);let i=q.findIndex(x=>cnt(x)===c0&&!used.has(stem(x)));if(i<0)i=0;const x=q.splice(i,1)[0];used.add(stem(x));out.push(x);add=true;}if(!add)break;}};
   fill(rotOf(order.filter(t=>!cap[t.id])));if(out.length<n)fill(rotOf(order));
-  return shuf(out);}
+  return grp(shuf(out),n);}
+/* ชุดคำถามต่อเนื่อง (x.g ภาพเดียวหรือเรื่องเดียว ถาม 2–3 ข้อ): สุ่มได้ข้อใดข้อหนึ่งของชุด ให้ดึงข้อที่เหลือมาต่อกันตามลำดับ
+   ชุดทำให้เกิน n ข้อ ตัดข้อเดี่ยวท้ายรายการออกแทน (ข้อในชุดเก็บภาพ/เรื่องไว้ครบทุกข้อ ถ้าถูกตัดเหลือข้อเดียวก็ยังตอบได้) */
+function grp(a,n){const got=new Set(),u=[];a.forEach(x=>{if(!x.g)return u.push([x]);if(got.has(x.g))return;got.add(x.g);u.push(BANK.items.filter(y=>y.g===x.g&&okIt(y)).sort((p,q)=>p.gi-q.gi));});
+  let k=u.reduce((s,b)=>s+b.length,0);for(let i=u.length-1;i>=0&&k>n;i--)if(u[i].length===1){u.splice(i,1);k--;}
+  return u.flat().slice(0,n);}
 /* ความคืบหน้า: ทำไปแล้วกี่ข้อ จากข้อทั้งหมดในหัวข้อที่เปิดแล้ว */
 const cover=ts=>{const it=BANK.items.filter(x=>ts.some(t=>t.id===x.t)&&okIt(x));return [it.filter(x=>cnt(x)>0).length,it.length];};
 const openOf=subj=>T.filter(t=>open(t)&&(subj==='mix'||t.subj===subj));

@@ -177,7 +177,9 @@ function figSVG(f){const vb=f.vb||[100,100];let b='';
  (f.paths||[]).forEach(c=>{b+='<path d="'+c[0]+'" fill="'+(c[1]||'none')+'" stroke="'+(c[3]||'#3b3b4f')+'" stroke-width="'+(c[2]||2.5)+'" stroke-linejoin="round" stroke-linecap="round"/>';});
  (f.lines||[]).forEach(l=>{b+='<line x1="'+l[0]+'" y1="'+l[1]+'" x2="'+l[2]+'" y2="'+l[3]+'" stroke="#3b3b4f" stroke-width="'+(l[4]||3)+'" stroke-linecap="round"'+(l[5]?' stroke-dasharray="6 5"':'')+'/>';});
  (f.txt||[]).forEach(t=>{const r=t[5],tr=r==='h'?'translate('+2*t[0]+' 0) scale(-1 1)':r==='v'?'translate(0 '+2*t[1]+') scale(1 -1)':r&&r[0]==='r'?'rotate('+r.slice(1)+' '+t[0]+' '+t[1]+')':'';b+='<text x="'+t[0]+'" y="'+t[1]+'" text-anchor="middle" dominant-baseline="central" font-size="'+(t[3]||22)+'" fill="'+(t[4]||'#3b3b4f')+'"'+(tr?' transform="'+tr+'"':'')+'>'+t[2]+'</text>';});
- return '<svg class="fig" viewBox="0 0 '+vb[0]+' '+vb[1]+'">'+b+'</svg>';}
+ if(f.raw)b+=f.raw;   /* ภาพวาดสำเร็จรูปจากคลังโจทย์ (เช่น ภาพเงาซ้อนกัน) */
+ if(f.sh)b='<g class="shg">'+b+'</g>';   /* เงาซ้อนกัน: ดำทั้งกลุ่ม ส่วนที่ทับกันกลืนเป็นเงาเดียว */
+ return '<svg class="fig'+(vb[0]>=2.5*vb[1]?' row3':'')+'" viewBox="0 0 '+vb[0]+' '+vb[1]+'">'+b+'</svg>';}
 /* ตำแหน่ง: on under (โต๊ะ) · in behind front beside between (กล่อง) */
 function posSVG(o){const w=o.pos,it=o.item||'🐱',E=(x,y,k)=>'<text x="'+x+'" y="'+y+'" text-anchor="middle" font-size="'+(k||46)+'">'+it+'</text>';
  const box=(x)=>'<rect x="'+x+'" y="72" width="76" height="58" rx="4" fill="#c98a4b" stroke="#7a4f22" stroke-width="2.5"/><path d="M'+(x+8)+' 92 H'+(x+68)+' M'+(x+8)+' 112 H'+(x+68)+'" stroke="#a96d33" stroke-width="2"/>';
@@ -362,7 +364,7 @@ async function mockTimer(qi,q,box,btns,segs){const my=tok;const ms=(EP.sec||15)*
  const s=QS;if(!s||s.lock)return;s.lock=true;LOG[qi]={id:q.id,t:q.t,ok:false,to:1};btns.forEach(x=>x.disabled=true);tm.classList.add('end');SFX.chime();hideSub=false;
  await say('หมดเวลาแล้วค่ะ');if(my!==tok)return;await gap(500,my);if(my!==tok)return;quiz(qi+1);}
 /* ---------- เฉลยแบบภาพเคลื่อนไหว 3 มิติ (โหมดฝึก/คลิป): นับกล่องที่ซ้อนกัน · มองจากด้านบน/หน้า · พับภาพคลี่ ---------- */
-function exPlan(q){if(q.g&&!q.x2)return null;if(q.x2&&window.EX2){const p=EX2.plan(q);if(p)return p;}const t=q.q+' '+(q.say||''),v=q.v||{},a=q.opts[q.ans];
+function exPlan(q){if(q.g&&!q.x2)return null;if(q.v&&q.v.fig&&q.v.fig.sh)return null;if(q.x2&&window.EX2){const p=EX2.plan(q);if(p)return p;}const t=q.q+' '+(q.say||''),v=q.v||{},a=q.opts[q.ans];
  let g=v.type==='blocks'?v.g:null;if(!g&&/มากที่สุด|น้อยที่สุด/.test(t)&&a&&a.blk&&a.blk.g)g=a.blk.g;
  if(g&&/ติดกับ/.test(t)&&v.gray)return {k:'blk',g,view:'adj',gray:v.gray};
  if(g&&!/ติดกับ/.test(t)){if(/ด้านบน/.test(t))return {k:'blk',g,view:'top'};if(/ด้านหน้า/.test(t))return {k:'blk',g,view:'front'};if(/กี่กล่อง|กี่ใบ|กี่ก้อน|มากที่สุด|น้อยที่สุด/.test(t))return {k:'blk',g,view:'count'};}
@@ -468,12 +470,14 @@ async function paperWait(){const sec=EP.paper||0;if(!EP.mode||!sec)return true;c
  const ring=el.querySelector('.pring'),num=el.querySelector('b');let t=0;const ms=sec*1000;
  while(t<ms&&!skip){await wait(100);if(my!==tok)break;if(!paused){t+=100;ring.style.setProperty('--p',(t/ms*360)+'deg');num.textContent=Math.ceil((ms-t)/1000);if(t%1000===0&&t<ms)SFX.pop(1);}}
  el.remove();return my===tok;}
+/* ข้อเงาซ้อนกัน: ตอบถูก หรือเฉลยแล้ว เงาค่อย ๆ กลายเป็นภาพสีให้เห็นว่ามีอะไรซ้อนอยู่ */
+const unSh=()=>st.querySelectorAll('.shg').forEach(g=>g.classList.add('lit'));
 async function answer(i,b){const s=QS;if(!s||s.lock)return;s.lock=true;hideSub=false;tok++;if(synth)synth.cancel();const q=s.q;
  if(MOCK){LOG[s.qi]={id:q.id,t:q.t,ok:i===q.ans};b.classList.add('picked');SFX.pop(3);s.btns.forEach(x=>x.disabled=true);await wait(650);if(!await paperWait())return;return quiz(s.qi+1);}
- if(i===q.ans){LOG[s.qi]={id:q.id,t:q.t,ok:s.tries===0,sec:Math.round((s.th||0)/1000)};b.classList.add('ok');SFX.ok();react('cheer');const [x,y]=centerOf(b);confetti(x,y,s.tries===0?26:14);if(s.tries===0&&!q.star&&!q.bonus)score.first++;if(q.bonus&&window.logFocus)logFocus(q.id,q.t,s.tries===0);if(s.tries===0&&q.star){SFX.sparkle();starBurst(x,y,8);}s.btns.forEach(x=>x.disabled=true);const xp=exPlan(q),sp=[rand(PRAISE),q.why];if(xp&&xp.k==='x2'){if(!EP.mode||s.tries>0||slowNow(s)){await say(sp[0]);await explain(xp,q.why);}else await offerX(xp,sp,q.why);}else if(xp)await Promise.all([say(sp),explain(xp)]);else await say(sp);}
+ if(i===q.ans){unSh();LOG[s.qi]={id:q.id,t:q.t,ok:s.tries===0,sec:Math.round((s.th||0)/1000)};b.classList.add('ok');SFX.ok();react('cheer');const [x,y]=centerOf(b);confetti(x,y,s.tries===0?26:14);if(s.tries===0&&!q.star&&!q.bonus)score.first++;if(q.bonus&&window.logFocus)logFocus(q.id,q.t,s.tries===0);if(s.tries===0&&q.star){SFX.sparkle();starBurst(x,y,8);}s.btns.forEach(x=>x.disabled=true);const xp=exPlan(q),sp=[rand(PRAISE),q.why];if(xp&&xp.k==='x2'){if(!EP.mode||s.tries>0||slowNow(s)){await say(sp[0]);await explain(xp,q.why);}else await offerX(xp,sp,q.why);}else if(xp)await Promise.all([say(sp),explain(xp)]);else await say(sp);}
  else{b.classList.add('no');b.disabled=true;SFX.no();react('oops');s.tries++;
   if(s.tries===1){setWho('jook');await say(['เจ้าจุกใบ้ให้นะ',q.hint||'ลองดูดี ๆ อีกครั้งนะ']);setWho('kla');s.lock=false;return;}
-  LOG[s.qi]={id:q.id,t:q.t,ok:false,sec:Math.round((s.th||0)/1000)};if(q.bonus&&window.logFocus)logFocus(q.id,q.t,false);s.btns.forEach(x=>x.disabled=true);s.btns[q.ans].classList.add('ok');{const xs=['ไม่เป็นไรนะ คำตอบคือ',labelSay(q.opts[q.ans])||'ข้อ '+'กขคง'[q.ans],q.why],xp=exPlan(q);if(xp&&xp.k==='x2'){await say(xs.slice(0,2));await explain(xp,q.why);}else if(xp)await Promise.all([say(xs),explain(xp)]);else await say(xs);}}
+  unSh();LOG[s.qi]={id:q.id,t:q.t,ok:false,sec:Math.round((s.th||0)/1000)};if(q.bonus&&window.logFocus)logFocus(q.id,q.t,false);s.btns.forEach(x=>x.disabled=true);s.btns[q.ans].classList.add('ok');{const xs=['ไม่เป็นไรนะ คำตอบคือ',labelSay(q.opts[q.ans])||'ข้อ '+'กขคง'[q.ans],q.why],xp=exPlan(q);if(xp&&xp.k==='x2'){await say(xs.slice(0,2));await explain(xp,q.why);}else if(xp)await Promise.all([say(xs),explain(xp)]);else await say(xs);}}
  await wait(700);if(!await paperWait())return;quiz(s.qi+1);}
 function save(gold){try{const k='kla-garden-v1';const d=JSON.parse(localStorage.getItem(k)||'{}');const o=d['EP'+EP.ep]||{};d['EP'+EP.ep]={seed:1,gold:!!(o.gold||gold),t:Date.now()};localStorage.setItem(k,JSON.stringify(d));}catch(e){}}
 async function finish(){if(EP.mode)return examEnd();phase='end';react('cheer');QS=null;prog(1);const need=EP.questions.filter(q=>!q.star&&!q.bonus).length;const gold=score.first>=need;save(gold);

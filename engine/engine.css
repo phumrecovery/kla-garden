@@ -372,3 +372,6 @@ button{font-family:inherit;cursor:pointer}
 .story{position:relative;background:#fff;border-radius:20px;padding:12px 22px;max-width:680px;width:100%;box-shadow:0 3px 0 rgba(0,0,0,.08);font-size:clamp(18px,2.8vw,26px);line-height:1.5;text-align:left}
 .story p{margin:0}.story .rep{position:absolute;right:8px;bottom:8px}
 .figbox.wide svg{width:min(92vw,540px);max-height:40vh}
+/* เงาซ้อนกัน (2 พ.ย. 69) */
+.shg{filter:brightness(0);opacity:.82;transition:filter 1.4s,opacity 1.4s}.shg.lit{filter:none;opacity:1}
+.art .fig.row3,.card .art .fig.row3{width:clamp(180px,27vw,300px)}   /* ตัวเลือกที่เป็นภาพเรียง 3 ภาพ (ข้อเงาซ้อนกัน มีอะไรบ้าง) */

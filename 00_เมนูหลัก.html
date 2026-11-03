@@ -626,21 +626,76 @@ function pluck(t,m,dur,v,bell){const o=AC.createOscillator(),o2=AC.createOscilla
   g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.006);g.gain.exponentialRampToValueAtTime(.0005,t+dur);g2.gain.value=bell?.35:.12;
   o.connect(g);o2.connect(g2).connect(g);g.connect(MG);o.start(t);o2.start(t);o.stop(t+dur+.05);o2.stop(t+dur+.05);}
 function bassN(t,m,dur,v){const o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.value=hz(m);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.02);g.gain.exponentialRampToValueAtTime(.0005,t+dur);o.connect(g).connect(MG);o.start(t);o.stop(t+dur+.05);}
-// SONG: per bar -> [chord root, melody slots]; null = rest
-const DAYS={per:8,bars:[[48,[76,79,84,79,81,79,76,null]],[41,[77,81,84,81,79,77,76,null]],[43,[74,79,83,79,81,79,77,74]],[48,[76,null,72,null,72,null,null,null]],
+// SONG: per = ช่องต่อห้อง (8 = เขบ็ตหนึ่ง 4/4 · 6 = 6/8 · 3 = วอลซ์ 3/4) · ห้อง = [โน้ตราก (เบส), ทำนอง, 'm' = คอร์ดไมเนอร์] · null/'-' = เว้น
+// เพลงใหม่ (3 พ.ย. 69 ผู้ปกครองชอบสไตล์กล่องดนตรี แต่ฟังซ้ำทุกสัปดาห์): แต่งเอง ทุกบรรยากาศมีเพลงของตัวเอง
+// เพลงที่มีท่อน B เล่น A → B → A (รอบสองเป็นเสียงระฆัง + เสียงประสานคู่แปด) · acc = ทำนองเครื่องประกอบ
+const PC={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+const nt=s=>s.trim().split(/\s+/).map(x=>{if(x==='-')return null;const m=/^([A-G])([#b]?)(\d)$/.exec(x);return (+m[3]+1)*12+PC[m[1]]+(m[2]==='#'?1:m[2]==='b'?-1:0);});
+const SG2=(per,acc,A,B)=>({per,acc,A:A.map(([r,s,q])=>[r,nt(s),q]),B:B&&B.map(([r,s,q])=>[r,nt(s),q])});
+const DAYS={per:8,acc:'boom',A:[[48,[76,79,84,79,81,79,76,null]],[41,[77,81,84,81,79,77,76,null]],[43,[74,79,83,79,81,79,77,74]],[48,[76,null,72,null,72,null,null,null]],
   [45,[81,84,81,79,76,79,81,null]],[41,[77,81,79,77,76,77,79,null]],[43,[79,83,86,83,81,79,77,74]],[48,[72,76,79,84,null,null,null,null]]]};
-const LULL={per:3,bars:[[41,[72,69,72]],[36,[74,72,67]],[38,[69,74,72]],[34,[70,69,67]],[41,[72,69,72]],[36,[76,74,72]],[41,[69,67,65]],[41,[65,null,null]]]};
-// mood -> [song, beats-per-minute, transpose, bell]
-const TUNE=[[DAYS,92,0],[DAYS,100,0],[DAYS,108,0],[DAYS,84,-5],[DAYS,100,0],[LULL,76,0],[LULL,66,0],[DAYS,96,-2],[DAYS,112,0],[DAYS,92,5,1],[LULL,66,5,1],[DAYS,126,0,1]];
+const LULL={per:3,acc:'lull',A:[[41,[72,69,72]],[36,[74,72,67]],[38,[69,74,72]],[34,[70,69,67]],[41,[72,69,72]],[36,[76,74,72]],[41,[69,67,65]],[41,[65,null,null]]]};
+/* ดอกไม้บาน: วอลซ์เบา ๆ F เมเจอร์ */
+const BLOSSOM=SG2(3,'waltz',[[41,'F5 A5 C6'],[48,'E5 G5 E5'],[50,'D5 F5 A5','m'],[46,'Bb5 A5 G5'],[41,'A5 F5 C5'],[48,'G5 E5 C5'],[41,'F5 A5 G5'],[41,'F5 - -']],
+  [[46,'D6 C6 Bb5'],[41,'C6 A5 F5'],[43,'Bb5 A5 G5','m'],[48,'E5 G5 C6'],[46,'D6 C6 Bb5'],[41,'A5 C6 A5'],[48,'G5 A5 E5'],[41,'F5 - -']]);
+/* อากาศแจ่มใส: กระโดดร่าเริง G เมเจอร์ */
+const SUNNY=SG2(8,'alb',[[43,'G5 - B5 D6 B5 - G5 -'],[48,'E5 G5 C6 - B5 A5 G5 -'],[50,'F#5 A5 D6 - C6 B5 A5 -'],[43,'B5 A5 G5 D5 G5 - - -'],
+  [52,'E5 G5 B5 - A5 G5 E5 -','m'],[48,'C6 - B5 - A5 - G5 -'],[50,'A5 B5 C6 D6 C6 B5 A5 F#5'],[43,'G5 - D5 - G5 - - -']],
+  [[48,'E6 - D6 C6 - B5 C6 -'],[43,'D6 - B5 G5 - A5 B5 -'],[45,'C6 B5 A5 - E5 A5 C6 -','m'],[50,'D6 C6 B5 A5 F#5 - D5 -'],
+  [48,'E5 G5 C6 E6 D6 C6 B5 -'],[43,'B5 D6 B5 G5 D5 G5 B5 -'],[50,'A5 - F#5 A5 D6 - C6 -'],[43,'B5 G5 - D5 G5 - - -']]);
+/* ฝนตกพรำ ๆ: หยดน้ำทีละหยด A ไมเนอร์เพนทาโทนิก */
+const RAIN=SG2(8,'drop',[[45,'E6 - C6 - A5 - - -','m'],[41,'F5 A5 C6 - A5 - - -'],[48,'G5 - E5 - C6 - G5 -'],[43,'D6 - B5 - G5 - - -'],
+  [45,'A5 C6 E6 - D6 C6 A5 -','m'],[41,'C6 - A5 F5 A5 - C6 -'],[40,'E5 G5 B5 - G5 - E5 -','m'],[45,'A5 - - - E5 - A5 -','m']],
+  [[41,'A5 - C6 - F6 - E6 -'],[48,'E6 D6 C6 - G5 - - -'],[43,'D6 - G5 - B5 - D6 -'],[45,'C6 - A5 - E5 - - -','m'],
+  [41,'F5 A5 C6 A5 F5 - - -'],[48,'G5 C6 E6 C6 G5 - - -'],[40,'G5 - B5 - E6 - D6 -','m'],[45,'C6 B5 A5 - - - - -','m']]);
+/* ฟ้าหลังฝน รุ้งกินน้ำ: 6/8 ไล่บันไดขึ้นเหมือนสายรุ้ง C เมเจอร์ */
+const RAINBOW=SG2(6,'arp',[[48,'C5 E5 G5 C6 - G5'],[45,'A5 - C6 E6 - C6','m'],[41,'F5 A5 C6 A5 - F5'],[43,'G5 B5 D6 - B5 G5'],
+  [48,'E5 G5 C6 E6 - C6'],[41,'A5 C6 A5 F5 - A5'],[43,'B5 - D6 G5 A5 B5'],[48,'C6 - - G5 - -']],
+  [[45,'E6 - C6 A5 - C6','m'],[52,'B5 - G5 E5 - G5','m'],[41,'A5 C6 A5 F5 - A5'],[48,'G5 C6 E6 - D6 C6'],
+  [50,'D6 - A5 F5 - A5','m'],[43,'B5 D6 B5 G5 - B5'],[41,'A5 - C6 B5 - G5'],[48,'C6 - - - - -']]);
+/* ท้องฟ้าสีสวย: ลมพัดสบาย D เมเจอร์ */
+const BREEZE=SG2(8,'alb',[[50,'F#5 - A5 - D6 - C#6 D6'],[45,'E6 - C#6 - A5 - - -'],[47,'D6 - B5 - F#5 - B5 -','m'],[43,'D6 C#6 B5 - G5 - - -'],
+  [50,'A5 F#5 D5 F#5 A5 - D6 -'],[52,'E6 D6 B5 - G5 - E5 -','m'],[45,'A5 B5 C#6 - E6 - C#6 -'],[50,'D6 - - - A5 - - -']],
+  [[43,'B5 - D6 - B5 G5 - -'],[50,'A5 - F#5 - D5 F#5 A5 -'],[52,'G5 - B5 - E6 - D6 -','m'],[45,'C#6 - E6 - C#6 A5 - -'],
+  [43,'B5 D6 B5 G5 D5 G5 B5 -'],[50,'A5 D6 A5 F#5 D5 F#5 A5 -'],[45,'E5 A5 C#6 E6 D6 C#6 B5 A5'],[50,'D6 - - - - - - -']]);
+/* นกน้อยบินเล่น/ดาวตก: เสียงนกร้องสลับเสียงสูง F เมเจอร์ */
+const BIRDS=SG2(8,'boom',[[41,'C6 A5 C6 A5 F5 - A5 -'],[46,'D6 Bb5 D6 Bb5 F5 - Bb5 -'],[48,'E6 C6 E6 C6 G5 - C6 -'],[41,'F6 - C6 - A5 - F5 -'],
+  [50,'A5 D6 A5 F5 D5 F5 A5 -','m'],[46,'Bb5 D6 F6 - D6 Bb5 - -'],[48,'G5 C6 E6 - C6 - G5 -'],[41,'A5 C6 F6 - - - - -']],
+  [[46,'D6 - C6 - Bb5 - A5 -'],[41,'C6 - A5 - F5 - A5 -'],[48,'G5 A5 Bb5 C6 D6 C6 Bb5 G5'],[41,'A5 - C6 - F6 - - -'],
+  [50,'F6 E6 D6 - A5 - D6 -','m'],[46,'D6 C6 Bb5 - F5 - Bb5 -'],[48,'C6 E6 G6 - E6 C6 - -'],[41,'F6 C6 A5 C6 F6 - - -']]);
+/* ฤดูใบไม้ร่วง: วอลซ์ใบไม้ปลิว D ดอเรียน */
+const AUTUMN=SG2(3,'waltz',[[50,'A5 F5 D5','m'],[43,'B5 A5 G5'],[48,'E5 G5 C6'],[41,'A5 G5 F5'],[46,'D6 Bb5 F5'],[41,'C6 A5 F5'],[45,'E5 A5 C#6'],[50,'D6 - -','m']],
+  [[41,'C6 A5 C6'],[48,'G5 E5 G5'],[50,'F5 A5 D6','m'],[45,'E6 C#6 A5'],[46,'D6 C6 Bb5'],[43,'B5 A5 G5'],[45,'A5 E5 C#5'],[50,'D5 - -','m']]);
+/* ลมแรง ว่าวลอยฟ้า: 6/8 ควบม้าเร็ว G เมเจอร์ */
+const KITE=SG2(6,'arp',[[43,'G5 - B5 D6 - B5'],[50,'A5 - F#5 D5 - F#5'],[43,'B5 - D6 B5 - G5'],[50,'A5 B5 A5 F#5 - D5'],
+  [48,'E5 - G5 C6 - E6'],[43,'D6 - B5 G5 - B5'],[50,'A5 - D6 C6 - A5'],[43,'G5 - - D5 - -']],
+  [[52,'E6 - B5 G5 - B5','m'],[48,'C6 - E6 C6 - G5'],[43,'B5 - D6 B5 - G5'],[50,'A5 - F#5 A5 - D6'],
+  [52,'G5 - B5 E6 - D6','m'],[48,'C6 - G5 E5 - G5'],[50,'F#5 - A5 D6 C6 A5'],[43,'G5 - - - - -']]);
+/* ฤดูหนาว หิมะโปรยปราย: ระฆังช้า ๆ E เมเจอร์ */
+const SNOW=SG2(3,'waltz',[[52,'B5 G#5 E6'],[47,'D#6 B5 F#5'],[49,'E6 C#6 G#5','m'],[45,'C#6 B5 A5'],[52,'G#5 B5 E6'],[45,'C#6 E6 C#6'],[47,'B5 F#5 D#6'],[52,'E6 - -']],
+  [[45,'E6 C#6 A5'],[52,'B5 G#5 E5'],[49,'G#5 C#6 E6','m'],[47,'D#6 - B5'],[45,'C#6 B5 A5'],[52,'G#5 B5 E6'],[47,'D#6 C#6 B5'],[52,'E5 - -']]);
+/* งานฉลองรอบกองไฟ: เพนทาโทนิกจังหวะสนุก C เมเจอร์ */
+const PARTY=SG2(8,'alb',[[48,'C6 - C6 A5 G5 - E5 G5'],[41,'A5 - A5 G5 E5 - G5 A5'],[43,'G5 - D6 - C6 D6 - -'],[48,'E6 D6 C6 - G5 - - -'],
+  [45,'A5 C6 - A5 G5 E5 - G5','m'],[41,'C6 - A5 - C6 D6 - -'],[43,'D6 E6 D6 C6 A5 - G5 -'],[48,'C6 - G5 - C6 - - -']],
+  [[41,'A5 A5 C6 - A5 G5 - -'],[48,'G5 G5 E6 - D6 C6 - -'],[45,'E6 - D6 C6 A5 - C6 -','m'],[43,'D6 - - G5 A5 C6 D6 -'],
+  [41,'C6 A5 G5 A5 C6 - D6 -'],[48,'E6 - D6 C6 G5 - E5 -'],[43,'D5 E5 G5 A5 C6 - D6 -'],[48,'C6 - - - G5 - C6 -']]);
+// บรรยากาศ (0 เริ่มต้น · 1–11 สัปดาห์) -> [เพลง, จังหวะต่อนาที, ทรานสโพส, เสียงระฆัง] · per 6/8 นับจังหวะเป็นเขบ็ตคู่ (slot = 60/bpm/2)
+const TUNE=[[DAYS,92,0],[BLOSSOM,120,0],[SUNNY,104,0],[RAIN,84,0],[RAINBOW,100,0],[BREEZE,96,0],[BIRDS,104,0,1],[AUTUMN,108,0],[KITE,120,0],[SNOW,84,0,1],[LULL,66,5,1],[PARTY,128,0,1]];
 let mStep=0,mNext=0,mTimer=null,mTune=null;
+const secs=s=>s.B?[[s.A,0],[s.B,0],[s.A,1]]:[[s.A,0]];
 function tick(){const tn=TUNE[Math.max(curMood,0)];if(tn!==mTune){mTune=tn;mStep=0;mNext=Math.max(mNext,AC.currentTime+.1);}
-  const [song,bpm,tr,bell]=tn,slot=song.per===8?60/bpm/2:60/bpm;
-  while(mNext<AC.currentTime+.25){const n=song.per*song.bars.length,b=Math.floor(mStep/song.per)%song.bars.length,k=mStep%song.per,[root,mel]=song.bars[b],m=mel[k];
-    if(m!=null)pluck(mNext,m+tr,bell?1.6:1.1,.22,bell);
-    if(k===0)bassN(mNext,root+tr,song.per===8?slot*3.5:slot*2.8,.2);
-    if(song.per===8&&k===4)bassN(mNext,root+7+tr,slot*3.5,.14);
-    if(song.per===3&&k===1){pluck(mNext,root+12+4+tr,.9,.06);pluck(mNext,root+12+7+tr,.9,.06);}
-    mNext+=slot;mStep=(mStep+1)%n;}}
+  const [song,bpm0,tr,bell]=tn,bpm=bpm0*(DARK.includes(skyPhase())?.88:1),slot=song.per===3?60/bpm:60/bpm/2,SC=secs(song),nb=SC.reduce((a,[b])=>a+b.length,0);   /* กลางคืนช้าลงหน่อย */
+  while(mNext<AC.currentTime+.25){let b=Math.floor(mStep/song.per)%nb,si=0;while(b>=SC[si][0].length){b-=SC[si][0].length;si++;}
+    const k=mStep%song.per,[root0,mel,q]=SC[si][0][b],var2=SC[si][1],root=root0+tr,m=mel[k],th=q==='m'?3:4;
+    if(m!=null){pluck(mNext,m+tr,bell||var2?1.6:1.1,.22,bell||var2);if(var2)pluck(mNext,m+tr+12,.8,.05,1);}
+    const A=song.acc;
+    if(A==='boom'||A==='lull'){if(k===0)bassN(mNext,root,song.per===8?slot*3.5:slot*2.8,.2);if(song.per===8&&k===4)bassN(mNext,root+7,slot*3.5,.14);
+      if(A==='lull'&&k===1){pluck(mNext,root+12+4,.9,.06);pluck(mNext,root+12+7,.9,.06);}}
+    else if(A==='alb'){if(k===0)bassN(mNext,root,slot*3.5,.18);if(k===4)bassN(mNext,root+7,slot*3.5,.12);if(k%2)pluck(mNext,root+12+[th,7,th,12][k>>1],.5,.05);}
+    else if(A==='arp'){if(k===0)bassN(mNext,root,slot*5.5,.18);pluck(mNext,root+12+[0,th,7,12,7,th][k],.45,.045);}
+    else if(A==='waltz'){if(k===0)bassN(mNext,root,slot*.95,.2);else{pluck(mNext,root+12+th,.45,.055);pluck(mNext,root+12+7,.45,.055);}}
+    else if(A==='drop'){if(k===0)bassN(mNext,root,slot*7,.16);if(k===3||k===7)pluck(mNext,root+24+(k===3?7:th),.25,.04,1);}   /* หยดน้ำ: ระฆังสั้น ๆ */
+    mNext+=slot;mStep=(mStep+1)%(nb*song.per);}}
 function musicOn(){if(!MS.on)return;ac();if(AC.state==='suspended')AC.resume();if(!mTimer){mNext=AC.currentTime+.15;mTimer=setInterval(tick,60);}setVols();}
 function musicOff(){if(mTimer){clearInterval(mTimer);mTimer=null;}setVols();}
 const syncVolUI=()=>{$('vM').value=MS.m;$('vS').value=MS.s;$('bOn').textContent=MS.on?'⏸ ปิดเพลง':'▶ เปิดเพลง';$('bMus').textContent=MS.on&&MS.m>0?'🎵':'🔇';};

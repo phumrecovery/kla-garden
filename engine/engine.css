@@ -375,3 +375,4 @@ button{font-family:inherit;cursor:pointer}
 /* เงาซ้อนกัน (2 พ.ย. 69) */
 .shg{filter:brightness(0);opacity:.82;transition:filter 1.4s,opacity 1.4s}.shg.lit{filter:none;opacity:1}
 .art .fig.row3,.card .art .fig.row3{width:clamp(180px,27vw,300px)}   /* ตัวเลือกที่เป็นภาพเรียง 3 ภาพ (ข้อเงาซ้อนกัน มีอะไรบ้าง) */
+.figbox.tall svg{max-height:50vh}   /* แผนผังครอบครัว 4 รุ่น */

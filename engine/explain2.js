@@ -823,6 +823,37 @@ R.fold=async(p,G)=>{const S=2,ox=300-PW/2*S,oy=30,P=(d,c,par)=>G.E('path',{d,fil
  const ts=[...new Set(p.holes.map(h=>h[0]))],SAY={semi:'ครึ่งวงกลมที่ตัดตรงรอยพับ กลายเป็นวงกลมเต็มวง',sq:'สี่เหลี่ยมมีสองรู ซ้ายกับขวา',tri:'สามเหลี่ยมมีสองรู และหันกลับข้างกัน',notch:'รอยบากเกิดทั้งขอบซ้ายและขอบขวา'};
  for(const t of ts){if(!await G.say([SAY[t]]))return;}
  await G.fin('คลี่แล้วได้ภาพนี้',['คลี่แล้วได้ภาพนี้'],[root]);};
+/* ---------- พับกระดาษ 1–2 ครั้ง (ชุด 3 พ.ย. 69): คลี่ทีละครั้ง รอยตัดเกิดอีกฝั่งเหมือนเงาในกระจก · นับรู ----------
+   ข้อมูลจาก เครื่องมือสร้างเนื้อหา/พับกระดาษ.py: mode 'v' พับแนวตั้ง · 'h' แนวนอน · 'q' พับ 2 ครั้ง · cuts = รูปหลายเหลี่ยมในชิ้นที่พับ (กระดาษเต็ม 120) */
+const F2P=120,F2M=60,F2AX={v:['x'],h:['y'],q:['x','y']};
+function f2hole(G,poly,mode,par,k){const ax=F2AX[mode],near=(a,b)=>Math.abs(a-b)<.2,onF=(a,b)=>ax.some(x=>{const i=x==='x'?0:1;return near(a[i],F2M)&&near(b[i],F2M);}),
+  onE=(a,b)=>[0,1].some(i=>[0,F2P].some(v=>near(a[i],v)&&near(b[i],v))),out=v=>near(v,0)?v-2.5:near(v,F2P)?v+2.5:v;
+ G.E('path',{d:'M'+poly.map(([x,y])=>out(x)+' '+out(y)).join(' L')+' Z',fill:'#cbd5e1'},par);
+ let d='';poly.forEach((a,i)=>{const b=poly[(i+1)%poly.length];if(!onF(a,b)&&!onE(a,b))d+='M'+a[0]+' '+a[1]+' L'+b[0]+' '+b[1]+' ';});
+ if(d)G.E('path',{d,fill:'none',stroke:INK,'stroke-width':2/k,'stroke-linejoin':'round'},par);}
+R.fold2=async(p,G)=>{const q=p.mode==='q',k=2.25,ox=300-F2M*k,oy=(330-F2P*k)/2,rx=c=>c.map(([x,y])=>[F2P-x,y]),ry=c=>c.map(([x,y])=>[x,F2P-y]);
+ const root=G.E('g',{transform:'translate('+ox+' '+oy+') scale('+k+')'}),sheet=(x,y,w,h,par)=>G.E('rect',{x,y,width:w,height:h,fill:'#fff7d6',stroke:INK,'stroke-width':2.5/k},par);
+ const part=(x,y,w,h,cs)=>{const g=G.E('g',{},root);sheet(x,y,w,h,g);cs.forEach(c=>f2hole(G,c,p.mode,g,k));return g;};
+ /* ชิ้นที่ยังพับอยู่ + ส่วนที่จะคลี่ออก (เริ่มแบบพับเก็บ scale 0 ที่รอยพับ) */
+ let g1,g2;
+ if(q){part(0,0,F2M,F2M,p.cuts);g1=part(0,F2M,F2M,F2M,p.cuts.map(ry));g2=part(F2M,0,F2M,F2P,p.cuts.map(rx).concat(p.cuts.map(c=>ry(rx(c)))));}
+ else if(p.mode==='v'){part(0,0,F2M,F2P,p.cuts);g2=part(F2M,0,F2M,F2P,p.cuts.map(rx));}
+ else{part(0,0,F2P,F2M,p.cuts);g1=part(0,F2M,F2P,F2M,p.cuts.map(ry));}
+ const hide=(g,ax)=>{if(!g)return;g.style.transformBox='view-box';g.style.transformOrigin=ax==='y'?'0px '+F2M+'px':F2M+'px 0px';g.style.transform=ax==='y'?'scaleY(0)':'scaleX(0)';};
+ hide(g1,'y');hide(g2,'x');
+ const fl=[];if(p.mode!=='h')fl.push(G.E('line',{x1:F2M,y1:-5,x2:F2M,y2:F2P+5,stroke:'#e11d48','stroke-width':1.6,'stroke-dasharray':'4 3'},root));
+ if(p.mode!=='v')fl.push(G.E('line',{x1:-5,y1:F2M,x2:F2P+5,y2:F2M,stroke:'#e11d48','stroke-width':1.6,'stroke-dasharray':'4 3'},root));
+ if(!await G.step(q?'พับ 2 ครั้ง กระดาษซ้อนกัน 4 ชั้น':'พับครึ่ง กระดาษซ้อนกัน 2 ชั้น',[q?'กระดาษพับสองครั้ง ซ้อนกันสี่ชั้น':'กระดาษพับครึ่ง ซ้อนกันสองชั้น','ตัดทีเดียว รอยตัดเกิดทุกชั้น'],600))return;
+ const open=async(g,ax,c,sy)=>{g.style.transition=G.F?'none':'transform 1.5s ease-in-out';g.style.transform=ax==='y'?'scaleY(1)':'scaleX(1)';G.sfx('whoosh');return await G.step(c,sy,1600);};
+ if(q){if(!await open(g1,'y','คลี่ครั้งที่ 1',['คลี่ครั้งที่หนึ่ง รอยตัดเกิดอีกฝั่ง เหมือนเงาในกระจก']))return;
+  if(!await open(g2,'x','คลี่ครั้งที่ 2',['คลี่ครั้งที่สอง รอยตัดเพิ่มขึ้นอีกเท่าตัว']))return;}
+ else if(!await open(g1||g2,g1?'y':'x','คลี่ออก',['คลี่ออกมา รอยตัดเกิดอีกฝั่ง เหมือนเงาในกระจก']))return;
+ const touch=(c,i)=>Math.max(...c.map(pt=>pt[i]))>=F2M-.2,ax=F2AX[p.mode];
+ if(q&&p.cuts.some(c=>touch(c,0)&&touch(c,1))){if(!await G.say(['รอยที่ตัดตรงมุมพับ กลายเป็นรูเดียวตรงกลางแผ่น']))return;}
+ else if(p.cuts.some(c=>ax.some(a=>touch(c,a==='x'?0:1)))){if(!await G.say(['รอยที่ตัดตรงรอยพับ ต่อกันเป็นรูเดียว']))return;}
+ if(p.cnt&&p.holes){let n=0;for(const [x,y] of p.holes){n++;G.tag(ox+x*k,oy+y*k,n,'#ec4899',13);G.sfx('pop',n%12);G.cap('นับได้ '+n+' รู');if(!await G.say([String(n)]))return;}
+  await G.fin('มีทั้งหมด '+n+' รู',['มีทั้งหมด '+n+' รู'],[root]);return;}
+ await G.fin('คลี่แล้วได้ภาพนี้',['คลี่แล้วได้ภาพนี้'],[root]);};
 /* ---------- ชุดคำสั่งลูกศร: ให้ลิงเดินตามทีละชุด นับผลไม้ ---------- */
 R.path=async(p,G)=>{const z=56,gx=24,gy=42,cx=(a,b)=>[gx+a*z+z/2,gy+b*z+z/2],MV={'→':[1,0],'←':[-1,0],'↑':[0,-1],'↓':[0,1]};
  for(let b=0;b<p.h;b++)for(let a=0;a<p.w;a++)G.E('rect',{x:gx+a*z,y:gy+b*z,width:z,height:z,rx:6,fill:(a+b)%2?'#eef7e4':'#f7fbef',stroke:'#c9d8b8','stroke-width':2});

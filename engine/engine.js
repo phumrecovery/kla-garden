@@ -298,7 +298,7 @@ function vis(v,still){const d=h('div','vis');d._fx=[];d._later=[];const at=still
    const mv=box.querySelector('.mv');let x=st[0],y=st[1];const steps=path.map(c=>{x+=c==='→'?1:c==='←'?-1:0;y+=c==='↓'?1:c==='↑'?-1:0;return [x,y];});const sp=v.speed||.7;
    const put=(i)=>{const [px,py]=steps[i];mv.style.transform='translate('+(px*z+z/2)+'px,'+(py*z+z/2)+'px)';chips.forEach((c,j)=>c.classList.toggle('on',j===i));chips[i].classList.add('done');};
    if(v.go!==false){if(still){mv.style.transition='none';put(steps.length-1);}else steps.forEach((_,i)=>later(at+.6+i*sp,()=>{put(i);SFX.pop(i);}));}}}
- else if(T==='fig'){const box=h('div','figbox pop'+(v.wide?' wide':''),figSVG(v.fig));d.append(box);const svg=box.querySelector('svg');const hl=v.hl||[],sp=v.speed||.8;
+ else if(T==='fig'){const box=h('div','figbox pop'+(v.wide?' wide':'')+(v.tall?' tall':''),figSVG(v.fig));d.append(box);const svg=box.querySelector('svg');const hl=v.hl||[],sp=v.speed||.8;
   const cnt=h('div','res pop','');if(hl.length)d.append(cnt);cnt.style.visibility='hidden';
   hl.forEach((pts,i)=>{const go=()=>{svg.querySelectorAll('.hlp').forEach(e=>e.classList.add('old'));const p=document.createElementNS('http://www.w3.org/2000/svg','polygon');p.setAttribute('points',pts.map(x=>x.join(',')).join(' '));p.setAttribute('class','hlp');svg.prepend(p);cnt.style.visibility='visible';cnt.textContent=(v.unit||'รูปที่ ')+(i+1);SFX.pop(i);};if(!still)later(at+.5+i*sp,go);});
   if(v.text){const tx=h('div','bignum pop',v.text);const tt=still?0:at+.6+hl.length*sp;tx.style.animationDelay=tt+'s';d.append(tx);later(tt,()=>{cnt.style.display='none';SFX.chime();});}}

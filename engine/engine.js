@@ -323,6 +323,23 @@ function vis(v,still){const d=h('div','vis');d._fx=[];d._later=[];const at=still
   const run=async fast=>{const my=tok;const W=fast?async()=>false:async ms=>{let q=0;while(q<ms){await wait(50);if(my!==tok||!d.isConnected)return false;if(!paused)q+=50;}return true;};
     const p={net:v.net,nums:v.nums,pair:v.pair,col:v.col,pre:v.pre};if(v.net==='cube')await exCube(p,sc,cap,W);else if(v.net==='cylinder')await exCyl(sc,cap,W);else await exCone(sc,cap,W);};
   if(still){cap.textContent=v.cap||'';run(true);}else{later(at+.4,()=>run(false));d._dur=v.net==='cube'?11.5:8;}}
+ else if(T==='ftree'){/* ผังครอบครัวค่อย ๆ ขยาย (ฉากสอน 4 พ.ย. 69): คนโผล่ทีละรุ่นตามคำพูด ป้ายคำเรียกเหนือกรอบ เน้นคนที่พูดถึง กล้องซูมตาม
+   เดิมผังเต็ม 15 คนขึ้นทีเดียว ผู้ปกครองว่าเด็กและผู้ใหญ่จับรายละเอียดไม่ทัน · ข้อมูลจาก เครื่องมือสร้างเนื้อหา/ผังครอบครัว.py scene() */
+  const box=h('div','figbox pop wide tall');box.innerHTML='<svg class="fig ftree" viewBox="'+v.vb0.join(' ')+'">'+v.raw+'<g class="ftags"></g></svg>';d.append(box);
+  const svg=box.querySelector('svg'),tg=svg.querySelector('.ftags'),shown=new Set(v.pre||[]),NSs='http://www.w3.org/2000/svg',tags={};let cur=v.vb0.slice();
+  const upd=()=>{svg.querySelectorAll('.fn').forEach(g=>g.style.opacity=shown.has(g.dataset.k)?1:0);svg.querySelectorAll('.fl').forEach(l=>l.style.opacity=l.dataset.need.split(' ').every(k=>shown.has(k))?1:0);};
+  const tag=(k,t)=>{if(tags[k])tags[k].remove();const [x,y]=v.pos[k],g=document.createElementNS(NSs,'g');
+   g.innerHTML='<rect y="'+(y-23)+'" height="21" rx="10.5" fill="#ec4899"/><text x="'+x+'" y="'+(y-12)+'" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="bold" fill="#fff">'+t+'</text>';
+   tg.append(g);tags[k]=g;/* กว้างตามตัวหนังสือจริง ไม่เกินกรอบคน (74) ป้ายของคนที่อยู่ติดกันจะได้ไม่ชนกัน */
+   const tx=g.querySelector('text');let tw=0;try{tw=tx.getComputedTextLength();}catch(e){}if(!tw)tw=[...t].length*9;if(tw>62)tx.setAttribute('textLength',62),tx.setAttribute('lengthAdjust','spacingAndGlyphs'),tw=62;
+   const w=Math.max(40,tw+12),r=g.querySelector('rect');r.setAttribute('x',x-w/2);r.setAttribute('width',w);if(!still)g.animate([{opacity:0,transform:'translateY(6px)'},{opacity:1,transform:'none'}],{duration:400});};
+  const tween=to=>{if(still){cur=to;svg.setAttribute('viewBox',to.join(' '));return;}const from=cur.slice(),t0=performance.now();
+   const f=now=>{const q=Math.min(1,(now-t0)/900),e=q<.5?2*q*q:1-Math.pow(-2*q+2,2)/2;cur=from.map((a,i)=>a+(to[i]-a)*e);svg.setAttribute('viewBox',cur.join(' '));if(q<1&&d.isConnected)requestAnimationFrame(f);};requestAnimationFrame(f);};
+  Object.entries(v.pretag||{}).forEach(([k,t])=>tag(k,t));upd();
+  v.steps.forEach(st=>later(st.t,()=>{st.show.forEach(k=>shown.add(k));upd();
+   if(!still)st.show.forEach(k=>{const g=svg.querySelector('.fn[data-k="'+k+'"]');if(g){g.style.transformBox='fill-box';g.style.transformOrigin='center';g.animate([{transform:'scale(.5)',opacity:0},{transform:'scale(1)',opacity:1}],{duration:450,easing:'cubic-bezier(.3,1.5,.5,1)'});}});
+   svg.querySelectorAll('.fn').forEach(g=>g.classList.toggle('hl',st.hl.includes(g.dataset.k)));Object.entries(st.tag||{}).forEach(([k,t])=>tag(k,t));tween(st.vb);if(!still)SFX.pop(3);}));
+  d._dur=(v.steps.length?v.steps[v.steps.length-1].t:0)+1.5;}
  else if(T==='memo'){/* จำภาพ: แสดงครบ sec วินาที แล้วของชิ้นหนึ่งหายไป (ในคำถามก็นับถอยหลังด้วย) */const sec=v.sec||5,its=v.items,r=h('div','row memo'),cs=its.map((e,i)=>{const c=h('div','card pop','<div class="e">'+e+'</div>');c.style.animationDelay=(i*.08)+'s';r.append(c);return c;});
   const bar=h('div','memob pop','👀 จำให้ดีนะ '+sec);d.append(bar,r);const preview=location.hash==='#all';
   const hide=()=>{if(v.gone!=null){const c=cs[v.gone];c.innerHTML='<div class="e">❓</div>';c.classList.add('gone2');}bar.textContent='อะไรหายไป?';bar.classList.add('ask');};

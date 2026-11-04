@@ -764,17 +764,30 @@ R.code=async(p,G)=>{const n=p.tab.length,cw=Math.min(66,560/n),x=i=>300-(n*cw)/2
  hl.setAttribute('opacity',0);const code=L.map(c=>num[c]).join(' ');
  await G.fin(p.w+' = '+code,p.dir==='f'?[p.w+' เขียนเป็น '+code]:['อ่านว่า',p.w],out);};
 /* ---------- รูปซ้อนทับ: ยกออกมาทีละชั้น ---------- */
-R.layer=async(p,G)=>{const ox=14,oy=60,els=[];
- p.sh.forEach(([k,x,y,r,c])=>els.push(G.E('path',{d:shPath(k,ox+x,oy+y,r),fill:c,stroke:INK,'stroke-width':3,'stroke-linejoin':'round'})));
- const nest=!!p.nest,order=nest?[0,1,2]:[2,1,0],LB=nest?['นอกสุด','ตรงกลาง','ข้างในสุด']:['ชั้นบนสุด','ชั้นกลาง','ชั้นล่างสุด'],rowY=i=>68+i*96;
- const SAY=nest?[n=>n+' อยู่นอกสุด ล้อมรูปอื่นไว้',n=>n+' อยู่ตรงกลาง',n=>n+' อยู่ข้างในสุด']:[n=>n+' อยู่ชั้นบนสุด เห็นเส้นครบ ไม่มีรูปไหนบัง',n=>n+' อยู่ชั้นกลาง',n=>n+' อยู่ชั้นล่างสุด ถูกรูปอื่นทับ'];
- if(!await G.step(nest?'ดูว่ารูปไหนล้อมรูปไหน':'ยกรูปออกมาทีละชั้น',[nest?'ดูว่ารูปไหนล้อมรูปไหนไว้':'ลองยกรูปออกมาทีละชั้น จากข้างบนลงมา'],500))return;
- const rows=[];
- for(let s=0;s<3;s++){const i=order[s],[k,x,y,r,c]=p.sh[i],nm=p.nm[i];G.glow(els[i],'#ec4899');
-  const g=G.E('g',{});G.E('path',{d:shPath(k,0,0,Math.min(r,36)),fill:c,stroke:INK,'stroke-width':3,'stroke-linejoin':'round'},g);g.style.transform='translate('+(ox+x)+'px,'+(oy+y)+'px)';
-  if(!nest)G.fade(els[i],.25,500);G.move(g,360,rowY(s),700);G.sfx('whoosh');G.pop(G.tx(500,rowY(s),LB[s],{fs:20,w:700,fill:'#7c3aed'}));rows.push(g);G.cap(LB[s]+': '+nm);
-  if(!await G.say([SAY[s](nm)]))return;els[i].style.filter='';}
- const want={top:0,mid:1,bottom:2,out:0,in:2}[p.ask];await G.fin(LB[want]+': '+p.nm[order[want]],['คำตอบคือ'+p.nm[order[want]]],[rows[want]]);};
+/* รูปซ้อนทับ (ทบทวน 4 พ.ย. 69): 1) ชี้จุดที่ทับกันทีละจุด "ตรงนี้ A ทับ B" 2) ยกรูปออกทีละชั้นจากบนสุด
+   รูปข้างล่างจะโผล่ให้เห็นเต็มรูป แล้ววางเรียงทางขวาเป็น ชั้นบนสุด / ชั้นกลาง / ชั้นล่างสุด
+   ข้อแบบซ้อนข้างใน: ไล่ขอบรูปจากนอกสุดเข้าไปข้างในสุด แล้วแยกออกมาเรียงจากใหญ่ไปเล็ก
+   เดิมยกรูปออกมาเรียงแล้วบอกว่า "เห็นเส้นครบ" เฉย ๆ ไม่ได้ชี้ให้ดูว่าทับกันตรงไหน */
+R.layer=async(p,G)=>{const K=1.18,ox=14,oy=8,X=v=>ox+v*K,Y=v=>oy+v*K,els=[],nest=!!p.nest;
+ p.sh.forEach(([k,x,y,r,c])=>{const e=G.E('path',{d:shPath(k,X(x),Y(y),r*K),fill:c,stroke:INK,'stroke-width':3,'stroke-linejoin':'round'});els.push(e);});
+ const LB=nest?['นอกสุด','ตรงกลาง','ข้างในสุด']:['ชั้นบนสุด','ชั้นกลาง','ชั้นล่างสุด'],order=nest?[0,1,2]:[2,1,0],slotY=s=>62+s*100;
+ const slot=s=>{G.pop(G.tx(530,slotY(s)+46,LB[s],{fs:19,w:700,fill:'#7c3aed'}));};
+ const lift=(i,s)=>{const [k,x,y,r]=p.sh[i],e=els[i],sc=Math.min(1,40/(r*K));e.parentNode.append(e);e.style.transformBox='fill-box';e.style.transformOrigin='center';
+  e.style.transition=G.F?'none':'transform .9s ease-in-out';e.style.transform='translate('+(430-X(x))+'px,'+(slotY(s)-Y(y))+'px) scale('+sc+')';G.sfx('whoosh');};
+ if(!nest){
+  if(!await G.step('ดูตรงที่รูปทับกัน',['ดูตรงที่รูปทับกันนะ รูปที่อยู่ข้างบน จะบังรูปข้างล่าง'],600))return;
+  const rings=[];for(const [a,b,cx,cy] of (p.ov||[]).slice(0,2)){const ring=G.E('circle',{cx:X(cx),cy:Y(cy),r:20,fill:'none',stroke:'#ec4899','stroke-width':5,'stroke-dasharray':'7 5'});G.pop(ring);G.pulse(ring);rings.push(ring);
+   G.cap('ตรงนี้ '+p.nm[b]+' ทับ '+p.nm[a]);if(!await G.say(['ตรงนี้',p.nm[b]+' ทับ '+p.nm[a]]))return;G.fade(ring,.25,300);}
+  rings.forEach(r=>G.fade(r,0,300));
+  if(!await G.step('ยกรูปออกทีละชั้น',['ลองยกรูปออกทีละชั้น จากข้างบนลงมา'],400))return;
+  const SAY=[n=>[n+' อยู่ชั้นบนสุด','ยกออกแล้ว เห็นรูปข้างล่างเต็มรูป'],n=>[n+' อยู่ชั้นกลาง'],n=>[n+' อยู่ชั้นล่างสุด']];
+  for(let s=0;s<3;s++){const i=order[s];lift(i,s);slot(s);G.cap(LB[s]+': '+p.nm[i]);if(!await G.say(SAY[s](p.nm[i])))return;}}
+ else{const SAY=[n=>n+' อยู่นอกสุด ล้อมรูปอื่นไว้ทั้งหมด',n=>n+' อยู่ตรงกลาง',n=>n+' อยู่ข้างในสุด ถูกล้อมไว้'];
+  if(!await G.step('ไล่จากนอกเข้าไปข้างใน',['ไล่ดูขอบรูป จากข้างนอกเข้าไปข้างใน'],500))return;
+  for(let s=0;s<3;s++){const i=order[s];G.glow(els[i],'#ec4899');G.cap(LB[s]+': '+p.nm[i]);if(!await G.say([SAY[s](p.nm[i])]))return;els[i].style.filter='';}
+  if(!await G.step('แยกรูปออกมาดู',['แยกออกมาดู จากใหญ่ไปเล็ก'],300))return;
+  for(let s=0;s<3;s++){lift(order[s],s);slot(s);if(!await G.W(700))return;}}
+ const want={top:0,mid:1,bottom:2,out:0,in:2}[p.ask];await G.fin(LB[want]+': '+p.nm[order[want]],['คำตอบคือ'+p.nm[order[want]]],[els[order[want]]]);};
 /* ---------- ตารางอุปมา: ดูแถวบน แล้วทำแถวล่างแบบเดียวกัน ---------- */
 R.matrix=async(p,G)=>{const f=p.qv&&p.qv.fig,af=p.opts&&p.opts[p.ans]&&p.opts[p.ans].fig;if(!f||!af)return;const S=1.42,ox=12,oy=12,CL=[[55,55],[155,55],[55,155],[155,155]],cc=i=>[ox+CL[i][0]*S,oy+CL[i][1]*S];
  drawFig(G,f,ox,oy,210*S,210*S);
@@ -854,6 +867,22 @@ R.fold2=async(p,G)=>{const q=p.mode==='q',k=2.25,ox=300-F2M*k,oy=(330-F2P*k)/2,r
  if(p.cnt&&p.holes){let n=0;for(const [x,y] of p.holes){n++;G.tag(ox+x*k,oy+y*k,n,'#ec4899',13);G.sfx('pop',n%12);G.cap('นับได้ '+n+' รู');if(!await G.say([String(n)]))return;}
   await G.fin('มีทั้งหมด '+n+' รู',['มีทั้งหมด '+n+' รู'],[root]);return;}
  await G.fin('คลี่แล้วได้ภาพนี้',['คลี่แล้วได้ภาพนี้'],[root]);};
+/* ---------- รูปซ่อน (ทบทวน 4 พ.ย. 69): ไฮไลต์ทีละรูปบนภาพใหญ่ แล้วแยกรูปที่นับแล้วออกมาเรียงทางขวาพร้อมเลข สีตามกลุ่ม ---------- */
+R.hidden=async(p,G)=>{const HC=['#fde68a','#bfdbfe','#c4b5fd','#fbcfe8'],HS=['#d97706','#2563eb','#7c3aed','#db2777'],f=p.fig,vb=f.vb||[200,180];
+ /* วาดเป็น 2 ชั้น: พื้นขาว → สีที่กำลังนับ → เส้นรูป (สีไม่ทับเส้น และไม่ถูกพื้นขาวบัง) */
+ const PT=q=>q.map(x=>x.join(',')).join(' '),fill=(par)=>(f.polys||[]).forEach(q=>G.E('polygon',{points:PT(q.p),fill:'#fff'},par)),
+  ink=(par,k)=>{(f.polys||[]).forEach(q=>G.E('polygon',{points:PT(q.p),fill:'none',stroke:INK,'stroke-width':3/k,'stroke-linejoin':'round'},par));
+   (f.lines||[]).forEach(l=>G.E('line',{x1:l[0],y1:l[1],x2:l[2],y2:l[3],stroke:INK,'stroke-width':3/k,'stroke-linecap':'round'},par));};
+ const K=Math.min(250/vb[0],250/vb[1]),main=G.E('g',{transform:'translate('+(150-vb[0]*K/2)+' '+(170-vb[1]*K/2)+') scale('+K+')'});fill(main);
+ const hl=G.E('polygon',{points:'',fill:'none','stroke-width':6/K,'stroke-linejoin':'round',opacity:.9},main);ink(main,K);
+ const tot=p.groups.reduce((a,g)=>a+g.s.length,0),cols=tot>6?3:2,cell=Math.min(78,280/cols),k=(cell-12)/Math.max(vb[0],vb[1]);let n=0;
+ for(let gi=0;gi<p.groups.length;gi++){const g=p.groups[gi];if(!await G.step(g.n,[g.n]))return;
+  for(const pts of g.s){const i=n++,x=310+(i%cols)*cell,y=30+Math.floor(i/cols)*cell,P=pts.map(q=>q.join(',')).join(' ');
+   hl.setAttribute('points',P);hl.setAttribute('fill',HC[gi%4]);hl.setAttribute('stroke',HS[gi%4]);
+   /* ตำแหน่งอยู่กลุ่มนอก แอนิเมชันเด้งอยู่กลุ่มใน (pop ตั้งจุดหมุนกลางภาพ ถ้าอยู่กลุ่มเดียวกับ translate ภาพจะเลื่อนหลุดจากเลขกำกับ) */
+   const mo=G.E('g',{transform:'translate('+(x+6)+' '+(y+6)+') scale('+k+')'}),m=G.E('g',{},mo);fill(m);G.E('polygon',{points:P,fill:HC[gi%4],stroke:HS[gi%4],'stroke-width':4/k,'stroke-linejoin':'round',opacity:.9},m);ink(m,k);G.pop(m);
+   G.tag(x+6,y+6,n,HS[gi%4],11);G.sfx('pop',n%12);G.cap(g.n+' · นับได้ '+n);if(!await G.say([String(n)]))return;}}
+ hl.setAttribute('points','');await G.fin('รวม '+n+' รูป',['รวม '+n+' รูป']);};
 /* ---------- ชุดคำสั่งลูกศร: ให้ลิงเดินตามทีละชุด นับผลไม้ ---------- */
 R.path=async(p,G)=>{const z=56,gx=24,gy=42,cx=(a,b)=>[gx+a*z+z/2,gy+b*z+z/2],MV={'→':[1,0],'←':[-1,0],'↑':[0,-1],'↓':[0,1]};
  for(let b=0;b<p.h;b++)for(let a=0;a<p.w;a++)G.E('rect',{x:gx+a*z,y:gy+b*z,width:z,height:z,rx:6,fill:(a+b)%2?'#eef7e4':'#f7fbef',stroke:'#c9d8b8','stroke-width':2});

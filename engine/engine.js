@@ -303,6 +303,26 @@ function vis(v,still){const d=h('div','vis');d._fx=[];d._later=[];const at=still
   hl.forEach((pts,i)=>{const go=()=>{svg.querySelectorAll('.hlp').forEach(e=>e.classList.add('old'));const p=document.createElementNS('http://www.w3.org/2000/svg','polygon');p.setAttribute('points',pts.map(x=>x.join(',')).join(' '));p.setAttribute('class','hlp');svg.prepend(p);cnt.style.visibility='visible';cnt.textContent=(v.unit||'รูปที่ ')+(i+1);SFX.pop(i);};if(!still)later(at+.5+i*sp,go);});
   if(v.text){const tx=h('div','bignum pop',v.text);const tt=still?0:at+.6+hl.length*sp;tx.style.animationDelay=tt+'s';d.append(tx);later(tt,()=>{cnt.style.display='none';SFX.chime();});}}
 
+ else if(T==='hidden'){/* รูปซ่อน (ทบทวน 4 พ.ย. 69): ไฮไลต์ทีละรูปบนภาพใหญ่ แล้วแยกรูปนั้นออกมาวางเรียงพร้อมเลข สีตามกลุ่ม (รูปเล็ก/สองรูปรวมกัน/รูปใหญ่) นับครบแล้วรวม
+   เดิมไฮไลต์หายไปทีละรูป เด็กจำไม่ได้ว่านับรูปไหนไปแล้ว */
+  const HC=['#fde68a','#bfdbfe','#c4b5fd','#fbcfe8'],HS=['#d97706','#2563eb','#7c3aed','#db2777'],vb=v.fig.vb||[200,180],P=pts=>pts.map(p=>p.join(',')).join(' ');
+  const box=h('div','figbox pop',figSVG(v.fig));d.append(box);const svg=box.querySelector('svg');const NSs='http://www.w3.org/2000/svg';
+  const lay=document.createElementNS(NSs,'polygon');lay.setAttribute('class','hdl');svg.prepend(lay);
+  const row=h('div','hthumbs');d.append(row);const tot=h('div','bignum pop','');tot.style.visibility='hidden';d.append(tot);
+  let n=0,t=still?0:at+.9;const sp=v.speed||1;
+  v.groups.forEach((g,gi)=>{const chip=h('span','hchip',g.n);chip.style.background=HC[gi%4];chip.style.borderColor=HS[gi%4];chip.style.visibility=still?'visible':'hidden';row.append(chip);
+    later(t,()=>{chip.style.visibility='visible';chip.classList.add('pop');});
+    g.s.forEach(pts=>{n++;const k=n,th=h('div','hth','<svg viewBox="0 0 '+vb[0]+' '+vb[1]+'">'+figSVG(v.fig).replace(/^<svg[^>]*>|<\/svg>$/g,'')+'<polygon points="'+P(pts)+'" fill="'+HC[gi%4]+'" stroke="'+HS[gi%4]+'" stroke-width="5" stroke-linejoin="round" style="mix-blend-mode:multiply"/></svg><b style="background:'+HS[gi%4]+'">'+k+'</b>');
+      th.style.visibility=still?'visible':'hidden';row.append(th);
+      later(t,()=>{lay.setAttribute('points',P(pts));lay.style.fill=HC[gi%4];lay.style.stroke=HS[gi%4];th.style.visibility='visible';th.classList.add('pop');SFX.pop(k);});t+=sp;});
+    t+=.5;});
+  tot.textContent='รวม '+n+' รูป';later(t,()=>{lay.setAttribute('points','');tot.style.visibility='visible';tot.classList.add('pop');SFX.chime();});
+  if(still)tot.style.visibility='visible';d._dur=t+1;}
+ else if(T==='fold3d'){/* ภาพคลี่พับเป็นทรงสามมิติในฉากสอน (ใช้ตัวเดียวกับภาพเฉลย exCube/exCyl/exCone) · ทบทวน EP56 4 พ.ย. 69: เดิมเป็นภาพนิ่ง ไม่เห็นว่าพับอย่างไร */
+  const st3=h('div','x3d sc-fold'),sc=h('div','sc3'),cap=h('div','excap',' ');st3.append(sc);d.append(cap,st3);
+  const run=async fast=>{const my=tok;const W=fast?async()=>false:async ms=>{let q=0;while(q<ms){await wait(50);if(my!==tok||!d.isConnected)return false;if(!paused)q+=50;}return true;};
+    const p={net:v.net,nums:v.nums,pair:v.pair,col:v.col,pre:v.pre};if(v.net==='cube')await exCube(p,sc,cap,W);else if(v.net==='cylinder')await exCyl(sc,cap,W);else await exCone(sc,cap,W);};
+  if(still){cap.textContent=v.cap||'';run(true);}else{later(at+.4,()=>run(false));d._dur=v.net==='cube'?11.5:8;}}
  else if(T==='memo'){/* จำภาพ: แสดงครบ sec วินาที แล้วของชิ้นหนึ่งหายไป (ในคำถามก็นับถอยหลังด้วย) */const sec=v.sec||5,its=v.items,r=h('div','row memo'),cs=its.map((e,i)=>{const c=h('div','card pop','<div class="e">'+e+'</div>');c.style.animationDelay=(i*.08)+'s';r.append(c);return c;});
   const bar=h('div','memob pop','👀 จำให้ดีนะ '+sec);d.append(bar,r);const preview=location.hash==='#all';
   const hide=()=>{if(v.gone!=null){const c=cs[v.gone];c.innerHTML='<div class="e">❓</div>';c.classList.add('gone2');}bar.textContent='อะไรหายไป?';bar.classList.add('ask');};
@@ -345,7 +365,9 @@ async function rest(){const my=tok;const cd=h('div','restn pop','10');const msg=
 async function mockIntro(){phase='quiz';const my=++tok;setWho('teach');SFX.chime();await show(h('div','vis','<div class="char pop">'+TEACH+'</div><div class="bubble pop">ฟังโจทย์ให้ดี แล้วเลือกคำตอบที่ถูกที่สุด 📝</div>'),true);
  await say(['สวัสดีค่ะ ครูชื่อดอกม่วง วันนี้มาลองทำข้อสอบเหมือนวันสอบจริงกันนะคะ','ครูจะอ่านโจทย์ให้ฟังข้อละสองรอบ แล้วให้เวลาคิดสักครู่ พอหมดเวลา ครูจะอ่านข้อต่อไปเลยนะคะ ข้อไหนไม่แน่ใจ ให้เลือกคำตอบที่คิดว่าใช่ที่สุดค่ะ']);if(my!==tok)return;EP._t0=Date.now();quiz(0);}
 async function lesson(from){if(MOCK)return mockIntro();phase='lesson';const my=++tok;if(synth)synth.cancel();
- for(let i=from;i<EP.scenes.length;i++){cur=i;const s=EP.scenes[i];setWho('kla');if(i>from)SFX.whoosh();await show(vis(s.v||{type:'kla'}),true);if(my!==tok)return;prog(i/total);await say(s.say);if(my!==tok)return;await gap(800,my);if(my!==tok)return;}
+ for(let i=from;i<EP.scenes.length;i++){cur=i;const s=EP.scenes[i];setWho('kla');if(i>from)SFX.whoosh();const el=vis(s.v||{type:'kla'}),t0=Date.now();await show(el,true);if(my!==tok)return;prog(i/total);await say(s.say);if(my!==tok)return;
+  /* ภาพเคลื่อนไหวยาว (นับรูปซ่อน พับกล่อง 3 มิติ) ยังไม่จบ: รอให้จบก่อนไปฉากถัดไป (el._dur วินาที) */
+  if(el._dur){const rem=el._dur*1000-(Date.now()-t0);if(rem>0)await gap(rem,my);if(my!==tok)return;}await gap(800,my);if(my!==tok)return;}
  phase='quiz';SFX.chime();await show(h('div','vis','<div class="char pop">'+KLA+'</div><div class="bubble pop">ถึงเวลาตอบคำถามแล้ว 🌟</div>'),true);await say('ถึงเวลาตอบคำถามแล้ว ฟังให้ดีนะ');if(my!==tok)return;quiz(0);}
 /* ข้อ "cat ขึ้นต้นด้วยตัวใด" "ดาว ขึ้นต้นด้วยพยัญชนะตัวใด" "เตียง ใช้สระใด" ที่มีภาพ: ไม่แสดงคำบนจอ (เด็กจะดูตัวอักษรแทนการฟัง) แสดงเป็น "ภาพนี้…" แต่ยังอ่านคำให้ฟัง */
 function hideWord(q){const m=/^(\S+) (ขึ้นต้นด้วย(?:พยัญชนะ)?ตัวใด|ใช้สระใด|ประสมด้วยสระใด)$/.exec(q.q);if(!m||!q.v||!q.v.e)return q;const v=Object.assign({},q.v);delete v.sub;delete v.text;return {q:'ภาพนี้'+m[2],v};}
@@ -364,7 +386,7 @@ async function mockTimer(qi,q,box,btns,segs){const my=tok;const ms=(EP.sec||15)*
  const s=QS;if(!s||s.lock)return;s.lock=true;LOG[qi]={id:q.id,t:q.t,ok:false,to:1};btns.forEach(x=>x.disabled=true);tm.classList.add('end');SFX.chime();hideSub=false;
  await say('หมดเวลาแล้วค่ะ');if(my!==tok)return;await gap(500,my);if(my!==tok)return;quiz(qi+1);}
 /* ---------- เฉลยแบบภาพเคลื่อนไหว 3 มิติ (โหมดฝึก/คลิป): นับกล่องที่ซ้อนกัน · มองจากด้านบน/หน้า · พับภาพคลี่ ---------- */
-function exPlan(q){if(q.g&&!q.x2)return null;if(q.v&&q.v.fig&&q.v.fig.sh)return null;if(q.x2&&window.EX2){const p=EX2.plan(q);if(p)return p;}const t=q.q+' '+(q.say||''),v=q.v||{},a=q.opts[q.ans];
+function exPlan(q){if(q.x2&&q.x2.kind==='net3')return Object.assign({k:'net',net:'gen'},q.x2);if(q.g&&!q.x2)return null;if(q.v&&q.v.fig&&q.v.fig.sh)return null;if(q.x2&&window.EX2){const p=EX2.plan(q);if(p)return p;}const t=q.q+' '+(q.say||''),v=q.v||{},a=q.opts[q.ans];
  let g=v.type==='blocks'?v.g:null;if(!g&&/มากที่สุด|น้อยที่สุด/.test(t)&&a&&a.blk&&a.blk.g)g=a.blk.g;
  if(g&&/ติดกับ/.test(t)&&v.gray)return {k:'blk',g,view:'adj',gray:v.gray};
  if(g&&!/ติดกับ/.test(t)){if(/ด้านบน/.test(t))return {k:'blk',g,view:'top'};if(/ด้านหน้า/.test(t))return {k:'blk',g,view:'front'};if(/กี่กล่อง|กี่ใบ|กี่ก้อน|มากที่สุด|น้อยที่สุด/.test(t))return {k:'blk',g,view:'count'};}
@@ -373,14 +395,14 @@ function exPlan(q){if(q.g&&!q.x2)return null;if(q.v&&q.v.fig&&q.v.fig.sh)return 
   if(net==='cube'&&f&&f.txt){nums={};f.txt.forEach(([x,y,n])=>{nums[Math.round((x-30)/40)+','+Math.round((y-30)/40)]=n;});}
   const m=t.match(/ตรงข้ามกับหน้า (\d)/);if(m)pair=[m[1],label(a)];
   if(net==='cube'&&!nums&&/กี่รูป|กี่หน้า/.test(t))nums={'1,0':1,'0,1':2,'1,1':3,'2,1':4,'3,1':5,'1,2':6};
-  return {k:'net',net,nums,pair};}
+  return {k:'net',net,nums,pair,col:!pair,cnt:/กี่รูป|กี่หน้า/.test(t)};}   /* ทบทวน 4 พ.ย. 69: ข้ออื่นระบายสีทีละหน้า · ข้อนับ นับทีละช่อง · ข้อลูกเต๋า ชี้ช่องคั่นก่อนพับ */
  return window.EX2?EX2.plan(q):null;}
 async function explain(p,why){const my=tok;let skip=false;const ov=h('div','ex3d'),box=h('div','exbox'),cap=h('div','excap','👀 มาดูกัน'),st3=h('div','x3d'),sc=h('div','sc3'),sk=h('button','pgo','ข้าม ▶');
  sk.onclick=()=>{skip=true;};st3.append(sc);box.append(cap,st3,sk);ov.append(box);document.body.append(ov);
  const W=async ms=>{let t=0;while(t<ms&&!skip){await wait(50);if(my!==tok)return false;if(!paused)t+=50;}return my===tok&&!skip;};
  try{if(p.k==='x2'){box.classList.add('x2box');const st=h('div','x2d');st3.replaceWith(st);await x2Play(p,st,cap,box,sk,W,my,()=>{skip=false;},()=>skip,why);}
   else if(p.k==='blk'){await exBlocks(p,sc,cap,W);if(my===tok&&p.st){sk.style.display='none';await blkPlay(p,sc,cap,box,my);}}
-  else{if(p.net==='cube')await exCube(p,sc,cap,W);else if(p.net==='cylinder')await exCyl(sc,cap,W);else await exCone(sc,cap,W);if(!skip)await W(700);}}catch(e){}
+  else{if(p.net==='gen')await exNet(p,sc,cap,W);else if(p.net==='cube')await exCube(p,sc,cap,W);else if(p.net==='cylinder')await exCyl(sc,cap,W);else await exCone(sc,cap,W);if(!skip)await W(700);}}catch(e){}
  ov.remove();return my===tok;}
 /* เฉลยภาพชุด 2 (explain2.js): เล่นภาพทีละขั้นพร้อมเสียงพากย์ · กดข้ามแล้วเสียงหยุดและข้ามไปภาพสุดท้าย
    จบรอบแรกแล้วน้องกล้าพูดสรุป (why) พร้อมปุ่ม ดูอีกครั้ง / ไปต่อ (และแตะนับเองได้ในบางภาพ) */
@@ -440,13 +462,40 @@ async function blkPlay(p,sc,cap,box,my){const {els,cubes,place,gi,nb}=p.st,N=cub
 async function exCube(p,sc,cap,W){const S=72,m=p.nums||{};sc.style.setProperty('--s',S+'px');
  const F=(c,r,cls)=>{const n=m[c+','+r];const e=h('div','nf'+(cls?' '+cls:''),'<b>'+(n==null?'':n)+'</b>');e.dataset.n=n==null?'':n;return e;};
  const base=F(1,1,'nbase'),top=F(1,0,'nt'),lf=F(0,1,'nl'),rt=F(2,1,'nr'),far=F(3,1,'nr'),bt=F(1,2,'nb');rt.append(far);base.append(top,lf,rt,bt);sc.append(base);
+ /* ฉากสอน EP56: col = แต่ละหน้าคนละสี เห็นว่าช่องไหนกลายเป็นหน้าไหน · pre = ไฮไลต์คู่หน้าตรงข้ามตั้งแต่ยังแบน (สีตามคู่) */
+ if(p.col)[base,top,lf,rt,far,bt].forEach((e,i)=>e.style.background=['#fde68a','#bfdbfe','#bbf7d0','#fbcfe8','#ddd6fe','#fed7aa'][i]);
+ if(p.pre){const PC2={1:'#f9a8d4',6:'#f9a8d4',2:'#93c5fd',5:'#93c5fd',3:'#86efac',4:'#86efac'};[base,top,lf,rt,far,bt].forEach(e=>{if(PC2[e.dataset.n])e.style.background=PC2[e.dataset.n];});}
  const Z=' translateZ('+(S/2)+'px)';sc.style.transform='rotateX(0deg) rotateY(0deg) translateX('+(-S/2)+'px)';
- cap.textContent='ภาพคลี่ของลูกบาศก์ มีสี่เหลี่ยม 6 รูป';if(!await W(1300))return;
+ cap.textContent='ภาพคลี่ของลูกบาศก์ มีสี่เหลี่ยม 6 รูป';
+ const FS=[base,top,lf,rt,far,bt];
+ /* ข้อนับช่อง: ซ่อนเลขไว้ แล้วนับทีละช่อง 1–6 */
+ if(p.cnt){FS.forEach(e=>e.querySelector('b').style.visibility='hidden');cap.textContent='มานับช่องกัน';if(!await W(700))return;
+  for(let i=0;i<6;i++){const b=FS[i].querySelector('b');b.textContent=i+1;b.style.visibility='visible';FS[i].classList.add('cnt');SFX.pop(i+1);cap.textContent='นับได้ '+(i+1)+' ช่อง';if(!await W(650))return;}
+  cap.textContent='มี 6 ช่อง เท่ากับลูกบาศก์มี 6 หน้า';if(!await W(1200))return;}
+ /* ข้อลูกเต๋า: ตอนยังแบน ชี้คู่หน้าที่ถาม และช่องที่คั่นอยู่ตรงกลาง (กฎ เว้น 1 ช่อง = อยู่ตรงข้ามกัน) */
+ if(p.pair&&!p.pre){const pos=n=>Object.keys(m).find(k=>String(m[k])===String(n)),a=pos(p.pair[0]),b=pos(p.pair[1]);
+  const fa=FS.find(e=>e.dataset.n===String(p.pair[0])),fb=FS.find(e=>e.dataset.n===String(p.pair[1]));[fa,fb].forEach(e=>e&&e.classList.add('hl'));
+  if(a&&b){const [ac,ar]=a.split(',').map(Number),[bc,br]=b.split(',').map(Number),mid=((ac+bc)/2)+','+((ar+br)/2),fm=FS.find(e=>e.dataset.n===String(m[mid]));if(fm)fm.classList.add('gap1');}
+  cap.textContent='หน้า '+p.pair[0]+' กับหน้า '+p.pair[1]+' มีช่องคั่น 1 ช่อง';if(!await W(2200))return;cap.textContent='พับแล้วจะอยู่ตรงข้ามกัน ดูนะ';}
+ if(!await W(p.cnt||p.pair?400:1300))return;
  sc.style.transition='transform 1s ease';sc.style.transform='rotateX(-20deg) rotateY(-25deg) translateX(0px)'+Z;if(!await W(900))return;
- cap.textContent='พับขึ้นทีละด้าน';for(const f of [lf,top,bt,rt,far]){f.classList.add('fold');SFX.whoosh();if(!await W(750))return;}
+ cap.textContent='พับขึ้นทีละด้าน';FS.forEach(e=>e.classList.remove('gap1'));for(const f of [lf,top,bt,rt,far]){f.classList.add('fold');SFX.whoosh();if(!await W(750))return;}
  cap.textContent='พับแล้วได้ลูกบาศก์';SFX.chime();sc.style.transition='transform 4.5s ease-in-out';sc.style.transform='rotateX(-25deg) rotateY(-385deg) translateX(0px)'+Z;
  if(p.pair){const hs=[...sc.querySelectorAll('.nf')].filter(e=>p.pair.includes(String(e.dataset.n)));hs.forEach(e=>e.classList.add('hl'));cap.textContent='หน้า '+p.pair[0]+' อยู่ตรงข้ามกับหน้า '+p.pair[1];}
  await W(4700);}
+/* ภาพคลี่ลูกบาศก์รูปร่างใดก็ได้ (ชุดภาพคลี่กลาง–ยาก 4 พ.ย. 69): ต่อช่องเป็นต้นไม้ตามภาพคลี่ แล้วพับทีละช่อง
+   ภาพคลี่ที่พับไม่ได้ จะเห็นสองช่อง (สีชมพู) พับไปซ้อนกัน และกล่องมีด้านว่าง · p.cells ช่องแรก = ฐาน · p.tree = [ช่อง, ช่องแม่, ทิศ] */
+async function exNet(p,sc,cap,W){const ext=Math.max(...[0,1].map(i=>Math.max(...p.cells.map(x=>x[i]))-Math.min(...p.cells.map(x=>x[i]))+1)),S=Math.round(Math.min(64,180/ext)),K=(c,r)=>c+','+r,el={},CL={l:'nl',r:'nr',t:'nt',b:'nb'},PAL=['#fde68a','#bfdbfe','#bbf7d0','#fbcfe8','#ddd6fe','#fed7aa'];sc.style.setProperty('--s',S+'px');
+ const hl=new Set((p.hl||[]).map(x=>K(x[0],x[1]))),lab=p.lab||{},plain=!Object.keys(lab).length;let ci=0;
+ const mk=(c,r,cls)=>{const e=h('div','nf'+(cls?' '+cls:''),'<b>'+(lab[K(c,r)]||'')+'</b>');if(hl.has(K(c,r)))e.classList.add('hl');else if(plain)e.style.background=PAL[ci%6];ci++;return e;};
+ const [c0,r0]=p.cells[0];el[K(c0,r0)]=mk(c0,r0,'nbase');sc.append(el[K(c0,r0)]);
+ p.tree.forEach(([a,b,d])=>{const e=mk(a[0],a[1],CL[d]);el[K(b[0],b[1])].append(e);el[K(a[0],a[1])]=e;});
+ const cs=p.cells.map(x=>x[0]),rs=p.cells.map(x=>x[1]),dx=(c0+.5-(Math.min(...cs)+Math.max(...cs)+1)/2)*S,dy=(r0+.5-(Math.min(...rs)+Math.max(...rs)+1)/2)*S,Z=' translateZ('+(S/2)+'px)';
+ sc.style.transform='translateX('+dx+'px) translateY('+dy+'px)';cap.textContent=hl.size&&!plain?'ดูสองช่องสีชมพู':'ภาพคลี่ 6 ช่อง';if(!await W(1500))return;
+ sc.style.transition='transform 1s ease';sc.style.transform='rotateX(-20deg) rotateY(-25deg)'+Z;if(!await W(900))return;
+ cap.textContent='พับขึ้นทีละช่อง';for(const [a] of p.tree){el[K(a[0],a[1])].classList.add('fold');SFX.whoosh();if(!await W(700))return;}
+ cap.textContent=p.note||'พับแล้วได้กล่อง';SFX.chime();sc.style.transition='transform 4.5s ease-in-out,scale 1s ease';sc.style.scale=String(1.3*64/S*1.1);   /* ภาพคลี่ยาวใช้ช่องเล็ก พอพับเสร็จขยายกล่องให้ใหญ่ */
+ sc.style.transform='rotateX(-25deg) rotateY(-385deg)'+Z;await W(4700);}
 async function exCyl(sc,cap,W){const N=20,H=130,R=46,w=2*Math.PI*R/N;cap.textContent='ภาพคลี่ของทรงกระบอก';
  const st=[];for(let i=0;i<N;i++){const e=h('div','sv-cs');Object.assign(e.style,{width:(w+.6)+'px',height:H+'px',left:(-w/2)+'px',top:(-H/2)+'px'});sc.append(e);st.push(e);}
  const cc=[h('div','sv-cc'),h('div','sv-cc')];cc.forEach(c=>{Object.assign(c.style,{width:2*R+'px',height:2*R+'px',left:-R+'px',top:-R+'px'});sc.append(c);});

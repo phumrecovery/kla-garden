@@ -376,3 +376,17 @@ button{font-family:inherit;cursor:pointer}
 .shg{filter:brightness(0);opacity:.82;transition:filter 1.4s,opacity 1.4s}.shg.lit{filter:none;opacity:1}
 .art .fig.row3,.card .art .fig.row3{width:clamp(180px,27vw,300px)}   /* ตัวเลือกที่เป็นภาพเรียง 3 ภาพ (ข้อเงาซ้อนกัน มีอะไรบ้าง) */
 .figbox.tall svg{max-height:50vh}   /* แผนผังครอบครัว 4 รุ่น */
+/* รูปซ่อน: รูปที่นับแล้วแยกออกมาเรียงพร้อมเลข (ทบทวน EP57 4 พ.ย. 69) */
+.fig .hdl{fill:none;stroke:none;stroke-width:5;opacity:.85;stroke-linejoin:round}
+.hthumbs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;max-width:min(720px,94vw)}
+.hchip{font-size:clamp(14px,2vw,18px);border:2px solid;border-radius:999px;padding:1px 10px}
+.hth{position:relative;background:#fff;border-radius:10px;padding:3px;box-shadow:0 2px 0 rgba(0,0,0,.08)}
+.hth svg{width:clamp(46px,6.5vw,66px);height:auto;display:block}
+.hth b{position:absolute;top:-7px;left:-7px;color:#fff;border-radius:50%;width:22px;height:22px;font-size:13px;display:flex;align-items:center;justify-content:center}
+.x3d.sc-fold{height:clamp(240px,42vh,380px);width:min(620px,92vw);background:#fff;border-radius:22px;box-shadow:0 4px 0 rgba(0,0,0,.08)}
+.x3d.sc-fold .sc3{scale:1.5}   /* ฉากสอน: ขยายกล่อง/ทรงกระบอก/กรวยให้ใหญ่กว่าในภาพเฉลย */
+.vis .excap{font-size:clamp(20px,3vw,30px);color:#4c1d95;font-weight:bold;text-align:center}
+.nf.cnt b{animation:pop .3s both}
+.nf.gap1{background:#fff!important;border-style:dashed}   /* ช่องที่คั่นระหว่างคู่หน้าตรงข้าม */
+.ex3d .sc3{scale:1.3}   /* ภาพเฉลยภาพคลี่ 3 มิติ: ขยายให้ใหญ่ขึ้น (ทบทวน 4 พ.ย. 69) */
+.opt .art .fig{max-height:30vh}   /* ตัวเลือกเป็นภาพทรงสูง (ภาพคลี่ 5 แถว) ไม่ให้การ์ดสูงล้นจอ */

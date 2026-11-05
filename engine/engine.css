@@ -383,12 +383,13 @@ button{font-family:inherit;cursor:pointer}
 .hth{position:relative;background:#fff;border-radius:10px;padding:3px;box-shadow:0 2px 0 rgba(0,0,0,.08)}
 .hth svg{width:clamp(46px,6.5vw,66px);height:auto;display:block}
 .hth b{position:absolute;top:-7px;left:-7px;color:#fff;border-radius:50%;width:22px;height:22px;font-size:13px;display:flex;align-items:center;justify-content:center}
-.x3d.sc-fold{height:clamp(240px,42vh,380px);width:min(620px,92vw);background:#fff;border-radius:22px;box-shadow:0 4px 0 rgba(0,0,0,.08)}
-.x3d.sc-fold .sc3{scale:1.5}   /* ฉากสอน: ขยายกล่อง/ทรงกระบอก/กรวยให้ใหญ่กว่าในภาพเฉลย */
+.x3d.sc-fold{height:clamp(220px,46vh,480px);width:min(620px,92vw);background:#fff;border-radius:22px;box-shadow:0 4px 0 rgba(0,0,0,.08)}
+.x3d.sc-fold .sc3{scale:1.5}   /* ค่าเริ่ม · engine fit3() ตั้งใหม่ให้พอดีกรอบ */
 .vis .excap{font-size:clamp(20px,3vw,30px);color:#4c1d95;font-weight:bold;text-align:center}
 .nf.cnt b{animation:pop .3s both}
 .nf.gap1{background:#fff!important;border-style:dashed}   /* ช่องที่คั่นระหว่างคู่หน้าตรงข้าม */
-.ex3d .sc3{scale:1.3}   /* ภาพเฉลยภาพคลี่ 3 มิติ: ขยายให้ใหญ่ขึ้น (ทบทวน 4 พ.ย. 69) */
+.ex3d .sc3{scale:1.3}   /* ค่าเริ่ม · engine fit3() ตั้งใหม่ให้พอดีกรอบ (4 พ.ย. 69 แท็บเล็ตเคยล้น) */
+.ex3d .x3d{height:clamp(180px,48vh,460px)}
 .opt .art .fig{max-height:30vh}   /* ตัวเลือกเป็นภาพทรงสูง (ภาพคลี่ 5 แถว) ไม่ให้การ์ดสูงล้นจอ */
 .ftree .fn,.ftree .fl{transition:opacity .5s}
 .ftree .fn.hl{filter:drop-shadow(0 0 5px #ec4899) drop-shadow(0 0 2px #ec4899)}   /* ผังครอบครัว: คนที่กำลังพูดถึง */

@@ -309,6 +309,9 @@ function vis(v,still){const d=h('div','vis');d._fx=[];d._later=[];const at=still
   const box=h('div','figbox pop',figSVG(v.fig));d.append(box);const svg=box.querySelector('svg');const NSs='http://www.w3.org/2000/svg';
   const lay=document.createElementNS(NSs,'polygon');lay.setAttribute('class','hdl');svg.prepend(lay);
   const row=h('div','hthumbs');d.append(row);const tot=h('div','bignum pop','');tot.style.visibility='hidden';d.append(tot);
+  /* จอเตี้ย (แท็บเล็ตแนวนอน แล็ปท็อป): ย่อภาพใหญ่ให้ภาพ + แถวรูปที่นับ + ผลรวม อยู่ในจอเดียว ไม่ต้องเลื่อน (4 พ.ย. 69) */
+  let ro=null;const fitH=()=>{const st=d.closest('.stage');if(!st||location.hash==='#all')return;if(ro&&!d._roSt){ro.observe(st);d._roSt=1;}const m=Math.max(120,st.clientHeight-row.offsetHeight-tot.offsetHeight-56)+'px';if(svg.style.maxHeight!==m)svg.style.maxHeight=m;};
+  if(window.ResizeObserver){ro=new ResizeObserver(fitH);ro.observe(d);}
   let n=0,t=still?0:at+.9;const sp=v.speed||1;
   v.groups.forEach((g,gi)=>{const chip=h('span','hchip',g.n);chip.style.background=HC[gi%4];chip.style.borderColor=HS[gi%4];chip.style.visibility=still?'visible':'hidden';row.append(chip);
     later(t,()=>{chip.style.visibility='visible';chip.classList.add('pop');});
@@ -321,7 +324,7 @@ function vis(v,still){const d=h('div','vis');d._fx=[];d._later=[];const at=still
  else if(T==='fold3d'){/* ภาพคลี่พับเป็นทรงสามมิติในฉากสอน (ใช้ตัวเดียวกับภาพเฉลย exCube/exCyl/exCone) · ทบทวน EP56 4 พ.ย. 69: เดิมเป็นภาพนิ่ง ไม่เห็นว่าพับอย่างไร */
   const st3=h('div','x3d sc-fold'),sc=h('div','sc3'),cap=h('div','excap',' ');st3.append(sc);d.append(cap,st3);
   const run=async fast=>{const my=tok;const W=fast?async()=>false:async ms=>{let q=0;while(q<ms){await wait(50);if(my!==tok||!d.isConnected)return false;if(!paused)q+=50;}return true;};
-    const p={net:v.net,nums:v.nums,pair:v.pair,col:v.col,pre:v.pre};if(v.net==='cube')await exCube(p,sc,cap,W);else if(v.net==='cylinder')await exCyl(sc,cap,W);else await exCone(sc,cap,W);};
+    const p={net:v.net,nums:v.nums,pair:v.pair,col:v.col,pre:v.pre};fit3(st3,sc,v.net,1.5);if(v.net==='cube')await exCube(p,sc,cap,W);else if(v.net==='cylinder')await exCyl(sc,cap,W);else await exCone(sc,cap,W);};
   if(still){cap.textContent=v.cap||'';run(true);}else{later(at+.4,()=>run(false));d._dur=v.net==='cube'?11.5:8;}}
  else if(T==='ftree'){/* ผังครอบครัวค่อย ๆ ขยาย (ฉากสอน 4 พ.ย. 69): คนโผล่ทีละรุ่นตามคำพูด ป้ายคำเรียกเหนือกรอบ เน้นคนที่พูดถึง กล้องซูมตาม
    เดิมผังเต็ม 15 คนขึ้นทีเดียว ผู้ปกครองว่าเด็กและผู้ใหญ่จับรายละเอียดไม่ทัน · ข้อมูลจาก เครื่องมือสร้างเนื้อหา/ผังครอบครัว.py scene() */
@@ -419,7 +422,7 @@ async function explain(p,why){const my=tok;let skip=false;const ov=h('div','ex3d
  const W=async ms=>{let t=0;while(t<ms&&!skip){await wait(50);if(my!==tok)return false;if(!paused)t+=50;}return my===tok&&!skip;};
  try{if(p.k==='x2'){box.classList.add('x2box');const st=h('div','x2d');st3.replaceWith(st);await x2Play(p,st,cap,box,sk,W,my,()=>{skip=false;},()=>skip,why);}
   else if(p.k==='blk'){await exBlocks(p,sc,cap,W);if(my===tok&&p.st){sk.style.display='none';await blkPlay(p,sc,cap,box,my);}}
-  else{if(p.net==='gen')await exNet(p,sc,cap,W);else if(p.net==='cube')await exCube(p,sc,cap,W);else if(p.net==='cylinder')await exCyl(sc,cap,W);else await exCone(sc,cap,W);if(!skip)await W(700);}}catch(e){}
+  else{fit3(st3,sc,p.net,1.3);if(p.net==='gen')await exNet(p,sc,cap,W);else if(p.net==='cube')await exCube(p,sc,cap,W);else if(p.net==='cylinder')await exCyl(sc,cap,W);else await exCone(sc,cap,W);if(!skip)await W(700);}}catch(e){}
  ov.remove();return my===tok;}
 /* เฉลยภาพชุด 2 (explain2.js): เล่นภาพทีละขั้นพร้อมเสียงพากย์ · กดข้ามแล้วเสียงหยุดและข้ามไปภาพสุดท้าย
    จบรอบแรกแล้วน้องกล้าพูดสรุป (why) พร้อมปุ่ม ดูอีกครั้ง / ไปต่อ (และแตะนับเองได้ในบางภาพ) */
@@ -476,6 +479,11 @@ async function blkPlay(p,sc,cap,box,my){const {els,cubes,place,gi,nb}=p.st,N=cub
   n++;cu.classList.add('hl');cu.querySelectorAll('b').forEach(b=>b.textContent=n);SFX.pop(n);msg();
   if(n===goal){cap.textContent='ครบแล้ว! ทั้งหมด '+goal+' กล่อง เก่งมาก 🎉';SFX.chime();const [x,y]=centerOf(st3);confetti(x,y,24);}};
  await new Promise(res=>{go.onclick=res;const iv=setInterval(()=>{if(my!==tok){clearInterval(iv);res();}},200);go.addEventListener('click',()=>clearInterval(iv));});}
+/* ย่อ/ขยายภาพ 3 มิติให้พอดีกรอบทุกขนาดจอ (4 พ.ย. 69: เดิมขยายคงที่ 1.5/1.3 เท่า บนแท็บเล็ตภาพคลี่ล้นกรอบบน-ล่าง)
+   NAT = ขนาดจริงที่ scale 1 ตอนภาพกางกว้างที่สุด (วัดในเบราว์เซอร์) รวมขอบเผื่อมุมเอียง */
+const NAT3={cube:[300,250],cylinder:[300,336],cone:[300,390],gen:[230,250]};
+function fit3(box,sc,kind,max){const n=NAT3[kind]||NAT3.cube,f=()=>{const w=box.clientWidth,h=box.clientHeight;if(w&&h)sc.style.scale=Math.max(.5,Math.min(max,(w-24)/n[0],(h-24)/n[1])).toFixed(3);};
+ f();if(window.ResizeObserver)new ResizeObserver(f).observe(box);}
 async function exCube(p,sc,cap,W){const S=72,m=p.nums||{};sc.style.setProperty('--s',S+'px');
  const F=(c,r,cls)=>{const n=m[c+','+r];const e=h('div','nf'+(cls?' '+cls:''),'<b>'+(n==null?'':n)+'</b>');e.dataset.n=n==null?'':n;return e;};
  const base=F(1,1,'nbase'),top=F(1,0,'nt'),lf=F(0,1,'nl'),rt=F(2,1,'nr'),far=F(3,1,'nr'),bt=F(1,2,'nb');rt.append(far);base.append(top,lf,rt,bt);sc.append(base);

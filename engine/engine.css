@@ -151,7 +151,7 @@ button{font-family:inherit;cursor:pointer}
 /* จอเตี้ย (แล็ปท็อป แท็บเล็ตแนวนอน): จัดกึ่งกลางแบบเลื่อนได้ และย่อขนาด */
 .stage{align-items:flex-start}
 .stage>*{margin:auto}
-@media (max-height:800px){
+@media (max-height:860px){
  .vis{gap:10px}
  .scatter{height:clamp(170px,32vh,290px)}
  .e{font-size:clamp(32px,6.2vw,66px)}
@@ -167,6 +167,8 @@ button{font-family:inherit;cursor:pointer}
  .tf{grid-template-columns:repeat(5,clamp(38px,6vw,62px));grid-auto-rows:clamp(38px,6vw,62px)}
  .figbox svg{max-height:48vh}   /* แท็บเล็ตแนวนอน: ภาพในข้อไม่สูงจนตัวเลือกตกจอ (5 พ.ย. 69) */
  .grdbox svg{max-height:44vh}
+}
+
 }
 /* สัปดาห์ 3: ทรงสามมิติ กล่องบล็อก รอยเท้า วงจรชีวิต */
 .art{display:flex;align-items:center;justify-content:center}
@@ -190,7 +192,7 @@ button{font-family:inherit;cursor:pointer}
 .cyc .pic{width:clamp(56px,9vw,90px);height:clamp(56px,9vw,90px)}
 .cyA{animation:fadeIn .4s both}
 @keyframes fadeIn{from{opacity:0}}
-@media (max-height:800px){.blkbox .blk{height:clamp(170px,34vh,300px)}.cyc{height:clamp(300px,50vh,420px)}}
+@media (max-height:860px){.blkbox .blk{height:clamp(170px,34vh,300px)}.cyc{height:clamp(300px,50vh,420px)}}
 
 /* ต้นกล้า: เมล็ดขยับ → ดินแตก → ลำต้นงอกจากดิน → ใบซ้าย → ใบขวา → ดอกบาน → โยกเบา ๆ */
 .sprout{width:clamp(150px,28vw,250px);overflow:visible}
@@ -277,6 +279,7 @@ button{font-family:inherit;cursor:pointer}
 .art .fig,.art .pos,.art .kid{width:clamp(90px,15vw,160px);height:auto;display:block}
 .opt .art .tens .bun,.opt .art .tens .stk{height:clamp(38px,6vw,56px)}
 .card .art .fig,.card .art .pos,.card .art .kid{width:clamp(120px,20vw,210px)}
+.card .art .fig,.card .art .pos,.card .art .kid{max-height:30vh}   /* ภาพในการ์ดทรงสูง (แก้วน้ำ l_seq) ไม่ให้สูงจนต้องย่อทั้งข้อ (5 พ.ย. 69) */
 
 /* สัปดาห์ 9–11 */
 .art .clk,.art .scl{width:clamp(100px,16vw,170px);height:auto;display:block}
@@ -395,3 +398,12 @@ button{font-family:inherit;cursor:pointer}
 .opt .art .fig{max-height:30vh}   /* ตัวเลือกเป็นภาพทรงสูง (ภาพคลี่ 5 แถว) ไม่ให้การ์ดสูงล้นจอ */
 .ftree .fn,.ftree .fl{transition:opacity .5s}
 .ftree .fn.hl{filter:drop-shadow(0 0 5px #ec4899) drop-shadow(0 0 2px #ec4899)}   /* ผังครอบครัว: คนที่กำลังพูดถึง */
+/* จอเตี้ย: วางท้ายไฟล์ให้ชนะกฎขนาดปกติด้านบน (5 พ.ย. 69) · การ์ดภาพแคบลงให้ 4 ใบอยู่แถวเดียว ไม่ตกบรรทัดจนข้อสูงเกินจอ */
+@media (max-height:860px){
+ .card .art .fig,.card .art .pos,.card .art .kid{width:clamp(100px,14vw,170px);max-height:26vh}
+}
+@media (max-height:700px){   /* จอเตี้ยมาก (Android แนวนอน ~1280×650): ภาพในข้อและภาพตัวเลือกเตี้ยลง ไม่ต้องย่อทั้งข้อจนตัวหนังสือเล็ก (5 พ.ย. 69) */
+ .figbox svg{max-height:38vh}
+ .grdbox svg{max-height:38vh}
+ .opt .art .fig{max-height:22vh}
+ .card .art .fig,.card .art .pos,.card .art .kid{max-height:24vh}

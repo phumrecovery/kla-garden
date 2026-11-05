@@ -624,7 +624,7 @@ if(location.hash==='#all'){const w=h('div','vis');EP.scenes.forEach((s,i)=>{w.ap
  EP.questions.forEach((q,i)=>{if(q.pre&&!(i&&EP.questions[i-1].g===q.g))w.append(h('div','story',q.pre.map(l=>'<p>'+strip(l)+'</p>').join('')));w.append(h('div','qtext','ข้อ '+(i+1)+(q.star?' ⭐ ':' ')+strip(q.q)));if(q.v)w.append(vis(q.v,true));const o=h('div','opts');q.opts.forEach((x,k)=>o.append(h('button','opt'+(k===q.ans?' ok':''),'<span class="k">'+'กขคง'[k]+'.</span>'+optHTML(x))));w.append(o);});
  fixTri(w);st.innerHTML='';st.append(w);st.style.display='block';sub.textContent='โหมดตรวจภาพ: ข้อที่มีกรอบเขียวคือคำตอบ';}
 /* #fit = ตรวจว่าทุกฉาก/ทุกข้อพอดีจอ ไม่ต้องเลื่อน (5 พ.ย. 69 ใช้กับเครื่องมือ ตรวจล้นจอ) · วางภาพสุดท้ายของแต่ละฉากในเวทีจริงทีละฉาก ผลอยู่ใน window.FIT */
-else if(location.hash==='#fit'){(async()=>{const R=[];const m=async(lab,el)=>{st.innerHTML='';st.append(el);fixTri(el);fitStage(el);await wait(900);
+else if(location.hash==='#fit'){(async()=>{const R=[];const m=async(lab,el)=>{st.innerHTML='';st.append(el);fixTri(el);fitStage(el);await wait(EP.fitWait||900);
   R.push({k:lab,dy:st.scrollHeight-st.clientHeight,dx:st.scrollWidth-st.clientWidth,z:+(el.style.scale||1),h:el.offsetHeight,ch:st.clientHeight,top:Math.round(el.getBoundingClientRect().top-st.getBoundingClientRect().top)});};
  for(const [i,s] of EP.scenes.entries())await m('s'+(i+1)+' '+((s.v||{}).type||'kla'),vis(s.v||{type:'kla'},true));
  for(const [i,q] of EP.questions.entries()){const w=h('div','vis');if(q.pre)w.append(h('div','story',q.pre.map(l=>'<p>'+strip(l)+'</p>').join('')));w.append(h('div','qtext',strip(q.q)));if(q.v)w.append(vis(q.v,true));
@@ -632,7 +632,7 @@ else if(location.hash==='#fit'){(async()=>{const R=[];const m=async(lab,el)=>{st
   /* ภาพเฉลยชุด 2: เล่นแบบเร็วจนจบ แล้ววัดว่ากล่องเกินพื้นที่ (dy) หรือภาพเกินกรอบ viewBox (ix) ไหม */
  for(const [i,q] of EP.questions.entries()){let p=null;try{p=exPlan(q);}catch(e){}if(!p||p.k!=='x2'||p.kind==='turn')continue;st.innerHTML='';
   const ov=h('div','ex3d'),box=h('div','exbox x2box'),cap=h('div','excap',' '),x=h('div','x2d'),bar=h('div','x3bar','<button class="go x3b">ไปต่อ ▶</button>');box.append(cap,x,bar);ov.append(box);document.body.append(ov);
-  try{await EX2.run(p,{stage:x,cap,W:async()=>true,fast:true,SFX:new Proxy({},{get:()=>()=>{}}),confetti:()=>{},centerOf:()=>[0,0],say:async()=>{},blip:()=>{}});}catch(e){}await wait(700);
+  try{await EX2.run(p,{stage:x,cap,W:async()=>true,fast:true,SFX:new Proxy({},{get:()=>()=>{}}),confetti:()=>{},centerOf:()=>[0,0],say:async()=>{},blip:()=>{}});}catch(e){}await wait(EP.fitWait||700);
   const o=ov.getBoundingClientRect(),b=box.getBoundingClientRect(),sv=x.querySelector('svg');let ix=0;
   if(sv){const vb=sv.viewBox.baseVal,r=sv.getBoundingClientRect(),k=Math.min(r.width/vb.width,r.height/vb.height),cx=r.left+(r.width-vb.width*k)/2,cy=r.top+(r.height-vb.height*k)/2;
    [...sv.querySelectorAll('text,rect,circle,polygon,path,line,image,ellipse')].forEach(e=>{const q=e.getBoundingClientRect();if(!q.width&&!q.height)return;ix=Math.max(ix,cx-q.left,q.right-(cx+vb.width*k),cy-q.top,q.bottom-(cy+vb.height*k));});}

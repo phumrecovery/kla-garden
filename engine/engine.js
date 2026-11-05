@@ -70,7 +70,16 @@ const react=c=>{who.classList.remove('cheer','oops');void who.offsetWidth;who.cl
 function runFx(el){const my=tok;(el._fx||[]).forEach(f=>{setTimeout(()=>{if(my!==tok||paused)return;SFX.pop(f.i);if(f.el)setTimeout(()=>f.el.classList.add('on'),320);},f.t*1000);});(el._later||[]).forEach(f=>setTimeout(()=>{if(my===tok)f.fn();},f.t*1000));}
 function fixTri(el){const w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.nodeValue.includes('🔺')&&!(n.parentNode instanceof SVGElement)?1:3});const ns=[];while(w.nextNode())ns.push(w.currentNode);
  ns.forEach(n=>{const sp=document.createElement('span');sp.innerHTML=n.nodeValue.replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])).replace(/🔺/g,TRI);n.replaceWith(sp);});}
-async function show(el,anim){hideSub=false;fixTri(el);const old=st.firstElementChild;if(anim&&old&&!reduce){old.classList.add('leave');await wait(200);}st.innerHTML='';if(anim&&!reduce)el.classList.add('enter');st.append(el);runFx(el);}
+async function show(el,anim){hideSub=false;fixTri(el);const old=st.firstElementChild;if(anim&&old&&!reduce){old.classList.add('leave');await wait(200);}st.innerHTML='';if(anim&&!reduce)el.classList.add('enter');st.append(el);fitStage(el);runFx(el);}
+/* ตาข่ายกันล้นจอ (5 พ.ย. 69): ขนาดตัวอักษร/ภาพส่วนใหญ่คิดจากความกว้างจอ (vw) แท็บเล็ตแนวนอนที่กว้างแต่เตี้ยจึงล้นล่าง
+   ถ้าฉาก/ข้อสูงหรือกว้างเกินเวที ย่อทั้งก้อนลงให้พอดี (scale แยกจาก transform ของแอนิเมชันเข้า) ไม่ต้องเลื่อนจอ · ต่ำสุด 0.55 เท่า */
+function fitStage(el){if(!window.ResizeObserver||location.hash==='#all')return;let busy=false,again=false;
+ const f=()=>{if(busy){again=true;return;}if(!el.isConnected){ro.disconnect();return;}busy=true;
+  const H=Math.max(el.offsetHeight,el.scrollHeight),W=el.scrollWidth,aH=st.clientHeight-40,aW=st.clientWidth-8;const k=Math.max(.55,Math.min(1,aH/H,aW/W));
+  const sc=k>.995?'':k.toFixed(3),mb=k>.995?'':(-H*(1-k)).toFixed(1)+'px';
+  if(el.style.scale!==sc){el.style.scale=sc;el.style.transformOrigin='top center';el.style.marginTop=sc?'0':'';el.style.marginBottom=mb;}else if(el.style.marginBottom!==mb)el.style.marginBottom=mb;   /* ย่อแล้วชิดบน ไม่ให้ margin:auto ดันลงล่าง */
+  requestAnimationFrame(()=>{busy=false;if(again){again=false;f();}});};   /* ขนาดเปลี่ยนระหว่างรอ: วัดใหม่อีกรอบ ไม่ทิ้ง */
+ const ro=new ResizeObserver(f);ro.observe(el);ro.observe(st);f();}
 const total=EP.scenes.length+EP.questions.length;const prog=x=>{pg.style.width=Math.round(x*100)+'%';};
 const strip=t=>String(t).replace(/[\[\]]/g,'');
 const isEn=t=>/^[A-Za-z0-9 ,.'!?\-]+$/.test(t.trim())&&/[A-Za-z]/.test(t);
@@ -614,6 +623,21 @@ document.getElementById('bF').onclick=()=>{try{document.fullscreenElement?docume
 if(location.hash==='#all'){const w=h('div','vis');EP.scenes.forEach((s,i)=>{w.append(h('div','qtext','ฉาก '+(i+1)));w.append(vis(s.v||{type:'kla'},true));});
  EP.questions.forEach((q,i)=>{if(q.pre&&!(i&&EP.questions[i-1].g===q.g))w.append(h('div','story',q.pre.map(l=>'<p>'+strip(l)+'</p>').join('')));w.append(h('div','qtext','ข้อ '+(i+1)+(q.star?' ⭐ ':' ')+strip(q.q)));if(q.v)w.append(vis(q.v,true));const o=h('div','opts');q.opts.forEach((x,k)=>o.append(h('button','opt'+(k===q.ans?' ok':''),'<span class="k">'+'กขคง'[k]+'.</span>'+optHTML(x))));w.append(o);});
  fixTri(w);st.innerHTML='';st.append(w);st.style.display='block';sub.textContent='โหมดตรวจภาพ: ข้อที่มีกรอบเขียวคือคำตอบ';}
+/* #fit = ตรวจว่าทุกฉาก/ทุกข้อพอดีจอ ไม่ต้องเลื่อน (5 พ.ย. 69 ใช้กับเครื่องมือ ตรวจล้นจอ) · วางภาพสุดท้ายของแต่ละฉากในเวทีจริงทีละฉาก ผลอยู่ใน window.FIT */
+else if(location.hash==='#fit'){(async()=>{const R=[];const m=async(lab,el)=>{st.innerHTML='';st.append(el);fixTri(el);fitStage(el);await wait(900);
+  R.push({k:lab,dy:st.scrollHeight-st.clientHeight,dx:st.scrollWidth-st.clientWidth,z:+(el.style.scale||1),h:el.offsetHeight,ch:st.clientHeight,top:Math.round(el.getBoundingClientRect().top-st.getBoundingClientRect().top)});};
+ for(const [i,s] of EP.scenes.entries())await m('s'+(i+1)+' '+((s.v||{}).type||'kla'),vis(s.v||{type:'kla'},true));
+ for(const [i,q] of EP.questions.entries()){const w=h('div','vis');if(q.pre)w.append(h('div','story',q.pre.map(l=>'<p>'+strip(l)+'</p>').join('')));w.append(h('div','qtext',strip(q.q)));if(q.v)w.append(vis(q.v,true));
+  const o=h('div','opts');q.opts.forEach((x,k)=>o.append(h('button','opt','<span class="k">'+'กขคง'[k]+'.</span>'+optHTML(x))));w.append(o);await m('q'+(i+1)+' '+((q.v||{}).type||'-'),w);}
+  /* ภาพเฉลยชุด 2: เล่นแบบเร็วจนจบ แล้ววัดว่ากล่องเกินพื้นที่ (dy) หรือภาพเกินกรอบ viewBox (ix) ไหม */
+ for(const [i,q] of EP.questions.entries()){let p=null;try{p=exPlan(q);}catch(e){}if(!p||p.k!=='x2'||p.kind==='turn')continue;st.innerHTML='';
+  const ov=h('div','ex3d'),box=h('div','exbox x2box'),cap=h('div','excap',' '),x=h('div','x2d'),bar=h('div','x3bar','<button class="go x3b">ไปต่อ ▶</button>');box.append(cap,x,bar);ov.append(box);document.body.append(ov);
+  try{await EX2.run(p,{stage:x,cap,W:async()=>true,fast:true,SFX:new Proxy({},{get:()=>()=>{}}),confetti:()=>{},centerOf:()=>[0,0],say:async()=>{},blip:()=>{}});}catch(e){}await wait(700);
+  const o=ov.getBoundingClientRect(),b=box.getBoundingClientRect(),sv=x.querySelector('svg');let ix=0;
+  if(sv){const vb=sv.viewBox.baseVal,r=sv.getBoundingClientRect(),k=Math.min(r.width/vb.width,r.height/vb.height),cx=r.left+(r.width-vb.width*k)/2,cy=r.top+(r.height-vb.height*k)/2;
+   [...sv.querySelectorAll('text,rect,circle,polygon,path,line,image,ellipse')].forEach(e=>{const q=e.getBoundingClientRect();if(!q.width&&!q.height)return;ix=Math.max(ix,cx-q.left,q.right-(cx+vb.width*k),cy-q.top,q.bottom-(cy+vb.height*k));});}
+  R.push({k:'x'+(i+1)+' '+p.kind,dy:Math.round(Math.max(o.top-b.top,b.bottom-o.bottom)),dx:Math.round(Math.max(o.left-b.left,b.right-o.right)),ix:Math.round(ix)});ov.remove();}
+ window.FIT=R;})();}
 else if(EP.autostart){ac();pick();lesson(0);}
 else cover();
 if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){try{navigator.serviceWorker.register(new URL('sw.js',new URL(EP.menu,location.href)).href).catch(()=>{});}catch(e){}}

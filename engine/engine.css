@@ -165,6 +165,8 @@ button{font-family:inherit;cursor:pointer}
  .char{width:clamp(96px,16vw,170px)}
  .bubble{font-size:clamp(20px,3.4vw,34px)}
  .tf{grid-template-columns:repeat(5,clamp(38px,6vw,62px));grid-auto-rows:clamp(38px,6vw,62px)}
+ .figbox svg{max-height:48vh}   /* แท็บเล็ตแนวนอน: ภาพในข้อไม่สูงจนตัวเลือกตกจอ (5 พ.ย. 69) */
+ .grdbox svg{max-height:44vh}
 }
 /* สัปดาห์ 3: ทรงสามมิติ กล่องบล็อก รอยเท้า วงจรชีวิต */
 .art{display:flex;align-items:center;justify-content:center}
@@ -260,7 +262,7 @@ button{font-family:inherit;cursor:pointer}
 .tensv .bun{height:clamp(90px,16vw,150px);width:auto;display:block}.tensv .stk{height:clamp(90px,16vw,150px);width:auto;display:block}
 .tensv .gather{transition:transform .55s ease-in,opacity .55s;transform:translateX(-60px) scale(.6);opacity:0}
 .tlab{display:flex;gap:24px;font-size:clamp(20px,3.4vw,34px)}.tlab .lt{color:#c2410c}.tlab .lu{color:#a8742a}
-.colg{display:grid;grid-template-columns:repeat(3,auto);align-items:center;justify-items:center;background:#fff;border-radius:22px;padding:8px 28px 14px;box-shadow:0 4px 0 rgba(0,0,0,.08);column-gap:clamp(14px,3vw,30px);font-size:clamp(46px,8.5vw,88px);line-height:1.1}
+.colg{display:grid;grid-template-columns:repeat(3,auto);align-items:center;justify-items:center;background:#fff;border-radius:22px;padding:8px 28px 14px;box-shadow:0 4px 0 rgba(0,0,0,.08);column-gap:clamp(14px,3vw,30px);font-size:clamp(40px,min(8.5vw,10vh),88px);line-height:1.1}   /* min(vw,vh): แท็บเล็ตแนวนอนเตี้ย ไม่ให้ตั้งบวกลบสูงล้นจอ (5 พ.ย. 69) */
 .colg .cc{min-width:1.1em;text-align:center;border-radius:12px;padding:0 .12em;transition:background .3s}
 .colg .hd{font-size:clamp(15px,2.2vw,22px);color:#8a7f99}.colg .hd.ct{color:#c2410c}.colg .hd.cu{color:#a8742a}
 .colg .aux{font-size:clamp(22px,3.8vw,38px);color:#e8701c;min-height:1em;visibility:hidden}.colg .aux.on{visibility:visible}
@@ -268,7 +270,7 @@ button{font-family:inherit;cursor:pointer}
 .colg .rs{visibility:hidden;color:var(--c)}.colg .rs.on{visibility:visible}
 .colg .hl{background:#fff1c2}.colg .x{text-decoration:line-through;text-decoration-color:#e5484d;text-decoration-thickness:4px;color:#b3aabf}
 .colg sup{font-size:.45em;color:#e8701c;vertical-align:.9em;margin-right:1px}
-.grdbox svg{width:min(92vw,560px);height:auto;display:block}.grd .mv{transition:transform .45s ease-in-out}
+.grdbox svg{width:min(92vw,560px);height:auto;max-height:52vh;display:block}.grd .mv{transition:transform .45s ease-in-out}
 .arws{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.arw{background:#fff;border-radius:12px;padding:2px 12px;font-size:clamp(26px,4.5vw,44px);box-shadow:0 3px 0 rgba(0,0,0,.08);color:#8a7f99;transition:all .2s}.arw.done{color:var(--c)}.arw.on{background:var(--c);color:#fff;transform:scale(1.15)}
 .figbox svg{width:min(80vw,420px);height:auto;display:block;background:#fff;border-radius:20px}
 .fig .hlp{fill:#ffb347;opacity:.7;stroke:#e8701c;stroke-width:3}.fig .hlp.old{opacity:.0}

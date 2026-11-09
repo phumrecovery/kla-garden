@@ -40,7 +40,7 @@ const get=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.pars
 const set=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 const P=get('kla-garden-v1',{}),H=get('kla-exam-v1',[]);let all=get('kla-exam-all',false),N=get('kla-exam-n',30),MODE=get('kla-exam-mode','practice'),MN=get('kla-mock-n',30),MS=get('kla-mock-sec',15),PS=get('kla-paper-sec',2),PON=get('kla-paper-on',false);if(![2,4].includes(PS))PS=2;if(!QUOTAS[MN])MN=30;
 const T=BANK.topics;
-const open=t=>all||!!(P['EP'+t.ep]&&P['EP'+t.ep].seed);
+const open=t=>all||!!t.open||!!(P['EP'+t.ep]&&P['EP'+t.ep].seed);
 /* บางข้อใช้ความรู้จากตอนหลัง (x.ep) ซ่อนไว้จนกว่าน้องจะดูตอนนั้น */
 const okIt=x=>all||!x.ep||!!(P['EP'+x.ep]&&P['EP'+x.ep].seed);
 const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};

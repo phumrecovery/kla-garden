@@ -38,7 +38,7 @@ window.levelRank=(x,m)=>m&&m.hard?((x.lv||1)===3?0:1):0;
 window.pickFocus=function(n){
   const g=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}};
   const P=g('kla-garden-v1')||{},H=g('kla-exam-v1')||[],RV=g('kla-review-v1')||[],all=g('kla-exam-all'),SEEN=g('kla-seen-v1')||{},cnt=x=>(SEEN[x.id]||[0])[0];
-  const ts=BANK.topics.filter(t=>FOCUS.includes(t.id)&&(all||(P['EP'+t.ep]&&P['EP'+t.ep].seed)));
+  const ts=BANK.topics.filter(t=>FOCUS.includes(t.id)&&(all||t.open||(P['EP'+t.ep]&&P['EP'+t.ep].seed)));
   if(!ts.length)return [];
   const st={},add=(t,ok)=>{const o=st[t]=st[t]||{n:0,ok:0};o.n++;o.ok+=ok?1:0;};
   H.slice(-10).forEach(r=>(r.items||[]).forEach(x=>{if(x)add(x[1],x[2]);}));RV.slice(-60).forEach(x=>add(x[1],x[2]));

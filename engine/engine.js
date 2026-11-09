@@ -122,7 +122,7 @@ const poly=(pts,fill,cls)=>'<polygon'+(cls?' class="'+cls+'"':'')+' points="'+pt
 /* b={g:[[สูง..]..] แถวหลัง→หน้า, view:'iso'|'top'|'front'|'side', gray:[r,c,z], mark:[[r,c,z]], layers, color, nums} */
 function blocksSVG(b,anim){const g=b.g,R=g.length,C=Math.max(...g.map(r=>r.length)),view=b.view||'iso',H=(r,c)=>(g[r]&&g[r][c])||0;
  const same=(a,r,c,z)=>a&&a[0]===r&&a[1]===c&&(a[2]||0)===z;
- const fill=(r,c,z)=>same(b.gray,r,c,z)?'#a3a7ad':(b.mark||[]).some(m=>same(m,r,c,z))?'#f472b6':b.layers?BC[z%BC.length]:(b.color||BC[0]);
+ const fill=(r,c,z)=>same(b.gray,r,c,z)||(b.grays||[]).some(a=>same(a,r,c,z))?'#6b7280':(b.mark||[]).some(m=>same(m,r,c,z))?'#f472b6':b.layers?BC[z%BC.length]:(b.color||BC[0]);
  const svg=(w,hh,x0,y0,body)=>'<svg class="blk" viewBox="'+[x0,y0,w,hh].map(n=>n.toFixed(1)).join(' ')+'" stroke="#3b3b4f" stroke-width="2" stroke-linejoin="round">'+body+'</svg>';
  if(view==='iso'){const s=40,dx=s*.5,dy=s*.4;const cubes=[];
   for(let r=0;r<R;r++)for(let c=0;c<C;c++)for(let z=0;z<H(r,c);z++)cubes.push([r,c,z]);
@@ -267,7 +267,7 @@ function vis(v,still){const d=h('div','vis');d._fx=[];d._later=[];const at=still
   const t0=at+n*.08+.6;its.slice(n-k).reverse().forEach((e,j)=>{if(still)e.classList.add('gone');else later(t0+j*sp,()=>{e.classList.add('gone');SFX.pop(j);});});
   if(v.text){const t=h('div','bignum pop',v.text);const tt=still?0:t0+k*sp+.4;t.style.animationDelay=tt+'s';d.append(t);later(tt,SFX.chime);}}
  else if(T==='blocks'){const sp=v.speed||.45,n=v.g.flat().reduce((a,b)=>a+b,0);const w=h('div','blkrow');
-  const main=h('div','blkbox pop');main.innerHTML=blocksSVG(v,still?null:{at,sp});w.append(main);
+  const main=h('div','blkbox pop');main.innerHTML=blocksSVG(v,still?null:{at,sp});w.append(main);if(v.see){const e=h('div','blksee','<span>'+v.see+'</span><b>มองจากตรงนี้ 👈</b>');main.append(e);}
   (v.views||[]).forEach((vw,i)=>{const k=h('div','card pop');k.innerHTML='<div class="art">'+blocksSVG(Object.assign({},v,{view:vw}))+'</div><div class="T">'+({top:'มองจากด้านบน',front:'มองจากด้านหน้า',side:'มองจากด้านข้าง'}[vw])+'</div>';const tt=still?0:(v.vd||at+n*sp+.3)+i*.6;k.style.animationDelay=tt+'s';w.append(k);});d.append(w);
   if(!still)main.querySelectorAll('.cb').forEach(c=>later(at+(+c.dataset.i)*sp+.15,()=>SFX.pop(+c.dataset.i)));
   if(v.text){const t=h('div','bignum pop',v.text);const tt=still?0:at+n*sp+.4;t.style.animationDelay=tt+'s';d.append(t);later(tt,SFX.chime);}}
@@ -417,8 +417,8 @@ async function mockTimer(qi,q,box,btns,segs){const my=tok;const ms=(EP.sec||15)*
 /* ---------- เฉลยแบบภาพเคลื่อนไหว 3 มิติ (โหมดฝึก/คลิป): นับกล่องที่ซ้อนกัน · มองจากด้านบน/หน้า · พับภาพคลี่ ---------- */
 function exPlan(q){if(q.x2&&q.x2.kind==='net3')return Object.assign({k:'net',net:'gen'},q.x2);if(q.g&&!q.x2)return null;if(q.v&&q.v.fig&&q.v.fig.sh)return null;if(q.x2&&window.EX2){const p=EX2.plan(q);if(p)return p;}const t=q.q+' '+(q.say||''),v=q.v||{},a=q.opts[q.ans];
  let g=v.type==='blocks'?v.g:null;if(!g&&/มากที่สุด|น้อยที่สุด/.test(t)&&a&&a.blk&&a.blk.g)g=a.blk.g;
- if(g&&/ติดกับ/.test(t)&&v.gray)return {k:'blk',g,view:'adj',gray:v.gray};
- if(g&&!/ติดกับ/.test(t)){if(/ด้านบน/.test(t))return {k:'blk',g,view:'top'};if(/ด้านหน้า/.test(t))return {k:'blk',g,view:'front'};if(/กี่กล่อง|กี่ใบ|กี่ก้อน|มากที่สุด|น้อยที่สุด/.test(t))return {k:'blk',g,view:'count'};}
+ if(g&&/ติดกับ/.test(t)&&v.gray)return {k:'blk',g,view:'adj',gray:v.gray};if(g&&/ติด/.test(t)&&v.grays)return {k:'blk',g,view:'adj',grays:v.grays,free:/ไม่ติด/.test(t)};
+ if(g&&!/ติด/.test(t)){if(/ด้านข้าง|ด้านขวา/.test(t))return {k:'blk',g,view:'side'};if(/ด้านบน/.test(t))return {k:'blk',g,view:'top'};if(/ด้านหน้า/.test(t))return {k:'blk',g,view:'front'};if(/กี่กล่อง|กี่ใบ|กี่ก้อน|มากที่สุด|น้อยที่สุด/.test(t))return {k:'blk',g,view:'count'};}
  if(/คลี่|พับ/.test(t)){const net=(a&&a.solid)||(/ลูกบาศก์|ลูกเต๋า/.test(t)?'cube':/ทรงกระบอก/.test(t)?'cylinder':/กรวย/.test(t)?'cone':null);if(!net)return null;
   let nums=null,pair=null;const f=v.items&&v.items[0]&&v.items[0].fig;
   if(net==='cube'&&f&&f.txt){nums={};f.txt.forEach(([x,y,n])=>{nums[Math.round((x-30)/40)+','+Math.round((y-30)/40)]=n;});}
@@ -431,7 +431,8 @@ async function explain(p,why){const my=tok;let skip=false;const ov=h('div','ex3d
  const W=async ms=>{let t=0;while(t<ms&&!skip){await wait(50);if(my!==tok)return false;if(!paused)t+=50;}return my===tok&&!skip;};
  try{if(p.k==='x2'){box.classList.add('x2box');const st=h('div','x2d');st3.replaceWith(st);await x2Play(p,st,cap,box,sk,W,my,()=>{skip=false;},()=>skip,why);}
   else if(p.k==='blk'){await exBlocks(p,sc,cap,W);if(my===tok&&p.st){sk.style.display='none';await blkPlay(p,sc,cap,box,my);}}
-  else{fit3(st3,sc,p.net,1.3);if(p.net==='gen')await exNet(p,sc,cap,W);else if(p.net==='cube')await exCube(p,sc,cap,W);else if(p.net==='cylinder')await exCyl(sc,cap,W);else await exCone(sc,cap,W);if(!skip)await W(700);}}catch(e){}
+  else{fit3(st3,sc,p.net,1.3);if(p.net==='gen')await exNet(p,sc,cap,W);else if(p.net==='cube')await exCube(p,sc,cap,W);else if(p.net==='cylinder')await exCyl(sc,cap,W);else await exCone(sc,cap,W);if(!skip)await W(700);
+   if(p.net==='gen'&&my===tok){sk.style.display='none';drag3(sc);cap.textContent='👆 ใช้นิ้วลากหมุนกล่องดูรอบ ๆ ได้';await new Promise(res=>{const bar=h('div','x3bar'),go=h('button','go x3b','ไปต่อ ▶');bar.append(go);box.append(bar);go.onclick=res;const iv=setInterval(()=>{if(my!==tok){clearInterval(iv);res();}},300);});}}}catch(e){}
  ov.remove();return my===tok;}
 /* เฉลยภาพชุด 2 (explain2.js): เล่นภาพทีละขั้นพร้อมเสียงพากย์ · กดข้ามแล้วเสียงหยุดและข้ามไปภาพสุดท้าย
    จบรอบแรกแล้วน้องกล้าพูดสรุป (why) พร้อมปุ่ม ดูอีกครั้ง / ไปต่อ (และแตะนับเองได้ในบางภาพ) */
@@ -441,6 +442,26 @@ async function x2Play(p,st,cap,box,sk,W,my,resetSkip,isSkip,why){const ctx=fast=
   sk.style.display='none';let done=false;const wp=!n&&why?narr([why],()=>done):null;if(!wp)sub.textContent=cap.textContent;const bar=h('div','x3bar'),ag=h('button','btn2 x3b','↺ ดูอีกครั้ง'),go=h('button','go x3b','ไปต่อ ▶');bar.append(ag,go);box.append(bar);
   const r=await new Promise(res=>{const iv=setInterval(()=>{if(my!==tok){clearInterval(iv);res('g');}},200);ag.onclick=()=>{clearInterval(iv);res('a');};go.onclick=()=>{clearInterval(iv);res('g');};});
   done=true;if(wp)await wp;bar.remove();if(r!=='a'||my!==tok)return;}}
+/* ดูเฉลยหลังจำลองสอบ (9 พ.ย. 69 ผู้ปกครองขอ): ตารางข้อ สีเขียวถูก แดงผิด เทาหมดเวลา · แตะข้อไหนก็ได้ ครูบอกคำตอบและเหตุผล
+   ข้อ "เรื่องใหม่" (q.nw = หัวข้อที่ยังไม่มีใน EP ไหนเลย) เล่นภาพอธิบายละเอียดให้อัตโนมัติ ข้ออื่นกดปุ่มดูภาพเองได้ */
+async function review(){tok++;if(synth)synth.cancel();phase='review';QS=null;const c=h('div','vis');
+ const nOk=EP.questions.filter((q,i)=>LOG[i]&&LOG[i].ok).length;c.append(h('div','qtext','🔍 ดูเฉลย · ถูก '+nOk+' จาก '+EP.questions.length+' ข้อ'),h('div','rvn','แตะข้อที่อยากดู · สีแดง ยังไม่ถูก · สีเทา หมดเวลา · ✨ เรื่องใหม่ มีภาพอธิบายละเอียด'));
+ const g=h('div','rvgrid');EP.questions.forEach((q,i)=>{const L=LOG[i];const b=h('button','rvc '+(L&&L.ok?'ok':L&&L.to?'to':'bad'),(i+1)+(q.nw?'<i>✨</i>':''));b.onclick=()=>rvQ(i);g.append(b);});c.append(g);
+ const bad=EP.questions.map((q,i)=>i).filter(i=>!(LOG[i]&&LOG[i].ok));const bt=h('div','btns');
+ if(bad.length){const a=h('button','go','▶ ดูข้อที่ยังไม่ถูกทีละข้อ');a.onclick=()=>rvQ(bad[0],bad);bt.append(a);}
+ const m=h('a','btn2','🏡 กลับสวน');m.href=EP.menu;bt.append(m);c.append(bt);setWho('teach');await show(c,true);
+ say(bad.length?'ข้อที่เป็นสีแดง คือข้อที่ยังตอบไม่ถูก แตะดูเฉลยได้เลยค่ะ':'ถูกทุกข้อเลยค่ะ เก่งมาก');}
+async function rvQ(i,list){const my=++tok;if(synth)synth.cancel();if(curAudio)try{curAudio.pause()}catch(e){}const q=EP.questions[i],L=LOG[i]||{};const box=h('div','vis');
+ box.append(h('div','qno pop','ข้อ '+(i+1)+' / '+EP.questions.length+(q.nw?' · ✨ เรื่องใหม่':'')));
+ if(q.pre)box.append(h('div','story',q.pre.map(l=>'<p>'+strip(l)+'</p>').join('')));const hw=hideWord(q);if(hw.v)box.append(vis(hw.v,true));box.append(h('div','qtext',strip(hw.q)));
+ const opts=h('div','opts');q.opts.forEach((o,k)=>{const b=h('button','opt'+(k===q.ans?' ok':'')+(k===L.pick&&k!==q.ans?' wrong':''),'<span class="k">'+'กขคง'[k]+'.</span>'+optHTML(o)+(k===L.pick?'<span class="mine">หนูเลือก</span>':''));b.disabled=true;opts.append(b);});box.append(opts);
+ const xp=exPlan(q),why=q.why||'',nav=list||EP.questions.map((_,k)=>k),pos=nav.indexOf(i),bt=h('div','btns rvb');
+ if(xp){const e=h('button','go','👀 ดูภาพอธิบาย');e.onclick=()=>{tok++;if(synth)synth.cancel();explain(xp,why);};bt.append(e);}
+ if(pos>0){const b=h('button','btn2','◀ ข้อก่อน');b.onclick=()=>rvQ(nav[pos-1],list);bt.append(b);}
+ if(pos>=0&&pos<nav.length-1){const b=h('button','btn2','ข้อถัดไป ▶');b.onclick=()=>rvQ(nav[pos+1],list);bt.append(b);}
+ const bk=h('button','btn2','📋 ทุกข้อ');bk.onclick=review;bt.append(bk);box.append(bt);setWho('teach');await show(box,true);if(my!==tok)return;
+ await say([L.ok?'ข้อนี้ตอบถูกค่ะ':L.to?'ข้อนี้หมดเวลาก่อนค่ะ':'ข้อนี้ยังไม่ถูกค่ะ','คำตอบคือ',labelSay(q.opts[q.ans])].concat(xp&&q.nw?[]:why?[why]:[]));
+ if(my!==tok||!xp||!q.nw)return;await wait(400);if(my===tok)explain(xp,why);}
 /* สนามฝึก: ตอบถูกเร็ว ไม่บังคับดูภาพ แต่มีปุ่มให้กดดูได้ระหว่างน้องกล้าพูดเฉลย */
 const slowNow=s=>(s.th||0)/1000>(window.slowTH?slowTH():30);
 async function offerX(xp,sp,why){const my=tok;let cut=false;const b=h('button','xoff pop','👀 ดูภาพอธิบาย');document.body.append(b);
@@ -452,14 +473,24 @@ async function exBlocks(p,sc,cap,W){const g=p.g,R=g.length,C=Math.max(...g.map(r
  const els=cubes.map(()=>{const e=h('div','cu3',['f','b','l','r','t','d'].map(k=>'<i class="'+k+'"><b></b></i>').join(''));sc.append(e);return e;});
  const place=k=>cubes.forEach(([r,c,z],i)=>{els[i].style.transform='translate3d('+((c-(C-1)/2)*S*k)+'px,'+((-z+(mz-1)/2)*S*k)+'px,'+((r-(R-1)/2)*S*k)+'px)';});
  const gi=p.gray?cubes.findIndex(([r,c,z])=>r===p.gray[0]&&c===p.gray[1]&&z===(p.gray[2]||0)):-1;if(gi>=0)els[gi].classList.add('gy');
+ /* หลายก้อนสี (ชุดครูฝน: นับกล่องขาวที่ติด/ไม่ติดกล่องสี 9 พ.ย. 69) · ติด = แตะกันเต็มหน้า ไม่นับแตะแค่มุม/ขอบ */
+ const gs=(p.grays||[]).map(a=>cubes.findIndex(([r,c,z])=>r===a[0]&&c===a[1]&&z===(a[2]||0))).filter(i=>i>=0);gs.forEach(i=>els[i].classList.add('gy'));
+ const touch=i=>gs.some(j=>Math.abs(cubes[i][0]-cubes[j][0])+Math.abs(cubes[i][1]-cubes[j][1])+Math.abs(cubes[i][2]-cubes[j][2])===1);
  const nb=gi<0?[]:cubes.map((x,i)=>i).filter(i=>Math.abs(cubes[i][0]-cubes[gi][0])+Math.abs(cubes[i][1]-cubes[gi][1])+Math.abs(cubes[i][2]-cubes[gi][2])===1);
  p.st={els,cubes,place,gi,nb};
+ if(gs.length){const ISO2='rotateX(-25deg) rotateY(-35deg)',wh=cubes.map((x,i)=>i).filter(i=>!gs.includes(i)),T_=wh.filter(touch),F_=wh.filter(i=>!touch(i)),pick=p.free?F_:T_;
+  sc.style.transform=ISO2;place(1);cap.textContent='กล่องสีเข้มมี '+gs.length+' กล่อง · กล่องสีขาวมี '+wh.length+' กล่อง';if(!await W(1800))return;
+  cap.textContent='แยกกล่องออก ดูว่ากล่องขาวกล่องไหนแตะกล่องสีเข้ม (ต้องแตะกันเต็มหน้า)';els.forEach(e=>e.style.transition='transform .9s ease');place(1.45);SFX.whoosh();if(!await W(1700))return;
+  sc.style.transition='transform 3s ease-in-out';sc.style.transform='rotateX(-25deg) rotateY(25deg)';
+  for(let k=0;k<T_.length;k++){const e=els[T_[k]];e.classList.add(p.free?'dim':'hl');if(!p.free)e.querySelectorAll('b').forEach(b=>b.textContent=k+1);cap.textContent=p.free?'กล่องนี้แตะกล่องสี ไม่นับ':'แตะกล่องสี '+(k+1)+' กล่อง';SFX.pop(k);if(!await W(700))return;}
+  if(p.free)for(let k=0;k<F_.length;k++){const e=els[F_[k]];e.classList.add('hl');e.querySelectorAll('b').forEach(b=>b.textContent=k+1);cap.textContent='ไม่แตะกล่องสีเลย '+(k+1)+' กล่อง';SFX.pop(k);if(!await W(800))return;}
+  cap.textContent=(p.free?'กล่องขาวที่ไม่ติดกล่องสี ':'กล่องขาวที่ติดกล่องสี ')+pick.length+' กล่อง';SFX.chime();if(!await W(1800))return;els.forEach(e=>e.style.transition='transform .8s ease');place(1);sc.style.transform=ISO2;await W(900);return;}
  const ISO='rotateX(-25deg) rotateY(-35deg)';sc.style.transform=ISO;place(1);if(!await W(1000))return;
  if(p.view==='adj'){cap.textContent='แยกกล่องออกนิดนึง ดูว่ากล่องไหนแตะกล่องสีเทา';els.forEach(e=>e.style.transition='transform .9s ease');place(1.4);SFX.whoosh();if(!await W(1300))return;
   sc.style.transition='transform 2.4s ease-in-out';sc.style.transform='rotateX(-25deg) rotateY(25deg)';
   for(let k=0;k<nb.length;k++){const e=els[nb[k]];e.classList.add('hl');e.querySelectorAll('b').forEach(b=>b.textContent=k+1);cap.textContent='ติดกับกล่องสีเทา '+(k+1)+' กล่อง';SFX.pop(k);if(!await W(800))return;}
   cap.textContent='รวมติดกับกล่องสีเทา '+nb.length+' กล่อง';SFX.chime();if(!await W(1500))return;els.forEach(e=>e.style.transition='transform .8s ease');place(1);sc.style.transform=ISO;await W(900);return;}
- if(p.view!=='count'){cap.textContent=p.view==='top'?'⬇️ มองจากด้านบนลงมา':'👀 มองจากด้านหน้าตรง ๆ';sc.style.transition='transform 1.6s ease-in-out';sc.style.transform=p.view==='top'?'rotateX(-90deg) rotateY(0deg)':'rotateX(0deg) rotateY(0deg)';SFX.whoosh();
+ if(p.view!=='count'){cap.textContent=p.view==='top'?'⬇️ มองจากด้านบนลงมา':p.view==='side'?'👉 เดินไปยืนด้านขวา แล้วมองตรง ๆ':'👀 มองจากด้านหน้าตรง ๆ';sc.style.transition='transform 1.6s ease-in-out';sc.style.transform=p.view==='top'?'rotateX(-90deg) rotateY(0deg)':p.view==='side'?'rotateX(0deg) rotateY(-90deg)':'rotateX(0deg) rotateY(0deg)';SFX.whoosh();
   if(!await W(3000))return;sc.style.transform=ISO;await W(1600);return;}
  cap.textContent='แยกกล่องออก จะเห็นกล่องที่ซ่อนอยู่';els.forEach(e=>e.style.transition='transform .9s ease');place(1.5);SFX.whoosh();if(!await W(1200))return;
  sc.style.transition='transform '+(cubes.length*.65+1.5).toFixed(1)+'s linear';sc.style.transform='rotateX(-25deg) rotateY(325deg)';
@@ -491,7 +522,7 @@ async function blkPlay(p,sc,cap,box,my){const {els,cubes,place,gi,nb}=p.st,N=cub
 /* ย่อ/ขยายภาพ 3 มิติให้พอดีกรอบทุกขนาดจอ (4 พ.ย. 69: เดิมขยายคงที่ 1.5/1.3 เท่า บนแท็บเล็ตภาพคลี่ล้นกรอบบน-ล่าง)
    NAT = ขนาดจริงที่ scale 1 ตอนภาพกางกว้างที่สุด (วัดในเบราว์เซอร์) รวมขอบเผื่อมุมเอียง */
 const NAT3={cube:[300,250],cylinder:[300,336],cone:[300,390],gen:[230,250]};
-function fit3(box,sc,kind,max){const n=NAT3[kind]||NAT3.cube,f=()=>{const w=box.clientWidth,h=box.clientHeight;if(w&&h)sc.style.scale=Math.max(.5,Math.min(max,(w-24)/n[0],(h-24)/n[1])).toFixed(3);};
+function fit3(box,sc,kind,max){const n=NAT3[kind]||NAT3.cube,f=()=>{const w=box.clientWidth,h=box.clientHeight;if(w&&h)sc.style.scale=(Math.max(.5,Math.min(max,(w-24)/n[0],(h-24)/n[1]))*(sc._boost||1)).toFixed(3);};
  f();if(window.ResizeObserver)new ResizeObserver(f).observe(box);}
 async function exCube(p,sc,cap,W){const S=72,m=p.nums||{};sc.style.setProperty('--s',S+'px');
  const F=(c,r,cls)=>{const n=m[c+','+r];const e=h('div','nf'+(cls?' '+cls:''),'<b>'+(n==null?'':n)+'</b>');e.dataset.n=n==null?'':n;return e;};
@@ -519,6 +550,10 @@ async function exCube(p,sc,cap,W){const S=72,m=p.nums||{};sc.style.setProperty('
  await W(4700);}
 /* ภาพคลี่ลูกบาศก์รูปร่างใดก็ได้ (ชุดภาพคลี่กลาง–ยาก 4 พ.ย. 69): ต่อช่องเป็นต้นไม้ตามภาพคลี่ แล้วพับทีละช่อง
    ภาพคลี่ที่พับไม่ได้ จะเห็นสองช่อง (สีชมพู) พับไปซ้อนกัน และกล่องมีด้านว่าง · p.cells ช่องแรก = ฐาน · p.tree = [ช่อง, ช่องแม่, ทิศ] */
+/* ลากหมุนกล่อง 3 มิติด้วยนิ้ว (เก็บ translateZ เดิมไว้ กล่องจะได้หมุนรอบจุดกลาง) */
+function drag3(sc){const st=sc.parentElement;if(!st||st._dg)return;st._dg=1;st.classList.add('drag');const z=(sc.style.transform.match(/translateZ\([^)]*\)/)||[''])[0];let ry=-25,rx=-25,p=null;
+ st.addEventListener('pointerdown',e=>{p=[e.clientX,e.clientY,ry,rx];try{st.setPointerCapture(e.pointerId)}catch(x){}});st.addEventListener('pointermove',e=>{if(!p)return;ry=p[2]+(e.clientX-p[0])*.6;rx=Math.max(-85,Math.min(85,p[3]-(e.clientY-p[1])*.6));sc.style.transition='none';sc.style.transform='rotateX('+rx+'deg) rotateY('+ry+'deg) '+z;});
+ const up=()=>{p=null;};st.addEventListener('pointerup',up);st.addEventListener('pointercancel',up);}
 async function exNet(p,sc,cap,W){const ext=Math.max(...[0,1].map(i=>Math.max(...p.cells.map(x=>x[i]))-Math.min(...p.cells.map(x=>x[i]))+1)),S=Math.round(Math.min(64,180/ext)),K=(c,r)=>c+','+r,el={},CL={l:'nl',r:'nr',t:'nt',b:'nb'},PAL=['#fde68a','#bfdbfe','#bbf7d0','#fbcfe8','#ddd6fe','#fed7aa'];sc.style.setProperty('--s',S+'px');
  const hl=new Set((p.hl||[]).map(x=>K(x[0],x[1]))),lab=p.lab||{},plain=!Object.keys(lab).length;let ci=0;
  const mk=(c,r,cls)=>{const e=h('div','nf'+(cls?' '+cls:''),'<b>'+(lab[K(c,r)]||'')+'</b>');if(hl.has(K(c,r)))e.classList.add('hl');else if(plain)e.style.background=PAL[ci%6];ci++;return e;};
@@ -528,7 +563,7 @@ async function exNet(p,sc,cap,W){const ext=Math.max(...[0,1].map(i=>Math.max(...
  sc.style.transform='translateX('+dx+'px) translateY('+dy+'px)';cap.textContent=hl.size&&!plain?'ดูสองช่องสีชมพู':'ภาพคลี่ 6 ช่อง';if(!await W(1500))return;
  sc.style.transition='transform 1s ease';sc.style.transform='rotateX(-20deg) rotateY(-25deg)'+Z;if(!await W(900))return;
  cap.textContent='พับขึ้นทีละช่อง';for(const [a] of p.tree){el[K(a[0],a[1])].classList.add('fold');SFX.whoosh();if(!await W(700))return;}
- cap.textContent=p.note||'พับแล้วได้กล่อง';SFX.chime();sc.style.transition='transform 4.5s ease-in-out,scale 1s ease';sc.style.scale=String(1.3*64/S*1.1);   /* ภาพคลี่ยาวใช้ช่องเล็ก พอพับเสร็จขยายกล่องให้ใหญ่ */
+ cap.textContent=p.note||'พับแล้วได้กล่อง';SFX.chime();sc.style.transition='transform 4.5s ease-in-out,scale 1s ease';{const bx=sc.closest('.x3d')||sc.parentElement,m=Math.min(bx.offsetWidth||0,bx.offsetHeight||0)||300,tg=Math.max(m*.46/S,1.3),base=parseFloat(sc.style.scale)||1;sc._boost=tg/base;sc.style.scale=String(tg);}   /* ภาพคลี่ยาวใช้ช่องเล็ก พอพับเสร็จขยายกล่องให้ใหญ่ */
  sc.style.transform='rotateX(-25deg) rotateY(-385deg)'+Z;await W(4700);}
 async function exCyl(sc,cap,W){const N=20,H=130,R=46,w=2*Math.PI*R/N;cap.textContent='ภาพคลี่ของทรงกระบอก';
  const st=[];for(let i=0;i<N;i++){const e=h('div','sv-cs');Object.assign(e.style,{width:(w+.6)+'px',height:H+'px',left:(-w/2)+'px',top:(-H/2)+'px'});sc.append(e);st.push(e);}
@@ -556,7 +591,7 @@ async function paperWait(){const sec=EP.paper||0;if(!EP.mode||!sec)return true;c
 /* ข้อเงาซ้อนกัน: ตอบถูก หรือเฉลยแล้ว เงาค่อย ๆ กลายเป็นภาพสีให้เห็นว่ามีอะไรซ้อนอยู่ */
 const unSh=()=>st.querySelectorAll('.shg').forEach(g=>g.classList.add('lit'));
 async function answer(i,b){const s=QS;if(!s||s.lock)return;s.lock=true;hideSub=false;tok++;if(synth)synth.cancel();const q=s.q;
- if(MOCK){LOG[s.qi]={id:q.id,t:q.t,ok:i===q.ans};b.classList.add('picked');SFX.pop(3);s.btns.forEach(x=>x.disabled=true);await wait(650);if(!await paperWait())return;return quiz(s.qi+1);}
+ if(MOCK){LOG[s.qi]={id:q.id,t:q.t,ok:i===q.ans,pick:i};b.classList.add('picked');SFX.pop(3);s.btns.forEach(x=>x.disabled=true);await wait(650);if(!await paperWait())return;return quiz(s.qi+1);}
  if(i===q.ans){unSh();LOG[s.qi]={id:q.id,t:q.t,ok:s.tries===0,sec:Math.round((s.th||0)/1000)};b.classList.add('ok');SFX.ok();react('cheer');const [x,y]=centerOf(b);confetti(x,y,s.tries===0?26:14);if(s.tries===0&&!q.star&&!q.bonus)score.first++;if(q.bonus&&window.logFocus)logFocus(q.id,q.t,s.tries===0);if(s.tries===0&&q.star){SFX.sparkle();starBurst(x,y,8);}s.btns.forEach(x=>x.disabled=true);const xp=exPlan(q),sp=[rand(PRAISE),q.why];if(xp&&xp.k==='x2'){if(!EP.mode||s.tries>0||slowNow(s)){await say(sp[0]);await explain(xp,q.why);}else await offerX(xp,sp,q.why);}else if(xp)await Promise.all([say(sp),explain(xp)]);else await say(sp);}
  else{b.classList.add('no');b.disabled=true;SFX.no();react('oops');s.tries++;
   if(s.tries===1){setWho('jook');await say(['เจ้าจุกใบ้ให้นะ',q.hint||'ลองดูดี ๆ อีกครั้งนะ']);setWho('kla');s.lock=false;return;}
@@ -595,7 +630,7 @@ async function examEnd(){phase='end';react('cheer');QS=null;prog(1);const n=EP.q
   '<g clip-path="url(#sc)"><rect class="shine" x="-60" y="0" width="40" height="100" fill="url(#sh)" transform="skewX(-20)"/></g>'+
   '<circle cx="38" cy="50" r="4" fill="#5a3d00"/><circle cx="62" cy="50" r="4" fill="#5a3d00"/><path d="M42 62 Q50 69 58 62" stroke="#5a3d00" stroke-width="3" fill="none" stroke-linecap="round"/></svg>'+
   '<div class="scount"><b>0</b></div></div><p class="slabel">'+(cheer?'ดาวกำลังใจ':'ได้ดาว')+' <b class="sn">0</b> ดวง</p>';
- const bt=h('div','btns');const a1=h('button','go','↺ ทำชุดใหม่');a1.onclick=()=>location.reload();bt.append(a1);const m=h('a','btn2','🏡 กลับสวน');m.href=EP.menu;bt.append(m);c.append(bt);
+ const bt=h('div','btns');if(MOCK){const a0=h('button','go','🔍 ดูเฉลย');a0.onclick=()=>review();bt.append(a0);}const a1=h('button',MOCK?'btn2':'go','↺ ทำชุดใหม่');a1.onclick=()=>location.reload();bt.append(a1);const m=h('a','btn2','🏡 กลับสวน');m.href=EP.menu;bt.append(m);c.append(bt);
  SFX.whoosh();await show(c,true);
  const box=c.querySelector('.starbox'),star=c.querySelector('.bigstar'),cnt=c.querySelector('.scount b'),sn=c.querySelector('.sn');
  const setN=v=>{cnt.textContent=v;sn.textContent=v;};

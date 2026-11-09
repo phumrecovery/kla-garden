@@ -407,3 +407,24 @@ button{font-family:inherit;cursor:pointer}
  .grdbox svg{max-height:38vh}
  .opt .art .fig{max-height:22vh}
  .card .art .fig,.card .art .pos,.card .art .kid{max-height:24vh}
+/* ดูเฉลยหลังจำลองสอบ (9 พ.ย. 69) */
+.rvn{font-size:clamp(15px,2.2vw,19px);color:#6b6480;text-align:center}
+.rvgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:8px;width:min(720px,94vw)}
+.rvc{position:relative;font-size:20px;font-weight:700;border-radius:14px;padding:10px 0;border:3px solid transparent;background:#fff;color:var(--ink);box-shadow:0 3px 0 rgba(0,0,0,.08)}
+.rvc.ok{background:#eafbef;border-color:#2fae5c}.rvc.bad{background:#ffe8ea;border-color:#e5484d}.rvc.to{background:#f1f1f4;border-color:#a3a3b2}
+.rvc i{position:absolute;top:-8px;right:-6px;font-style:normal;font-size:15px}
+.opt.wrong{border-color:#e5484d;background:#ffe8ea}
+.opt .mine{display:block;font-size:13px;color:#8e5bd8;font-weight:700}
+.cu3.dim{opacity:.35}
+/* จุดลูกเต๋าบนภาพคลี่ 3 มิติ (ข้อลูกเต๋า 9 พ.ย. 69) */
+.pips{display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);width:78%;height:78%;margin:auto}
+.pips i{width:62%;height:62%;border-radius:50%;background:#3b3b4f;align-self:center;justify-self:center}
+.p1 i:nth-child(1){grid-area:2/2}
+.p2 i:nth-child(1){grid-area:1/1}.p2 i:nth-child(2){grid-area:3/3}
+.p3 i:nth-child(1){grid-area:1/1}.p3 i:nth-child(2){grid-area:2/2}.p3 i:nth-child(3){grid-area:3/3}
+.p4 i:nth-child(1){grid-area:1/1}.p4 i:nth-child(2){grid-area:1/3}.p4 i:nth-child(3){grid-area:3/1}.p4 i:nth-child(4){grid-area:3/3}
+.p5 i:nth-child(1){grid-area:1/1}.p5 i:nth-child(2){grid-area:1/3}.p5 i:nth-child(3){grid-area:2/2}.p5 i:nth-child(4){grid-area:3/1}.p5 i:nth-child(5){grid-area:3/3}
+.p6 i:nth-child(1){grid-area:1/1}.p6 i:nth-child(2){grid-area:1/3}.p6 i:nth-child(3){grid-area:2/1}.p6 i:nth-child(4){grid-area:2/3}.p6 i:nth-child(5){grid-area:3/1}.p6 i:nth-child(6){grid-area:3/3}
+.nf b{display:flex;align-items:center;justify-content:center;width:100%;height:100%}
+/* ข้อมองบล็อกจากด้านข้าง: สัตว์ยืนดูอยู่ทางขวา (9 พ.ย. 69) */
+.blkbox{position:relative}.blksee{position:absolute;right:-74px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center}.blksee span{font-size:46px}.blksee b{font-size:12px;color:#8e5bd8;white-space:nowrap}

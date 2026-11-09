@@ -990,4 +990,7 @@ window.EX2={
   for(const f of P){const r=f(q);if(r){if(r.kind==='arith')r.vb=/=/.test(q.q)?'x':verbOf(TXT(q));return Object.assign({},r,{k:'x2'});}}}catch(e){}return null;},
  /* ctx: stage cap W fast SFX confetti say blip · rec=[] เก็บคำพูดทุกท่อน (ไม่วาดจริง ไม่รอ) */
  async run(p,ctx){try{if(p.kind==='turn')return await R.turn(p,ctx);const G=mk(ctx);await R[p.kind](p,G);}catch(e){console.warn('EX2',p.kind,e);}}};
+/* ภาพเฉลยชุด 3 (engine/explain3.js 9 พ.ย. 69) เพิ่มชนิดภาพเข้า R เดียวกัน */
+window.EX2.R=R;window.EX2.H={roundRect,INK};window.EX2.mk=mk;
+try{const s=[...document.scripts].find(x=>/explain2\.js/.test(x.src||''));if(s){const e=document.createElement('script');e.src=s.src.replace(/explain2\.js.*$/,'explain3.js');document.head.append(e);}}catch(e){}
 })();

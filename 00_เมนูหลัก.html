@@ -344,7 +344,8 @@ const V25={};
 function v25(c){const k=mx25(c,c,0).slice(1),id='v25_'+k;if(!V25[id])V25[id]='<radialGradient id="'+id+'" cx=".34" cy=".26" r=".9"><stop offset="0" stop-color="'+mx25(c,'#ffffff',.45)+'"/><stop offset=".45" stop-color="#'+k+'"/><stop offset="1" stop-color="'+mx25(c,'#1f1630',.28)+'"/></radialGradient>';return 'url(#'+id+')';}
 function shade25(s){return s.replace(/<(circle|ellipse|path|rect|polygon)\b([^>]*?)\sfill="(#[0-9a-fA-F]{3}|#[0-9a-fA-F]{6})"([^>]*)>/g,(m,tag,a,c,b)=>{const at=a+b;
   if(/\bopacity="(0?\.[0-5]\d*|0)"|fill-opacity|data-flat/.test(at))return m;if(/^#000(000)?$/i.test(c))return m;return '<'+tag+a+' fill="'+v25(c)+'"'+b+'>';});}
-function defs25(){return '<defs><filter id="sh25" x="-40%" y="-80%" width="180%" height="260%"><feGaussianBlur stdDeviation="3"/></filter>'+Object.values(V25).join('')+'</defs>';}
+const SH25O='<radialGradient id="sh25o" cx=".32" cy=".25" r=".95"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".42" stop-color="#fff" stop-opacity="0"/><stop offset=".7" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#0b2a10" stop-opacity=".38"/></radialGradient>';
+function defs25(){return '<defs>'+SH25O+'<filter id="sh25" x="-40%" y="-80%" width="180%" height="260%"><feGaussianBlur stdDeviation="3"/></filter>'+Object.values(V25).join('')+'</defs>';}
 /* เงาสัมผัสพื้น: แดดมาจากซ้ายบน เงาเยื้องไปขวาล่างนิดหน่อย (opacity ต่ำ shade25 จึงไม่แปลงเป็นไล่แสง) */
 const sh25=(rx,ry,dx)=>'<ellipse cx="'+(dx||0)+'" cy="3" rx="'+rx+'" ry="'+ry+'" fill="#1d3d14" opacity=".26" filter="url(#sh25)"/>';
 function build(){
@@ -362,7 +363,7 @@ function build(){
   s+='<path d="M-1500 190 Q-1150 150 -800 195 T-100 190 Q-40 196 0 205 Q160 140 330 190 T660 178 T1000 170 Q1300 140 1600 185 T2500 180 L2500 460 L-1500 460Z" id="h1" style="fill:#b9e69c"/>';
   s+='<path d="M-1500 228 Q-1100 200 -700 226 T0 232 Q260 188 520 222 T1000 212 Q1300 190 1600 220 T2500 222 L2500 460 L-1500 460Z" fill="url(#lawn)"/>';
   // distant trees
-  [[960,214,1],[345,196,.7],[648,186,.6],[24,226,.8],[-110,236,1.1],[-290,226,.9],[-520,230,.8],[1110,222,1],[1290,232,1.2],[1520,226,.9]].forEach(([x,y,k])=>{s+='<g transform="translate('+x+' '+y+') scale('+k+')"><g class="fxw" data-act="tree"><rect x="-5" y="-30" width="10" height="30" fill="#8a5a3b"/><g class="dt" style="fill:#4fae55"><circle cx="0" cy="-48" r="26"/><circle cx="-14" cy="-36" r="16"/><circle cx="14" cy="-36" r="16"/></g><path class="sc" d="M-22 -58 Q0 -86 22 -58 Q12 -52 6 -58 Q0 -50 -8 -58 Q-14 -52 -22 -58Z" fill="#fff"/></g></g>';});
+  [[960,214,1,0],[345,196,.7,1],[648,186,.6,3],[24,226,.8,2],[505,192,.5,4],[208,206,.55,1],[800,198,.62,2],[-110,236,1.1,3],[-290,226,.9,1],[-520,230,.8,0],[1110,222,1,2],[1290,232,1.2,3],[1520,226,.9,4]].forEach(([x,y,k,t])=>{s+='<g transform="translate('+x+' '+y+') scale('+k+')"><g class="fxw" data-act="tree">'+bgTree25(t,'class="dt" style="fill:#4fae55"')+(t===1?'<path class="sc" d="M0 -92 L10 -75 Q4 -72 0 -76 Q-4 -72 -10 -75Z" fill="#fff"/>':t===4?'':'<path class="sc" d="M-22 -60 Q0 -86 22 -60 Q12 -54 6 -60 Q0 -52 -8 -60 Q-14 -54 -22 -60Z" fill="#fff"/>')+'</g></g>';});   /* 2.5D หลายทรง (10 พ.ย. 69) */
   // grass tufts + wild flowers
   seed=11;for(let i=0;i<110;i++){const x=rnd()*2400-700,y=245+rnd()*210;s+=tuft25(x.toFixed(0),y.toFixed(0),(.75+(y-245)/420).toFixed(2));}
   for(let i=0;i<16;i++){const x=rnd()*1000,y=250+rnd()*205;s+='<g transform="translate('+x.toFixed(0)+' '+y.toFixed(0)+')"><g class="fxw" data-act="wf"><circle r="13" fill="#000" fill-opacity="0"/>'+flower(0,0,['#fff','#ffe66d','#ffb3c7','#c9b6ff'][i%4],.8)+'</g></g>';}
@@ -398,6 +399,17 @@ function build(){
   const hr=(w,x,y,W,H)=>'<rect data-hit="'+w+'" x="'+x+'" y="'+y+'" width="'+W+'" height="'+H+'" fill="#000" fill-opacity="0" style="cursor:pointer"/>';
   s+='<g id="hits">'+hr(0,0,262,56,100);for(let w=1;w<=6;w++)s+=hr(w,STOP[w].x-62,306,124,146);for(let w=7;w<=11;w++)s+=hr(w,STOP[w].x-58,186,116,120);s+='</g>';
   sv.innerHTML=shade25(s)+defs25();}
+/* ต้นไม้ประดับฉาก 2.5D หลายทรง (10 พ.ย. 69 ผู้ปกครองขอ): กลม สน สูงรี จามจุรี(ร่ม) พุ่มเตี้ย
+   fill = สีพื้นของพุ่ม (ในสวนใช้ class dt ให้เปลี่ยนสีตามฤดูได้ · ฉากต้อนรับใช้ gradient) · ทับด้วยชั้นแสงเงา url(#sh25o) ที่ไม่ขึ้นกับสี จึงนูนทุกฤดู */
+const BGT=[
+ /* 0 กลม */ ['<rect x="-5" y="-30" width="10" height="30" rx="3"/>','<circle cx="-14" cy="-38" r="16"/><circle cx="14" cy="-38" r="16"/><circle cx="0" cy="-52" r="24"/>'],
+ /* 1 สน */ ['<rect x="-4" y="-16" width="8" height="16" rx="2"/>','<path d="M0 -92 L18 -62 Q0 -56 -18 -62Z"/><path d="M0 -74 L24 -40 Q0 -33 -24 -40Z"/><path d="M0 -54 L30 -16 Q0 -8 -30 -16Z"/>'],
+ /* 2 สูงรี */ ['<rect x="-4" y="-22" width="8" height="22" rx="2"/>','<ellipse cx="0" cy="-62" rx="17" ry="42"/><ellipse cx="-6" cy="-46" rx="10" ry="20"/>'],
+ /* 3 จามจุรี */ ['<path d="M-5 0 Q-3 -20 -10 -34 L-4 -36 Q0 -26 2 -36 L8 -34 Q2 -20 5 0Z"/>','<ellipse cx="0" cy="-42" rx="48" ry="16"/><circle cx="-26" cy="-46" r="14"/><circle cx="24" cy="-47" r="15"/><circle cx="0" cy="-54" r="17"/>'],
+ /* 4 พุ่มเตี้ย */ ['','<circle cx="-16" cy="-12" r="13"/><circle cx="14" cy="-12" r="14"/><circle cx="0" cy="-22" r="16"/><circle cx="-28" cy="-6" r="8"/><circle cx="28" cy="-6" r="9"/>']];
+function bgTree25(kind,canopyAttr){const [tr,cp]=BGT[kind%BGT.length];
+ return sh25(kind===3?44:kind===4?30:20,6,6)+(tr?'<g fill="#8a5a3b">'+tr+'</g><g fill="url(#sh25o)">'+tr+'</g>':'')+'<g '+canopyAttr+'>'+cp+'</g><g fill="url(#sh25o)">'+cp+'</g>'+
+  (kind===1?'':'<ellipse cx="-8" cy="'+(kind===4?-26:kind===3?-56:kind===2?-82:-60)+'" rx="7" ry="4" fill="#fff" opacity=".3"/>');}
 /* ผีเสื้อ 2.5D: ปีกบนใหญ่ ปีกล่างเล็ก ขอบปีกสีเข้ม จุดลายสีขาว เส้นปีก ตัวเป็นปล้อง หัวกลม ปลายหนวดกลม (10 พ.ย. 69) */
 function wing25(side,c,ink){const k=side,dk=mx25(c,'#3a2350',.35),lt=mx25(c,'#ffffff',.55);
  return '<path d="M0 -1 C'+(-16*k)+' -22 '+(-30*k)+' -14 '+(-26*k)+' -3 C'+(-23*k)+' 3 '+(-12*k)+' 3 0 1Z" fill="'+c+'" stroke="'+ink+'" stroke-width="1.3" stroke-linejoin="round"/>'+
@@ -897,7 +909,7 @@ function moonSVG(x,y,p,op){const r=34,k=r*Math.abs(Math.cos(2*Math.PI*p)),wax=p<
   return '<g opacity="'+op.toFixed(2)+'"><circle cx="'+x+'" cy="'+y+'" r="110" fill="#fff6c8" opacity=".12"/><circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="#fff" opacity=".08"/><path d="'+d+'" fill="#fff4c4"/></g>';}
 function scene3D(){const SP=skyNow(),dark=SP.dk>=.2,{f}=seasonNow();
   if(f.rain){if(!dark)SP.s=SP.s.map(c=>mix(c,'#8d9bb0',.65));SP.sun=null;}
-  const lite=c=>mix(c,'#ffffff',.18),deep=c=>mix(c,'#000000',.1),hillC=f.hill?[lite(f.hill),f.hill,deep(f.hill)]:null,lawnC=f.lawn||null,treeC=f.tree?[mix(f.tree,'#ffffff',.35),f.tree]:null;const tree=(x,on,k)=>'<g data-on="'+on+'" data-x="'+x+'" data-k="'+k+'"><ellipse cx="0" cy="2" rx="26" ry="6" fill="#2f6b2a" opacity=".25"/><rect x="-5" y="-40" width="10" height="40" rx="3" fill="#8a5a3b"/><circle cx="0" cy="-58" r="30" fill="url(#hz_t3)"/><circle cx="-10" cy="-68" r="9" fill="#fff" opacity=".25"/></g>';
+  const lite=c=>mix(c,'#ffffff',.18),deep=c=>mix(c,'#000000',.1),hillC=f.hill?[lite(f.hill),f.hill,deep(f.hill)]:null,lawnC=f.lawn||null,treeC=f.tree?[mix(f.tree,'#ffffff',.35),f.tree]:null;const tree=(x,on,k)=>'<g data-on="'+on+'" data-x="'+x+'" data-k="'+k+'"><g transform="scale(1.25)">'+bgTree25(({120:1,250:3,830:0,900:2})[x]||0,'fill="url(#hz_t3)"')+'</g></g>';   /* 2.5D หลายทรง (10 พ.ย. 69) */
   /* แปลงของแต่ละสัปดาห์ตามที่น้องเรียนจริง (ต้นไม้แบบเดียวกับในสวน): เรียนครบ = ต้นไม้โตเต็มต้น · กำลังเรียน = ต้นกล้าตามจำนวนตอน · ยังไม่เริ่ม = ดินเปล่า
      วางสลับซ้าย-ขวาตามถนน สัปดาห์ 1 อยู่หน้าสุด ไล่ขึ้นไปหาโรงเรียน (สนามสอบ) */
   const SPOT=[,[175,560,1],[825,565,1],[300,478,.72],[700,482,.72],[175,440,.58],[830,445,.58],[315,415,.48],[705,418,.48],[220,398,.42],[835,400,.42],[770,378,.36]];

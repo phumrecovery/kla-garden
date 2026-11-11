@@ -415,7 +415,9 @@ async function mockTimer(qi,q,box,btns,segs){const my=tok;const ms=(EP.sec||15)*
  const s=QS;if(!s||s.lock)return;s.lock=true;LOG[qi]={id:q.id,t:q.t,ok:false,to:1};btns.forEach(x=>x.disabled=true);tm.classList.add('end');SFX.chime();hideSub=false;
  await say('หมดเวลาแล้วค่ะ');if(my!==tok)return;await gap(500,my);if(my!==tok)return;quiz(qi+1);}
 /* ---------- เฉลยแบบภาพเคลื่อนไหว 3 มิติ (โหมดฝึก/คลิป): นับกล่องที่ซ้อนกัน · มองจากด้านบน/หน้า · พับภาพคลี่ ---------- */
-function exPlan(q){if(q.x2&&q.x2.kind==='net3')return Object.assign({k:'net',net:'gen'},q.x2);if(q.g&&!q.x2)return null;if(q.v&&q.v.fig&&q.v.fig.sh)return null;if(q.x2&&window.EX2){const p=EX2.plan(q);if(p)return p;}const t=q.q+' '+(q.say||''),v=q.v||{},a=q.opts[q.ans];
+/* ติดชื่อหัวข้อไว้ (tp) ให้ภาพเฉลยเล่นบทเรียนสั้นของหัวข้อเรื่องใหม่ก่อน (explain4.js 11 พ.ย. 69) */
+function exPlan(q){const p=exPlan0(q);if(p&&q.t&&p.tp==null)p.tp=q.t;return p;}
+function exPlan0(q){if(q.x2&&q.x2.kind==='net3')return Object.assign({k:'net',net:'gen'},q.x2);if(q.g&&!q.x2)return null;if(q.v&&q.v.fig&&q.v.fig.sh)return null;if(q.x2&&window.EX2){const p=EX2.plan(q);if(p)return p;}const t=q.q+' '+(q.say||''),v=q.v||{},a=q.opts[q.ans];
  let g=v.type==='blocks'?v.g:null;if(!g&&/มากที่สุด|น้อยที่สุด/.test(t)&&a&&a.blk&&a.blk.g)g=a.blk.g;
  if(g&&/ติดกับ/.test(t)&&v.gray)return {k:'blk',g,view:'adj',gray:v.gray};if(g&&/ติด/.test(t)&&v.grays)return {k:'blk',g,view:'adj',grays:v.grays,free:/ไม่ติด/.test(t)};
  if(g&&!/ติด/.test(t)){if(/ด้านข้าง|ด้านขวา/.test(t))return {k:'blk',g,view:'side'};if(/ด้านบน/.test(t))return {k:'blk',g,view:'top'};if(/ด้านหน้า/.test(t))return {k:'blk',g,view:'front'};if(/กี่กล่อง|กี่ใบ|กี่ก้อน|มากที่สุด|น้อยที่สุด/.test(t))return {k:'blk',g,view:'count'};}
@@ -429,7 +431,9 @@ function exPlan(q){if(q.x2&&q.x2.kind==='net3')return Object.assign({k:'net',net
 async function explain(p,why){const my=tok;let skip=false;const ov=h('div','ex3d'),box=h('div','exbox'),cap=h('div','excap','👀 มาดูกัน'),st3=h('div','x3d'),sc=h('div','sc3'),sk=h('button','pgo','ข้าม ▶');
  sk.onclick=()=>{skip=true;};st3.append(sc);box.append(cap,st3,sk);ov.append(box);document.body.append(ov);
  const W=async ms=>{let t=0;while(t<ms&&!skip){await wait(50);if(my!==tok)return false;if(!paused)t+=50;}return my===tok&&!skip;};
- try{if(p.k==='x2'){box.classList.add('x2box');const st=h('div','x2d');st3.replaceWith(st);await x2Play(p,st,cap,box,sk,W,my,()=>{skip=false;},()=>skip,why);}
+ try{if(p.k!=='x2'&&window.EX2&&EX2.teachable&&EX2.teachable(p.tp)){const st=h('div','x2d');box.classList.add('x2box');st3.replaceWith(st);
+   await EX2.teach(p.tp,{stage:st,cap,W,fast:false,SFX,confetti,centerOf,say:s=>narr(s,()=>skip),blip});if(my!==tok){ov.remove();return false;}st.replaceWith(st3);box.classList.remove('x2box');skip=false;}
+  if(p.k==='x2'){box.classList.add('x2box');const st=h('div','x2d');st3.replaceWith(st);await x2Play(p,st,cap,box,sk,W,my,()=>{skip=false;},()=>skip,why);}
   else if(p.k==='blk'){await exBlocks(p,sc,cap,W);if(my===tok&&p.st){sk.style.display='none';await blkPlay(p,sc,cap,box,my);}}
   else{fit3(st3,sc,p.net,1.3);if(p.net==='gen')await exNet(p,sc,cap,W);else if(p.net==='cube')await exCube(p,sc,cap,W);else if(p.net==='cylinder')await exCyl(sc,cap,W);else await exCone(sc,cap,W);if(!skip)await W(700);
    if(p.net==='gen'&&my===tok){sk.style.display='none';drag3(sc);cap.textContent='👆 ใช้นิ้วลากหมุนกล่องดูรอบ ๆ ได้';await new Promise(res=>{const bar=h('div','x3bar'),go=h('button','go x3b','ไปต่อ ▶');bar.append(go);box.append(bar);go.onclick=res;const iv=setInterval(()=>{if(my!==tok){clearInterval(iv);res();}},300);});}}}catch(e){}

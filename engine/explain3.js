@@ -22,8 +22,8 @@ R.latin=async(p,G)=>{const n=p.g.length,s=n===3?88:68,x0=300-n*s/2,y0=(330-n*s)/
 R.rot=async(p,G)=>{const mk=(cx,flip)=>{const g=G.E('g',{});const ig=G.E('g',{},g);G.E('rect',{x:-60,y:-60,width:120,height:120,rx:16,fill:'#f8fafc',stroke:'#cbd5e1','stroke-width':2},ig);G.tx(0,4,p.ch,{fs:86,w:800,fill:'#2563eb',p:ig});G.E('circle',{cx:38,cy:-42,r:9,fill:'#e11d48'},ig);g.setAttribute('transform','translate('+cx+' 160)');if(flip)ig.setAttribute('transform','scale(-1 1)');return [g,ig];};
  const [a]=mk(140);G.pop(a);const CN={0:'มุมบนขวา',90:'มุมล่างขวา','-90':'มุมบนซ้าย',180:'มุมล่างซ้าย'};
  if(!await G.step('ติดจุดสีแดงไว้ที่มุมบนขวา',['ดูจุดสีแดง ตอนนี้อยู่มุมบนขวา'],500))return;
- const [b,bi]=mk(450);G.pop(b);const dir=p.ang===180?'หมุนครึ่งรอบ':p.ang>0?'หมุนตามเข็มนาฬิกา หนึ่งในสี่รอบ':'หมุนทวนเข็มนาฬิกา หนึ่งในสี่รอบ';
- G.tx(295,160,p.ang<0?'⟲':'⟳',{fs:70,fill:'#e11d48'});if(!await G.step(dir,[dir],400))return;
+ const [b,bi]=mk(450);G.pop(b);const dir=p.dir||(p.ang===180?'หมุนครึ่งรอบ':p.ang>0?'หมุนตามเข็มนาฬิกา หนึ่งในสี่รอบ':'หมุนทวนเข็มนาฬิกา หนึ่งในสี่รอบ');
+ G.tx(295,160,(p.cw!=null?!p.cw:p.ang<0)?'⟲':'⟳',{fs:70,fill:'#e11d48'});if(!await G.step(dir,[dir],400))return;
  bi.style.transformBox='view-box';bi.style.transformOrigin='0px 0px';bi.style.transition=G.F?'none':'transform 1.8s ease-in-out';bi.style.transform='rotate('+p.ang+'deg)';G.sfx('whoosh');if(!await G.W(2000))return;
  if(!await G.step('จุดสีแดงไปอยู่'+CN[p.ang],['จุดสีแดงเดินไปอยู่',CN[p.ang],'ตัว '+p.ch+' ก็หมุนตามไปด้วย'],600))return;
  const [m]=mk(140,true);m.style.opacity=0;G.fade(a,.15);G.fade(m,1);G.E('line',{x1:80,y1:100,x2:200,y2:220,stroke:'#e11d48','stroke-width':6,'stroke-linecap':'round'});
@@ -45,7 +45,11 @@ R.venn=async(p,G)=>{const g=G.E('g',{transform:'translate(115 10) scale(1)'});co
  if(!await G.step('ตรงกลางเป็นของทั้งวงซ้ายและวงขวา',['ช่องตรงกลาง อยู่ในวงซ้ายด้วย และอยู่ในวงขวาด้วย'],600))return;
  L.forEach(e=>G.glow(e,'#f97316'));G.glow(el1,'#f97316');if(!await G.step('วงซ้าย: ทุกรูปเป็น'+p.la,['ดูวงซ้าย ทุกรูปเป็น',p.la],900))return;L.forEach(e=>e.style.filter='');el1.style.filter='';
  Rr.forEach(e=>G.glow(e,'#3b82f6'));G.glow(el2,'#3b82f6');if(!await G.step('วงขวา: ทุกรูปเป็น'+p.ra,['ดูวงขวา ทุกรูปเป็น',p.ra],900))return;Rr.forEach(e=>e.style.filter='');el2.style.filter='';
- q.remove();const a=G.E('path',{d:p.ad[0],fill:p.ad[1],stroke:INK,'stroke-width':3,transform:'translate(0 58)'},g);G.pop(a,500);
+ q.remove();if(p.mode==='left'){const m=G.E('path',{d:p.mid[0],fill:p.mid[1],stroke:INK,'stroke-width':2,'stroke-dasharray':'5 4',opacity:.45,transform:'translate(0 58)'},g);G.pop(m);
+  if(!await G.step('ตรงกลาง = เป็นทั้งสองอย่าง',['ตรงกลาง ต้องเป็น',p.la,'และเป็น',p.ra,'พร้อมกัน'],700))return;
+  if(!await G.step('วงซ้ายอย่างเดียว = เป็น'+p.la+' แต่ไม่ใช่'+p.ra,['ถ้าอยู่วงซ้ายอย่างเดียว','ต้องเป็น',p.la,'แต่ไม่ใช่',p.ra],700))return;
+  const b=G.E('path',{d:p.ad[0],fill:p.ad[1],stroke:INK,'stroke-width':3,transform:'translate(0 60)'},g);G.pop(b,500);return G.fin('คำตอบคือ'+p.an,['คำตอบคือ',p.an],[b]);}
+ const a=G.E('path',{d:p.ad[0],fill:p.ad[1],stroke:INK,'stroke-width':3,transform:'translate(0 58)'},g);G.pop(a,500);
  await G.fin('ตรงกลางต้องเป็น'+p.an,['ตรงกลางจึงต้องเป็น',p.la,'และเป็น',p.ra,'คือ',p.an],[a]);};
 /* ---------- การทดลอง: ภาพจำลองเคลื่อนไหวของแต่ละแบบ ---------- */
 const VIS=l=>/น้ำผึ้ง/.test(l)?4.2:/นมข้น|เชื่อม/.test(l)?3:/น้ำมัน/.test(l)?1.9:/น้ำส้ม|นม/.test(l)?1.2:.8;
@@ -53,7 +57,7 @@ const LQC=l=>/น้ำผึ้ง/.test(l)?'#f59e0b':/นมข้น|นม/.
 const glass=(G,x,y,col,lv=.75,w=90,h=130)=>{const g=G.E('g',{});G.E('path',{d:'M'+(x-w/2)+' '+y+' L'+(x-w/2+8)+' '+(y+h)+' H'+(x+w/2-8)+' L'+(x+w/2)+' '+y,fill:'#f8fafc',stroke:INK,'stroke-width':3},g);const lq=G.E('rect',{x:x-w/2+6,y:y+h*(1-lv),width:w-12,height:h*lv-2,fill:col,opacity:.85},g);return {g,lq};};
 R.exp=async(p,G)=>{const n=p.labs.length,X=i=>110+i*190,m=p.mode,win=p.labs.indexOf(p.win),labs=p.labs;
  const label=(i,y)=>G.tx(X(i),y||300,labs[i],{fs:labs[i].length>12?13:17,w:700});
- const done=async(cs,extra)=>{const t=G.E('rect',{x:X(win)-92,y:20,width:184,height:300,rx:18,fill:'none',stroke:'#16a34a','stroke-width':5});G.pop(t);await G.fin(p.win,['คำตอบคือ',p.win].concat(extra||[]),[t]);};
+ const done=async(cs,extra)=>{const t=G.E('rect',{x:X(win)-92,y:20,width:184,height:300,rx:18,fill:'none',stroke:'#16a34a','stroke-width':5});G.pop(t);await G.fin(p.rank||p.win,['คำตอบคือ'].concat(p.rank?p.rank.split(' ➜ ').join(' แล้วก็ '):p.win,extra||[]),[t]);};
  if(m==='sink'||m==='pour'){const gs=labs.map((l,i)=>glass(G,X(i),110,LQC(l)));labs.forEach((l,i)=>label(i));
   if(!await G.step(m==='sink'?'หย่อนลูกพร้อมกันทั้งสามแก้ว':'เทพร้อมกันทั้งสามขวด',[m==='sink'?'หย่อนลูกลงไปพร้อมกัน ดูว่าแก้วไหนถึงก้นช้า หรือเร็ว':'เทพร้อมกัน ดูว่าขวดไหนหมดช้า หรือเร็ว'],400))return;
   const sp=labs.map(VIS),mx=Math.max(...sp);labs.forEach((l,i)=>{if(m==='sink'){const b=G.E('circle',{cx:X(i),cy:60,r:13,fill:'#64748b',stroke:INK,'stroke-width':2});b.style.transition=G.F?'none':'transform '+sp[i]+'s linear';requestAnimationFrame(()=>b.style.transform='translateY(165px)');}
@@ -73,7 +77,7 @@ R.exp=async(p,G)=>{const n=p.labs.length,X=i=>110+i*190,m=p.mode,win=p.labs.inde
   labs.forEach((l,i)=>{const y=70+i*85;G.E('path',{d:'M20 '+(y-30)+' L120 '+(y+20)+' H580',fill:'none',stroke:/หญ้า/.test(l)?'#22c55e':/ทราย|ลูกรัง/.test(l)?'#d6a35c':'#94a3b8','stroke-width':8,'stroke-linecap':'round'});G.tx(350,y+42,l,{fs:15,w:700});
    const b=G.tx(30,y-40,rough?'📦':'⚽',{fs:26});b.style.transition=G.F?'none':'transform 2.4s ease-out';const dx=rough?(1-D(l))*0+120+D(l)*330:90+D(l)*430;requestAnimationFrame(()=>b.style.transform='translate('+dx+'px,'+(rough?50:50)+'px)');});
   if(!await G.W(2600))return;if(!await G.step(rough?'พื้นขรุขระ ต้านมาก ต้องออกแรงมาก':'พื้นเรียบลื่น ต้านน้อย ไปได้ไกล',[rough?'พื้นยิ่งขรุขระ ยิ่งต้านการเคลื่อนที่ ต้องออกแรงลากมากขึ้น':'พื้นเรียบลื่นต้านลูกบอลน้อย ลูกบอลจึงกลิ้งไปได้ไกลที่สุด'],400))return;
-  const t=G.E('rect',{x:8,y:20+win*85,width:584,height:84,rx:14,fill:'none',stroke:'#16a34a','stroke-width':5});G.pop(t);return G.fin(p.win,['คำตอบคือ',p.win],[t]);}
+  const t=G.E('rect',{x:8,y:20+win*85,width:584,height:84,rx:14,fill:'none',stroke:'#16a34a','stroke-width':5});G.pop(t);return G.fin(p.rank||p.win,['คำตอบคือ',p.rank?p.rank.split(' ➜ ').join(' แล้วก็ '):p.win],[t]);}
  if(m==='stone'){const k=labs.map(l=>/สอง/.test(l)?3:/สาม/.test(l)?2:1);const gs=labs.map((l,i)=>glass(G,X(i),100,'#93c5fd',.45));labs.forEach((l,i)=>label(i));
   if(!await G.step('น้ำเท่ากันทุกแก้ว',['ตอนแรกน้ำเท่ากันทุกแก้ว'],400))return;
   for(let i=0;i<n;i++)for(let j=0;j<k[i];j++){const st=G.tx(X(i)-22+j*22,60,'🪨',{fs:26});st.style.transition=G.F?'none':'transform .7s ease-in';requestAnimationFrame(()=>st.style.transform='translateY(150px)');G.sfx('pop',j);if(!await G.W(500))return;}
@@ -163,6 +167,8 @@ R.area=async(p,G)=>{const s=40,g1=[40,90],g2=[340,90],cellR=(o,r,c)=>[o[0]+c*s,o
 /* ---------- ถังขยะ: ขยะลอยลงถังที่ถูก ---------- */
 R.bins=async(p,G)=>{const X=i=>90+i*140;const bs=p.bins.map(([c,nm,t,e],i)=>{const g=G.E('g',{});G.E('rect',{x:X(i)-32,y:170,width:64,height:12,rx:4,fill:c,stroke:INK,'stroke-width':2},g);G.E('path',{d:'M'+(X(i)-38)+' 186 H'+(X(i)+38)+' L'+(X(i)+30)+' 270 H'+(X(i)-30)+' Z',fill:c,stroke:INK,'stroke-width':2.5},g);G.tx(X(i),226,e,{fs:24,p:g});G.tx(X(i),292,t.split(' ')[0],{fs:15,w:700,p:g});return g;});
  if(!await G.step('ถังแต่ละสีรับขยะคนละแบบ',['ถังสีเขียว ขยะเปียก','ถังสีเหลือง ขยะรีไซเคิล','ถังสีแดง ขยะอันตราย','ถังสีน้ำเงิน ขยะทั่วไป'],600))return;
+ if(p.list){const its=[];for(const [e,nm,b] of p.list){const it=G.tx(300,70,e,{fs:60});G.pop(it);const [,bn,tt]=p.bins[b];if(!await G.step(nm+' เป็น'+tt,[nm,'เป็น'+tt,'ทิ้งลง'+bn],500))return;G.move(it,X(b)-300,150,1000);G.sfx('whoosh');if(!await G.W(1100))return;it.style.opacity=0;its.push(bs[b]);}
+  return G.fin('ข้อที่ถูก ต้องทิ้งถูกทั้งสองชิ้น',['ข้อที่ถูก ต้องทิ้งถูกถังทั้งสองชิ้น'],its);}
  const it=G.tx(300,70,p.e,{fs:60});G.pop(it);const [c,nm,t]=p.bins[p.b];if(!await G.step(p.nm+' เป็น'+t,[p.nm,'เป็น'+t],500))return;
  G.move(it,X(p.b)-300,150,1000);G.sfx('whoosh');if(!await G.W(1100))return;it.style.opacity=0;await G.fin('ทิ้งลง'+nm,['จึงทิ้งลง'+nm],[bs[p.b]]);};
 /* ---------- ห นำ · วรรณยุกต์ ---------- */
@@ -222,4 +228,6 @@ R.queue=async(p,G)=>{const n=p.n,gap=Math.min(46,540/n),x=i=>300-(n-1)*gap/2+i*g
  kids[me].textContent='👧';G.glow(kids[me],'#ec4899');G.pulse(kids[me]);if(!await G.step('น้องมายคือคนที่ '+p.p+' นับจาก'+(p.front?'หัวแถว':'ท้ายแถว'),['นี่คือน้องมาย'],500))return;
  let c=0;for(let i=0;i<n;i++){if(p.front?i>me:i<me){c++;G.tag(x(i),200,c,'#16a34a',11);G.sfx('pop',c);if(!await G.say([String(c)]))return;}}
  await G.fin((p.front?'ข้างหลัง':'ข้างหน้า')+' '+c+' คน',[(p.front?'ข้างหลังน้องมาย':'ข้างหน้าน้องมาย')+'มี',String(c),'คน']);};
+/* ภาพเฉลยชุด 4 + บทเรียนสั้นกึ่งสอน (engine/explain4.js 11 พ.ย. 69) */
+try{const s=[...document.scripts].find(x=>/explain3\.js/.test(x.src||''));if(s){const e=document.createElement('script');e.src=s.src.replace(/explain3\.js.*$/,'explain4.js');document.head.append(e);}}catch(e){}
 })();

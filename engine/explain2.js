@@ -787,6 +787,7 @@ R.layer=async(p,G)=>{const K=1.18,ox=14,oy=8,X=v=>ox+v*K,Y=v=>oy+v*K,els=[],nest
   for(let s=0;s<3;s++){const i=order[s];G.glow(els[i],'#ec4899');G.cap(LB[s]+': '+p.nm[i]);if(!await G.say([SAY[s](p.nm[i])]))return;els[i].style.filter='';}
   if(!await G.step('แยกรูปออกมาดู',['แยกออกมาดู จากใหญ่ไปเล็ก'],300))return;
   for(let s=0;s<3;s++){lift(order[s],s);slot(s);if(!await G.W(700))return;}}
+ if(p.ask==='order'){const seq=order.map(i=>p.nm[i]);return G.fin(seq.join(' ➜ '),['เรียงจากบนลงล่าง'].concat(seq.join(' แล้วก็ ')),order.map(i=>els[i]));}   /* ข้อเรียงลำดับชั้น (คลังชุด13) */
  const want={top:0,mid:1,bottom:2,out:0,in:2}[p.ask];await G.fin(LB[want]+': '+p.nm[order[want]],['คำตอบคือ'+p.nm[order[want]]],[els[order[want]]]);};
 /* ---------- ตารางอุปมา: ดูแถวบน แล้วทำแถวล่างแบบเดียวกัน ---------- */
 R.matrix=async(p,G)=>{const f=p.qv&&p.qv.fig,af=p.opts&&p.opts[p.ans]&&p.opts[p.ans].fig;if(!f||!af)return;const S=1.42,ox=12,oy=12,CL=[[55,55],[155,55],[55,155],[155,155]],cc=i=>[ox+CL[i][0]*S,oy+CL[i][1]*S];
@@ -983,13 +984,18 @@ R.facing=async(p,G)=>{const n=p.names.length,x=i=>300-(n-1)*120/2+i*120,ks=[];
  G.pop(arrowTo(G,x(p.ref),232,x(p.who),232,'#e11d48'));await G.fin('ทางมือ'+p.side+'ของ'+nm+' คือ '+p.names[p.who],['คือ'+p.names[p.who]],[ks[p.who]]);};
 /* คำกริยาในโจทย์ลบ → ท่าเอาของออก (นกบินไป ขนมถูกกิน ให้เพื่อน ...) */
 const verbOf=t=>/บินไป|บินหนี/.test(t)?'fly':/กิน/.test(t)?'eat':/ให้|แจก|ขาย/.test(t)?'give':/แตก/.test(t)?'pop':/หล่น|ตก/.test(t)?'drop':/หาย/.test(t)?'lost':/เดินไป|วิ่งไป|ว่ายไป/.test(t)?'go':'x';
-window.EX2={
+const TSEEN={};window.EX2={
  plan(q){try{if(!q||!q.opts||q.ans==null)return null;
   /* ข้อชุดใหม่มีข้อมูลภาพเฉลยมาด้วย (q.x2) · chk = ป้ายของคำตอบ ถ้าไม่ตรงกับเฉลยจะไม่แสดงภาพ */
-  if(q.x2&&R[q.x2.kind]){const r=Object.assign({},q.x2);if(r.chk!=null&&norm(lab(q.opts[q.ans]))!==norm(r.chk))return null;r.opts=q.opts;r.ans=q.ans;r.qv=q.v;return Object.assign(r,{k:'x2'});}
+  if(q.x2&&R[q.x2.kind]){const r=Object.assign({},q.x2);if(r.chk!=null&&norm(lab(q.opts[q.ans]))!==norm(r.chk))return null;r.opts=q.opts;r.ans=q.ans;r.qv=q.v;r.tp=q.t;return Object.assign(r,{k:'x2'});}
   for(const f of P){const r=f(q);if(r){if(r.kind==='arith')r.vb=/=/.test(q.q)?'x':verbOf(TXT(q));return Object.assign({},r,{k:'x2'});}}}catch(e){}return null;},
  /* ctx: stage cap W fast SFX confetti say blip · rec=[] เก็บคำพูดทุกท่อน (ไม่วาดจริง ไม่รอ) */
- async run(p,ctx){try{if(p.kind==='turn')return await R.turn(p,ctx);const G=mk(ctx);await R[p.kind](p,G);}catch(e){console.warn('EX2',p.kind,e);}}};
+ /* บทเรียนสั้นของหัวข้อ สำหรับภาพเฉลยที่ไม่ได้มาจาก explain2 (ลูกเต๋า 3 มิติ · บล็อก ใน engine.js) */
+ teachable(tp){const TC=window.EX2.TEACH;return !!(TC&&tp&&TC[tp]&&!TSEEN[tp]);},
+ async teach(tp,ctx){if(!window.EX2.teachable(tp))return true;TSEEN[tp]=1;try{const G0=mk(ctx);const ok=await window.EX2.TEACH[tp](G0);try{G0.svg.remove();}catch(e){}return ok!==false;}catch(e){console.warn('EX2 teach',tp,e);return true;}},
+ async run(p,ctx){try{if(p.kind==='turn')return await R.turn(p,ctx);/* บทเรียนสั้นกึ่งสอน (explain4.js 11 พ.ย. 69): หัวข้อเรื่องใหม่ เล่นก่อนภาพเฉลย ครั้งแรกของหัวข้อนั้นในการเปิดหน้านี้ · โหมดเก็บบทเก็บทุกครั้ง */
+  const TC=window.EX2.TEACH;if(TC&&p.tp&&TC[p.tp]&&(ctx.rec||!TSEEN[p.tp])){TSEEN[p.tp]=1;const G0=mk(ctx);const ok=await TC[p.tp](G0);try{G0.svg.remove();}catch(e){}if(ok===false)return;}
+  const G=mk(ctx);await R[p.kind](p,G);}catch(e){console.warn('EX2',p.kind,e);}}};
 /* ภาพเฉลยชุด 3 (engine/explain3.js 9 พ.ย. 69) เพิ่มชนิดภาพเข้า R เดียวกัน */
 window.EX2.R=R;window.EX2.H={roundRect,INK};window.EX2.mk=mk;
 try{const s=[...document.scripts].find(x=>/explain2\.js/.test(x.src||''));if(s){const e=document.createElement('script');e.src=s.src.replace(/explain2\.js.*$/,'explain3.js');document.head.append(e);}}catch(e){}

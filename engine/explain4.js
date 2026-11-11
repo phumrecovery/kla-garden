@@ -65,7 +65,7 @@ R.dots=async(p,G)=>{const K=1.45,ox=40,oy=16,P=p.pts.map(([x,y])=>[ox+x*K,oy+y*K
  if(!await G.step(p.mode==='shake'?'จับมือ 1 ครั้ง = เส้น 1 เส้น':'ลากทีละจุด ไม่ลากซ้ำ',intro,600))return;
  const starts=p.mode==='from'?[p.red]:[...Array(n-1).keys()],sums=[];let cnt=0;
  for(const i of starts){const col=C[i%C.length],js=[...Array(n).keys()].filter(j=>p.mode==='from'?j!==i:j>i);let k=0;G.glow(nd[i],col);
-  for(const j of js){if(pre.has(i+'-'+j))continue;k++;cnt++;const l=G.E('line',{x1:P[i][0],y1:P[i][1],x2:P[j][0],y2:P[j][1],stroke:col,'stroke-width':5,'stroke-linecap':'round'},lg);G.pop(l);G.tag((P[i][0]+P[j][0])/2,(P[i][1]+P[j][1])/2,cnt,col,11);G.sfx('pop',cnt);if(!await G.say([sayN(cnt)]))return;}
+  for(const j of js){if(pre.has(i+'-'+j))continue;k++;cnt++;const l=G.E('line',{x1:P[i][0],y1:P[i][1],x2:P[j][0],y2:P[j][1],stroke:col,'stroke-width':5,'stroke-linecap':'round'},lg);G.pop(l);G.tag(P[i][0]+(P[j][0]-P[i][0])*.4,P[i][1]+(P[j][1]-P[i][1])*.4,cnt,col,11);/* ไม่วางกลางเส้น: เส้นทแยงตัดกันตรงกลาง ป้ายเลขเคยซ้อนกัน (12 พ.ย. 69) */G.sfx('pop',cnt);if(!await G.say([sayN(cnt)]))return;}
   nd[i].style.filter='';sums.push(k);G.tx(455,58+sums.length*32,who+(i+1)+' : เพิ่ม '+k+' '+unit,{fs:17,w:700,fill:col});
   if(!await G.step(who+(i+1)+' ได้เพิ่ม '+k+' '+unit,[who+(i+1),'ได้เพิ่ม',sayN(k),unit],300))return;}
  const ex=sums.length>1?sums.join(' + ')+' = '+cnt:String(cnt);const t=lbl(G,455,80+sums.length*32+20,ex+' '+unit,{fs:18,bg:'#ecfdf5',bd:'#16a34a',fill:'#166534'});
@@ -85,12 +85,12 @@ R.domino=async(p,G)=>{if(p.mode==='abc'){const A='ABCDEFGHIJKLMNOPQRSTUVWXYZ',w=
  const n=p.seq.length,w=58,gap=26,x0=300-(n*w+(n-1)*gap)/2,y0=62,X=i=>x0+i*(w+gap);
  const tiles=p.seq.map(([t,b],i)=>{const g=G.E('g',{});const h=i===p.hide;roundRect(G,X(i),y0,w,2*w,h?'#fde68a':'#fff',INK,10,g);G.E('line',{x1:X(i)+6,y1:y0+w,x2:X(i)+w-6,y2:y0+w,stroke:INK,'stroke-width':2},g);
   const q=h?G.tx(X(i)+w/2,y0+w,'?',{fs:34,w:800,fill:'#e11d48',p:g}):null;if(!h){pips(G,t,X(i),y0,w,g);pips(G,b,X(i),y0+w,w,g);}return {g,q};});
- const row=async(k,d,y,col,nm)=>{for(let i=0;i<n;i++){const v=p.seq[i][k];if(i===p.hide)G.tx(X(i)+w/2,y,'?',{fs:20,w:800,fill:'#e11d48'});else G.tag(X(i)+w/2,y,v,col,13);
+ const qs=[],row=async(k,d,y,col,nm)=>{for(let i=0;i<n;i++){const v=p.seq[i][k];if(i===p.hide)qs.push(G.tx(X(i)+w/2,y,'?',{fs:20,w:800,fill:'#e11d48'}));else G.tag(X(i)+w/2,y,v,col,13);
    if(i>0)G.tx(X(i)-gap/2,y,d>0?'+'+d:d<0?'−'+(-d):'=',{fs:15,w:800,fill:col});}G.sfx('pop',k);
   return G.step(nm+(d>0?' เพิ่มทีละ '+d:d<0?' ลดทีละ '+(-d):' เท่าเดิม'),['ดู'+nm+'อย่างเดียว',d>0?'เพิ่มทีละ':d<0?'ลดทีละ':'เท่าเดิมทุกชิ้น'].concat(d?[sayN(Math.abs(d))]:[]),700);};
  if(!await G.step('โดมิโนมีสองช่อง บน และ ล่าง',['โดมิโนแต่ละชิ้นมีสองช่อง ข้างบนและข้างล่าง','ดูทีละแถว แยกกัน'],500))return;
  if(!await row(0,p.dt,y0-18,'#3b82f6','แถวบน'))return;if(!await row(1,p.db,y0+2*w+20,'#ec4899','แถวล่าง'))return;
- const [t,b]=p.seq[p.hide],h=tiles[p.hide];h.q.remove();pips(G,t,X(p.hide),y0,w,h.g);pips(G,b,X(p.hide),y0+w,w,h.g);G.pop(h.g);
+ const [t,b]=p.seq[p.hide],h=tiles[p.hide];h.q.remove();/* ป้าย ? เหนือ/ใต้ชิ้นที่หายกลายเป็นตัวเลข (เดิมค้างเป็น ? 12 พ.ย. 69) */qs.forEach(e=>e.remove());G.tag(X(p.hide)+w/2,y0-18,t,'#3b82f6',13);G.tag(X(p.hide)+w/2,y0+2*w+20,b,'#ec4899',13);pips(G,t,X(p.hide),y0,w,h.g);pips(G,b,X(p.hide),y0+w,w,h.g);G.pop(h.g);
  await G.fin('ข้างบน '+t+' จุด ข้างล่าง '+b+' จุด',['ชิ้นที่หายไป','ข้างบน',sayN(t),'จุด','ข้างล่าง',sayN(b),'จุด'],[h.g]);};
 
 /* ---------- แผ่นใสซ้อนกัน · ภาพตรงข้าม ---------- */
@@ -103,9 +103,9 @@ R.overlay=async(p,G)=>{if(p.mode==='inv'){const n=p.g.length,s=n===3?62:50,x0=60
  const s=56,sheet=(x0,y0,A,B,bg)=>{const g=G.E('g',{});G.E('rect',{x:x0,y:y0,width:3*s,height:3*s,rx:6,fill:bg,stroke:INK,'stroke-width':3},g);for(let k=1;k<3;k++){G.E('line',{x1:x0+k*s,y1:y0,x2:x0+k*s,y2:y0+3*s,stroke:'#cbd5e1','stroke-width':1.5},g);G.E('line',{x1:x0,y1:y0+k*s,x2:x0+3*s,y2:y0+k*s,stroke:'#cbd5e1','stroke-width':1.5},g);}
   A.forEach(([r,c])=>G.E('circle',{cx:x0+c*s+s/2,cy:y0+r*s+s/2,r:s*.3,fill:'#3b82f6',stroke:INK,'stroke-width':2},g));
   B.forEach(([r,c])=>{const cx=x0+c*s+s/2,cy=y0+r*s+s/2,h=s*.32;G.E('polygon',{points:[cx,cy-h,cx+h,cy+h*.8,cx-h,cy+h*.8].join(' '),fill:'#ef4444',stroke:INK,'stroke-width':2},g);});return g;};
- sheet(60,70,p.A,[],'#eff6ff');const b=sheet(370,70,[],p.B,'rgba(255,241,242,.35)');G.tx(300,155,'+',{fs:50,w:800,fill:'#e11d48'});
+ sheet(60,70,p.A,[],'#eff6ff');const b=sheet(370,70,[],p.B,'rgba(255,241,242,.35)'),plus=G.tx(300,155,'+',{fs:50,w:800,fill:'#e11d48'});
  if(!await G.step('แผ่นใส มองทะลุได้',['แผ่นใส มองทะลุได้','วางซ้อนกันแล้ว จะเห็นรูปของทั้งสองแผ่น'],600))return;
- G.move(b,-310,0,1300);G.sfx('whoosh');if(!await G.W(1400))return;
+ G.fade(plus,0);G.move(b,-310,0,1300);G.sfx('whoosh');if(!await G.W(1400))return;
  if(!await G.step('วงกลม '+p.A.length+' รูป + สามเหลี่ยม '+p.B.length+' รูป อยู่ช่องเดิม',['เห็นวงกลม',sayN(p.A.length),'รูป','และสามเหลี่ยม',sayN(p.B.length),'รูป','อยู่ช่องเดิมของมัน ไม่ย้ายไปไหน'],600))return;
  const t=G.E('rect',{x:50,y:60,width:3*s+20,height:3*s+20,rx:12,fill:'none',stroke:'#16a34a','stroke-width':5});await G.fin('เห็นรูปของทั้งสองแผ่นครบ',['คำตอบคือภาพที่มีรูปของทั้งสองแผ่นครบ อยู่ช่องเดิม'],[t]);};
 
@@ -116,13 +116,13 @@ R.shape3=async(p,G)=>{if(p.mode==='solid'){const o=G.tx(140,150,p.e,{fs:120});G.
   let y=262;for(const d of SOLD[p.s]){lbl(G,300,y,d,{fs:16});G.pulse(sd);if(!await G.say([d]))return;y+=38;}
   return G.fin(p.nm+'เป็น'+SOLN[p.s],[p.nm,'เป็น'+SOLN[p.s]],[sd]);}
  if(p.mode==='face'){const o=G.tx(170,165,p.e,{fs:150});G.pop(o,500);if(!await G.step('มองขอบนอกของสิ่งนี้',['มองขอบนอกของสิ่งนี้ ว่าเหมือนรูปอะไร'],500))return;
-  const ol=G.E('path',{d:FLAT[p.f],transform:'translate(170 165) scale(1.25)',fill:'none',stroke:'#e11d48','stroke-width':5,'stroke-dasharray':'10 7'});G.pop(ol);if(!await G.W(600))return;
+  G.tx(305,160,'➜',{fs:50,fill:'#7c3aed'});/* ไม่วาดเส้นทับอีโมจิ (ลูกรักบี้เอียงแต่เส้นวงรีตั้งตรง ไม่ตรงกัน 12 พ.ย. 69) */
   const sh=G.E('path',{d:FLAT[p.f],transform:'translate(440 150)',fill:'#e9d5ff',stroke:INK,'stroke-width':3});G.pop(sh,500);const t=lbl(G,440,250,FLATN[p.f],{fs:20});
   return G.fin('คล้ายรูป'+FLATN[p.f],['ขอบนอกเหมือนรูป',FLATN[p.f]],[sh]);}
  const ks=p.ks,m=ks.length,gap=600/m,cnt=[],shapes=[];let total=0;
  ks.forEach((k,i)=>{const pts=poly(k,gap*i+gap/2,150,m>2?62:72);shapes.push({k,pts,el:G.E('polygon',{points:pts.map(q=>q.join(',')).join(' '),fill:'#bae6fd',stroke:INK,'stroke-width':3,'stroke-linejoin':'round'})});});
  if(!await G.step('แตะนับทีละด้าน',['ด้าน คือเส้นรอบรูป','แตะนับทีละด้าน วนไปจนครบรอบ'],500))return;
- for(let i=0;i<m;i++){const {pts,el}=shapes[i],cx=gap*i+gap/2;let k=0;G.glow(el,'#f59e0b');
+ for(let i=0;i<m;i++){const {pts,el}=shapes[i],cx=gap*i+gap/2;let k=0;G.glow(el,'#f59e0b');G.cap('รูปที่ '+(i+1)+': นับด้าน');
   for(let j=0;j<pts.length;j++){const a=pts[j],b=pts[(j+1)%pts.length],mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2,dx=mx-cx,dy=my-150,dl=Math.hypot(dx,dy)||1;k++;total++;
    G.E('line',{x1:a[0],y1:a[1],x2:b[0],y2:b[1],stroke:C[i%C.length],'stroke-width':6,'stroke-linecap':'round'});G.tag(mx+dx/dl*20,my+dy/dl*20,k,C[i%C.length],11);G.sfx('pop',k);if(!await G.say([sayN(k)]))return;}
   el.style.filter='';cnt.push(k);lbl(G,cx,268,k+' ด้าน',{fs:17});}
@@ -371,7 +371,7 @@ T.t_hnam=lesson('ห นำ และวรรณยุกต์',[
  ['ห นำ อยู่หน้า ง ญ น ม ย ร ล ว',['ห นำ จะอยู่หน้าพยัญชนะแปดตัวนี้','ง ญ น ม ย ร ล ว'],(G,g)=>row(G,g,160,['ง','ญ','น','ม','ย','ร','ล','ว'],44,64)],
  ['หมา = ห + มา · ห ไม่ออกเสียง',['คำว่า หมา มี ห อยู่ข้างหน้า','แต่เราไม่ออกเสียง ห','ห นำ ช่วยให้เสียงสูงขึ้น'],(G,g)=>{tx(G,g,300,120,'หมา',{fs:70});tx(G,g,300,215,'ห (ไม่ออกเสียง) + มา',{fs:22,fill:'#b45309'});}],
  ['ห ที่ออกเสียงเอง ไม่ใช่ ห นำ',['คำว่า หัว ห่าน ห ออกเสียงเอง','จึงไม่ใช่ ห นำ'],(G,g)=>{tx(G,g,200,150,'หัว',{fs:56});tx(G,g,400,150,'ห่าน',{fs:56});}],
- ['วรรณยุกต์ 4 รูป',['ไม้เอก ขีดเดียว','ไม้โท เหมือนเลขสอง','ไม้ตรี เหมือนเลขเจ็ด','ไม้จัตวา เหมือนเครื่องหมายบวก'],(G,g)=>{[['่','ไม้เอก'],['้','ไม้โท'],['๊','ไม้ตรี'],['๋','ไม้จัตวา']].forEach(([m,n],i)=>{tx(G,g,90+i*140,150,'◌'+m,{fs:64,w:400});tx(G,g,90+i*140,240,n);});}]]);
+ ['วรรณยุกต์ 4 รูป',['ไม้เอก ขีดเดียว','ไม้โท เหมือนเลขสอง','ไม้ตรี เหมือนเลขเจ็ด','ไม้จัตวา เหมือนเครื่องหมายบวก'],(G,g)=>{[['่','ไม้เอก'],['้','ไม้โท'],['๊','ไม้ตรี'],['๋','ไม้จัตวา']].forEach(([m,n],i)=>{tx(G,g,90+i*140,150,'ก'+m,{fs:84,fill:'#e11d48'});tx(G,g,90+i*140,150,'ก',{fs:84});tx(G,g,90+i*140,250,n);});}]]);
 const sg=(G,g,x0,y0,cells,s)=>{s=s||40;cells.forEach((r,ri)=>r.forEach((v,ci)=>G.E('rect',{x:x0+ci*s,y:y0+ri*s,width:s,height:s,fill:v?'#60a5fa':'#fff',stroke:INK,'stroke-width':1.5},g)));G.E('line',{x1:x0+2*s,y1:y0-10,x2:x0+2*s,y2:y0+cells.length*s+10,stroke:'#e11d48','stroke-width':4,'stroke-dasharray':'8 6'},g);};
 T.l_sym=lesson('สมมาตร',[
  ['ภาพสมมาตร: พับแล้วสองข้างทับกันสนิท',['ภาพที่สมมาตร','พับครึ่งตามเส้นประแล้ว','สองข้างทับกันสนิทพอดี'],(G,g)=>{em(G,g,300,160,'🦋',150);G.E('line',{x1:300,y1:60,x2:300,y2:270,stroke:'#e11d48','stroke-width':4,'stroke-dasharray':'8 6'},g);}],

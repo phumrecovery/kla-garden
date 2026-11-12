@@ -274,8 +274,10 @@ const T={};X2.TEACH=T;
 const lesson=(title,slides)=>async G=>{const hd=G.E('g',{});roundRect(G,150,4,300,32,'#8e5bd8',null,16,hd);G.tx(300,21,'📖 '+title,{fs:16,w:700,fill:'#fff',p:hd});
  const bk=G.tx(300,180,'📖',{fs:110});G.pop(bk,500);
  if(!await G.step('📖 บทเรียนสั้น: '+title,['ก่อนดูเฉลย','มาเรียนเรื่อง'+title+'กันก่อนนะ'],500))return false;
- bk.remove();let g=null;for(const [cap,segs,draw,ms] of slides){if(g)g.remove();g=G.E('g',{});if(draw){const r=draw(G,g);if(r&&r.then&&!await r)return false;}if(!await G.step(cap,segs,ms||700))return false;}
- if(g)g.remove();return await G.step('ทีนี้มาดูข้อนี้กัน',['เข้าใจแล้ว','ทีนี้มาดูเฉลยข้อนี้กันนะ'],400);};
+ /* เปลี่ยนภาพ: ลบทุกอย่างที่เกิดในภาพก่อน ไม่ใช่แค่กลุ่ม g (ป้ายเลขของ G.tag วางนอกกลุ่ม เคยค้างไปภาพถัดไป 12 พ.ย. 69) */
+ bk.remove();const kids=()=>{try{return [...G.svg.children];}catch(e){return [];}},base=new Set(kids()),clear=()=>kids().forEach(e=>{if(!base.has(e))e.remove();});
+ for(const [cap,segs,draw,ms] of slides){clear();const g=G.E('g',{});if(draw){const r=draw(G,g);if(r&&r.then&&!await r)return false;}if(!await G.step(cap,segs,ms||700))return false;}
+ clear();return await G.step('ทีนี้มาดูข้อนี้กัน',['เข้าใจแล้ว','ทีนี้มาดูเฉลยข้อนี้กันนะ'],400);};
 const em=(G,g,x,y,s,fs)=>{const e=G.tx(x,y,s,{fs:fs||44,p:g});G.pop(e);return e;};
 const row=(G,g,y,arr,fs,gap)=>{gap=gap||Math.min(90,560/arr.length);const x0=300-(arr.length-1)*gap/2;return arr.map((s,i)=>em(G,g,x0+i*gap,y,s,fs));};
 const tx=(G,g,x,y,s,o)=>G.tx(x,y,s,Object.assign({fs:17,w:700,p:g},o||{}));

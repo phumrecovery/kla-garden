@@ -806,16 +806,28 @@ const pick=a=>a[Math.floor(Math.random()*a.length)];
 function greetLines(){const now=NOW(),hr=now.getHours(),dw=now.getDay();let last={};try{last=JSON.parse(localStorage.getItem('kla-hi-last')||'{}')}catch(e){}
   const pk=(a,k)=>{const b=a.length>1?a.filter(x=>x!==last[k]):a;return last[k]=pick(b);};
   const ph=phaseNow(),pool=G.hello[ph==='sunset'?'evening':ph]||G.hello.afternoon;const out=[pk(got===0?G.hello.first:pool,'h')];if(ph==='late'&&got>0){out.push(G.ctx.sleep);try{localStorage.setItem('kla-hi-last',JSON.stringify(last))}catch(e){}return out;}/* ดึกแล้ว: ไม่ชวนเรียนต่อ */
+  /* วันพิเศษ (12 พ.ย. 69): ตรงวันที่ใน GREET.event · วันเด็ก = เสาร์ที่สองของมกราคม · สงกรานต์ 13–15 เม.ย. */
+  const md=String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0'),EV=G.event||{};
+  const kids=now.getMonth()===0&&dw===6&&now.getDate()>=8&&now.getDate()<=14,ev=kids?EV.kids:EV[md]||(now.getMonth()===3&&now.getDate()>=13&&now.getDate()<=15?EV['04-13']:null);
+  if(ev)out.push(ev);
+  /* มาเรียนเมื่อวานด้วย / หายไปหลายวัน: จำวันที่เปิดแอปครั้งล่าสุดใน kla-hi-last.v */
+  const today=new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime(),gapD=last.v?Math.round((today-last.v)/864e5):null;last.v=today;
   const nx=wk.find(e=>!S(e.ep).seed);
   if(!nx)out.push(G.done);else{const tpl=G.next[(nx.href.split('/').pop().split('_')[1])||''];if(tpl)out.push(tpl.replace('{t}',/[A-Za-z]/.test(nx.title)?'['+nx.title+']':nx.title));}
   let H=[];try{H=JSON.parse(localStorage.getItem('kla-exam-v1')||'[]')}catch(e){}
   const warmDone=H.some(r=>r.kind==='warm'&&new Date(r.t).toDateString()===now.toDateString()),st=stat(start);
   let c=null;
-  if(nx&&![1,3,5].includes(dw)&&Math.random()<.6)c=G.ctx.rest;
+  if(gapD!=null&&gapD>=3&&G.ctx.miss)c=G.ctx.miss;
+  else if(gapD===1&&G.ctx.streak&&Math.random()<.35)c=G.ctx.streak;
+  else if(nx&&![1,3,5].includes(dw)&&Math.random()<.6)c=G.ctx.rest;
   else if(st&&st.d>=6&&st.d<9)c=G.ctx.almost;
   else if(S('02').seed&&!warmDone&&Math.random()<.5)c=G.ctx.warm;
   else if(gold>=20&&Math.random()<.3)c=G.ctx.gold;
-  out.push(c||pk(G.cheer,'c'));
+  /* ไม่มีสถานการณ์พิเศษ: สุ่มจาก cheer + ฤดู (มี.ค.–พ.ค. ร้อน · มิ.ย.–ต.ค. ฝน · พ.ย.–ก.พ. หนาว) + วันในสัปดาห์ + ช่วงก่อนสอบ (ปลายมีนาคม 2570) */
+  if(!c){const m=now.getMonth(),sea=m>=2&&m<=4?'hot':m>=5&&m<=9?'rain':'cool',dd=Math.round((new Date(2027,2,23)-now)/864e5);
+   const extra=[].concat((G.season||{})[sea]||[],(G.week||{})[dw]||[],G.exam&&dd>0?[dd<=30?G.exam.soon:dd<=120?G.exam.near:G.exam.far]:[]);
+   c=pk(G.cheer.concat(extra),'c');}
+  out.push(c);
   try{localStorage.setItem('kla-hi-last',JSON.stringify(last))}catch(e){}
   return out;}
 // ปากขยับตามเสียง: เล่นไฟล์ mp3 ตามปกติ (ไม่ส่งผ่าน Web Audio เพราะบางเครื่องเสียงเงียบ)
